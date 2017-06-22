@@ -48,7 +48,7 @@ INSERT INTO `ROLES` (`ROLE_DESCRIPTION`, `PARENT_ID`) VALUES ('Voters', '1');
 -- USERS
 -- NOTE: You should change this immediately after installation; passing the password to the server is insecure.
 --
-INSERT INTO `USERS` (`USER_ID`, `USER_NAME`, `PWD_HASH`, `HASH_ALGORITHM`, `SALT`, `EMAIL`) VALUES (1, 'administrator', SHA2('SomeSaltValue?Password123',256), 'SHA2-256', 'SomeSaltValue?', 'test@administrator.com');
+INSERT INTO `USERS` (`USER_ID`, `USER_NAME`, `PWD_HASH`, `HASH_ALGORITHM`, `SALT`, `EMAIL`) VALUES (1, 'administrator', SHA2('<ConcatenateSaltPlusUserPasswordHere>',256), 'SHA2-256', '<CSPRNG-generated salt goes here>', '<EmailAddressGoesHere>');
 --
 -- USER ROLES
 -- NOTE: Assigns the Administrator role to the user 'administrator'

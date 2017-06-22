@@ -19,7 +19,7 @@ SET @measureid=1;
 SET @ballotid=0;
 
 -- Create a sample user and registrant for the user.
-CALL users_add('testuser2','test@test.com',SHA2('ThisIsASaltPlusPassword',256),'SHA2-256','ThisIsASaltPlus',@newUserid);
+CALL users_add('testuser2','test@test.com',SHA2('<SaltPlusPassword>',256),'SHA2-256','<Salt>',@newUserid);
 CALL registrant_add('TestJane2','TestChandra','TestDoe','','1970-01-01','770-555-1234','GAID','TESTfedid','FEMALE','AS','0','GA','UNS',@newUserid,@regid);
 
 -- Approve the registrant. (note: this should fail due to missing district)
