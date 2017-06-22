@@ -1,20 +1,16 @@
-/* ************************************************************ */
-/* ** Web-based Election Application and Voting Registration ** */
-/* *************************  WEAVR  ************************** */
-/* ************************************************************ */
 /* 	
 	AUTHOR: 		Charles Little (little_charles1@columbusstate.edu)
 	CREATION DATE:	22-June-2017
-	FILENAME:		weavr-dml.sql
+	FILENAME:		VOICE-dml.sql
 	PURPOSE:		Stored Procedures, Triggers, Functions (DML)
 */
-use weavr;
+use VOICE;
 START TRANSACTION;
 
 /* STUB 
 DELIMITER $$
-DROP PROCEDURE IF EXISTS `weavr`.`X` $$
-CREATE PROCEDURE `weavr`.`X` (
+DROP PROCEDURE IF EXISTS `VOICE`.`X` $$
+CREATE PROCEDURE `VOICE`.`X` (
 	IN X bigint(20),
     OUT X bigint(20)
 )
@@ -29,8 +25,8 @@ DELIMITER ; $$
 
 /** Receipt and Details **/
 DELIMITER $$
-DROP PROCEDURE IF EXISTS `weavr`.`receipt_generate` $$
-CREATE PROCEDURE `weavr`.`receipt_generate` (
+DROP PROCEDURE IF EXISTS `VOICE`.`receipt_generate` $$
+CREATE PROCEDURE `VOICE`.`receipt_generate` (
 	IN regid bigint(20),
     IN electionid bigint(20)
 )
@@ -51,8 +47,8 @@ DELIMITER ; $$
 
 /** ELECTIONS, ELECTION DISTRICTS, MEASURES, OPTIONS **/
 DELIMITER $$
-DROP PROCEDURE IF EXISTS `weavr`.`elections_cast_ballot` $$
-CREATE PROCEDURE `weavr`.`elections_cast_ballot` (
+DROP PROCEDURE IF EXISTS `VOICE`.`elections_cast_ballot` $$
+CREATE PROCEDURE `VOICE`.`elections_cast_ballot` (
 	IN regid bigint(20),
     IN electionid bigint(20),
     IN measureid bigint(20),
@@ -70,8 +66,8 @@ END $$
 DELIMITER ; $$
 
 DELIMITER $$
-DROP PROCEDURE IF EXISTS `weavr`.`registrant_get_elections` $$
-CREATE PROCEDURE `weavr`.`registrant_get_elections` (IN regid bigint(20))
+DROP PROCEDURE IF EXISTS `VOICE`.`registrant_get_elections` $$
+CREATE PROCEDURE `VOICE`.`registrant_get_elections` (IN regid bigint(20))
 COMMENT 'List registrant''s eligible elections.'
 BEGIN
     SELECT 
@@ -87,8 +83,8 @@ END $$
 DELIMITER ; $$
 
 DELIMITER $$
-DROP PROCEDURE IF EXISTS `weavr`.`elections_get_measures` $$
-CREATE PROCEDURE `weavr`.`elections_get_measures` (IN electionid bigint(20))
+DROP PROCEDURE IF EXISTS `VOICE`.`elections_get_measures` $$
+CREATE PROCEDURE `VOICE`.`elections_get_measures` (IN electionid bigint(20))
 COMMENT 'List measures in an election.'
 BEGIN
     SELECT 
@@ -101,8 +97,8 @@ END $$
 DELIMITER ; $$
 
 DELIMITER $$
-DROP PROCEDURE IF EXISTS `weavr`.`elections_get_measure_options` $$
-CREATE PROCEDURE `weavr`.`elections_get_measure_options` (IN electionid bigint(20),IN measureid bigint(20))
+DROP PROCEDURE IF EXISTS `VOICE`.`elections_get_measure_options` $$
+CREATE PROCEDURE `VOICE`.`elections_get_measure_options` (IN electionid bigint(20),IN measureid bigint(20))
 COMMENT 'List options in a measure.'
 BEGIN
     SELECT 
@@ -115,8 +111,8 @@ END $$
 DELIMITER ; $$
 -- get an election
 DELIMITER $$
-DROP PROCEDURE IF EXISTS `weavr`.`elections_get` $$
-CREATE PROCEDURE `weavr`.`elections_get` (
+DROP PROCEDURE IF EXISTS `VOICE`.`elections_get` $$
+CREATE PROCEDURE `VOICE`.`elections_get` (
 	IN electionid bigint(20)
 )
 COMMENT 'Get an Election.'
@@ -133,8 +129,8 @@ DELIMITER ; $$
 
 -- add election
 DELIMITER $$
-DROP PROCEDURE IF EXISTS `weavr`.`elections_add` $$
-CREATE PROCEDURE `weavr`.`elections_add` (
+DROP PROCEDURE IF EXISTS `VOICE`.`elections_add` $$
+CREATE PROCEDURE `VOICE`.`elections_add` (
 	IN electionname varchar(256),
     IN electiondetail longblob,
     IN startdate datetime,
@@ -152,8 +148,8 @@ DELIMITER ; $$
 
 -- add district to election
 DELIMITER $$
-DROP PROCEDURE IF EXISTS `weavr`.`elections_add_district` $$
-CREATE PROCEDURE `weavr`.`elections_add_district` (
+DROP PROCEDURE IF EXISTS `VOICE`.`elections_add_district` $$
+CREATE PROCEDURE `VOICE`.`elections_add_district` (
 	IN electionid bigint(20),
     IN districtid bigint(20)
 )
@@ -168,8 +164,8 @@ DELIMITER ; $$
 
 -- add measures to ballot
 DELIMITER $$
-DROP PROCEDURE IF EXISTS `weavr`.`elections_add_measure` $$
-CREATE PROCEDURE `weavr`.`elections_add_measure` (
+DROP PROCEDURE IF EXISTS `VOICE`.`elections_add_measure` $$
+CREATE PROCEDURE `VOICE`.`elections_add_measure` (
 	IN electionid bigint(20),
     IN measure longblob,
     OUT measureid bigint(20)
@@ -185,8 +181,8 @@ DELIMITER ; $$
 
 -- add options to measure
 DELIMITER $$
-DROP PROCEDURE IF EXISTS `weavr`.`elections_add_measure_option` $$
-CREATE PROCEDURE `weavr`.`elections_add_measure_option` (
+DROP PROCEDURE IF EXISTS `VOICE`.`elections_add_measure_option` $$
+CREATE PROCEDURE `VOICE`.`elections_add_measure_option` (
 	IN electionid bigint(20),
     IN measureid bigint(20),
 	IN moption longblob
@@ -206,8 +202,8 @@ DELIMITER ; $$
 
 /** REGISTRANT - DISTRICTS - LOCATIONS**/
 DELIMITER $$
-DROP PROCEDURE IF EXISTS `weavr`.`registrant_add` $$
-CREATE PROCEDURE `weavr`.`registrant_add` (
+DROP PROCEDURE IF EXISTS `VOICE`.`registrant_add` $$
+CREATE PROCEDURE `VOICE`.`registrant_add` (
 	IN firstname varchar(256),
     IN middlename varchar(256),
     IN lastname varchar(256),
@@ -237,8 +233,8 @@ BEGIN
     COMMIT;
 END $$
 
-DROP PROCEDURE IF EXISTS `weavr`.`registrant_get` $$
-CREATE PROCEDURE `weavr`.`registrant_get` (IN regid bigint(20))
+DROP PROCEDURE IF EXISTS `VOICE`.`registrant_get` $$
+CREATE PROCEDURE `VOICE`.`registrant_get` (IN regid bigint(20))
 COMMENT 'Get a specific registrant'
 BEGIN
 	SELECT 
@@ -266,8 +262,8 @@ BEGIN
     WHERE R.REGISTRANT_ID = regid and RL.IS_RESIDENCE = 1;
 END $$
 
-DROP PROCEDURE IF EXISTS `weavr`.`registrant_get_basic` $$
-CREATE PROCEDURE `weavr`.`registrant_get_basic` (IN regid bigint(20))
+DROP PROCEDURE IF EXISTS `VOICE`.`registrant_get_basic` $$
+CREATE PROCEDURE `VOICE`.`registrant_get_basic` (IN regid bigint(20))
 COMMENT 'Get a specific registrant'
 BEGIN
 	SELECT 
@@ -292,8 +288,8 @@ BEGIN
     WHERE R.REGISTRANT_ID = regid;
 END $$
 
-DROP PROCEDURE IF EXISTS `weavr`.`locations_delete` $$
-CREATE PROCEDURE `weavr`.`locations_delete` (
+DROP PROCEDURE IF EXISTS `VOICE`.`locations_delete` $$
+CREATE PROCEDURE `VOICE`.`locations_delete` (
     IN regid bigint(20),
     IN locid bigint(20)
 )
@@ -310,8 +306,8 @@ BEGIN
 	END IF;
 END $$
 
-DROP PROCEDURE IF EXISTS `weavr`.`locations_add` $$
-CREATE PROCEDURE `weavr`.`locations_add` (
+DROP PROCEDURE IF EXISTS `VOICE`.`locations_add` $$
+CREATE PROCEDURE `VOICE`.`locations_add` (
     IN streetname1 varchar(256),
     IN streetname2 varchar(256),
     IN city varchar(256),
@@ -352,8 +348,8 @@ BEGIN
     
 END $$
 
-DROP PROCEDURE IF EXISTS `weavr`.`registrant_get_mailingaddr` $$
-CREATE PROCEDURE `weavr`.`registrant_get_mailingaddr` (
+DROP PROCEDURE IF EXISTS `VOICE`.`registrant_get_mailingaddr` $$
+CREATE PROCEDURE `VOICE`.`registrant_get_mailingaddr` (
     IN regid bigint(20)
 )
 COMMENT 'Get the mailing address of a registrant. '
@@ -361,8 +357,8 @@ BEGIN
 	CALL locations_get(regid,null,1,null);
 END $$
 
-DROP PROCEDURE IF EXISTS `weavr`.`registrant_get_residenceaddr` $$
-CREATE PROCEDURE `weavr`.`registrant_get_residenceaddr` (
+DROP PROCEDURE IF EXISTS `VOICE`.`registrant_get_residenceaddr` $$
+CREATE PROCEDURE `VOICE`.`registrant_get_residenceaddr` (
     IN regid bigint(20)
 )
 COMMENT 'Get the mailing address of a registrant. '
@@ -370,8 +366,8 @@ BEGIN
 	CALL locations_get(regid,null,null,1);
 END $$
 
-DROP PROCEDURE IF EXISTS `weavr`.`registrant_get_addresses` $$
-CREATE PROCEDURE `weavr`.`registrant_get_addresses` (
+DROP PROCEDURE IF EXISTS `VOICE`.`registrant_get_addresses` $$
+CREATE PROCEDURE `VOICE`.`registrant_get_addresses` (
     IN regid bigint(20)
 )
 COMMENT 'Get all addresses of a registrant. '
@@ -379,8 +375,8 @@ BEGIN
 	CALL locations_get(regid,null,null,null);
 END $$
 
-DROP PROCEDURE IF EXISTS `weavr`.`registrant_get_address` $$
-CREATE PROCEDURE `weavr`.`registrant_get_address` (
+DROP PROCEDURE IF EXISTS `VOICE`.`registrant_get_address` $$
+CREATE PROCEDURE `VOICE`.`registrant_get_address` (
     IN regid bigint(20),
     IN locid bigint(20)
 )
@@ -390,8 +386,8 @@ BEGIN
 END $$
 
 
-DROP PROCEDURE IF EXISTS `weavr`.`locations_get` $$
-CREATE PROCEDURE `weavr`.`locations_get` (
+DROP PROCEDURE IF EXISTS `VOICE`.`locations_get` $$
+CREATE PROCEDURE `VOICE`.`locations_get` (
     IN regid bigint(20),
     IN locid bigint(20),
     IN bmail tinyint(1),
@@ -452,8 +448,8 @@ BEGIN
 END $$
 
 
-DROP PROCEDURE IF EXISTS `weavr`.`districts_add` $$
-CREATE PROCEDURE `weavr`.`districts_add` (IN district varchar(128),OUT districtid bigint(20))
+DROP PROCEDURE IF EXISTS `VOICE`.`districts_add` $$
+CREATE PROCEDURE `VOICE`.`districts_add` (IN district varchar(128),OUT districtid bigint(20))
 COMMENT 'Add a district'
 BEGIN
 	INSERT INTO `DISTRICTS` (`DISTRICT`) VALUES (district);
@@ -461,22 +457,22 @@ BEGIN
     SELECT `DISTRICT_ID` INTO districtid FROM `DISTRICTS` WHERE `DISTRICTS`.`DISTRICT`= district;
 END $$
 
-DROP PROCEDURE IF EXISTS `weavr`.`districts_update` $$
-CREATE PROCEDURE `weavr`.`districts_update` (IN districtid bigint(20), IN district varchar(128))
+DROP PROCEDURE IF EXISTS `VOICE`.`districts_update` $$
+CREATE PROCEDURE `VOICE`.`districts_update` (IN districtid bigint(20), IN district varchar(128))
 COMMENT 'Update a district name'
 BEGIN
 	UPDATE `DISTRICTS` SET `DISTRICT`=district WHERE `DISTRICTS`.`DISTRICT_ID` = districtid;
     COMMIT;
 END $$
-DROP PROCEDURE IF EXISTS `weavr`.`districts_delete` $$
-CREATE PROCEDURE `weavr`.`districts_delete` (IN districtid bigint(20))
+DROP PROCEDURE IF EXISTS `VOICE`.`districts_delete` $$
+CREATE PROCEDURE `VOICE`.`districts_delete` (IN districtid bigint(20))
 COMMENT 'Delete a district'
 BEGIN
 	DELETE FROM `DISTRICTS` WHERE `DISTRICTS`.`DISTRICT_ID` = districtid;
     COMMIT;
 END $$
-DROP PROCEDURE IF EXISTS `weavr`.`registrant_get_districts` $$
-CREATE PROCEDURE `weavr`.`registrant_get_districts` (IN regid bigint(20))
+DROP PROCEDURE IF EXISTS `VOICE`.`registrant_get_districts` $$
+CREATE PROCEDURE `VOICE`.`registrant_get_districts` (IN regid bigint(20))
 COMMENT 'Get a specific registrant''s districts'
 BEGIN
 	SELECT 
@@ -486,8 +482,8 @@ BEGIN
     WHERE RD.REGISTRANT_ID = regid;		
 END $$
 
-DROP PROCEDURE IF EXISTS `weavr`.`get_affirmations` $$
-CREATE PROCEDURE `weavr`.`get_affirmations` (IN statecd varchar(3))
+DROP PROCEDURE IF EXISTS `VOICE`.`get_affirmations` $$
+CREATE PROCEDURE `VOICE`.`get_affirmations` (IN statecd varchar(3))
 COMMENT 'Get affirmations for a given state'
 BEGIN
 	SELECT `AFFIRMATION`,`AFFIRM_ID`,`STATECD` 
@@ -495,8 +491,8 @@ BEGIN
     WHERE `AFFIRMATIONS`.`STATECD` = (statecd);		
 END $$
 
-DROP PROCEDURE IF EXISTS `weavr`.`registrant_set_affirm` $$
-CREATE PROCEDURE `weavr`.`registrant_set_affirm` (IN regid bigint(20))
+DROP PROCEDURE IF EXISTS `VOICE`.`registrant_set_affirm` $$
+CREATE PROCEDURE `VOICE`.`registrant_set_affirm` (IN regid bigint(20))
 COMMENT 'Mark registration as affirming state''s affirmations'
 BEGIN
 	UPDATE REGISTRANTS
@@ -507,24 +503,24 @@ BEGIN
 	COMMIT;
 END $$
 
-DROP PROCEDURE IF EXISTS `weavr`.`registrant_set_district` $$
-CREATE PROCEDURE `weavr`.`registrant_set_district` (IN regid bigint(20), IN districtid bigint(20))
+DROP PROCEDURE IF EXISTS `VOICE`.`registrant_set_district` $$
+CREATE PROCEDURE `VOICE`.`registrant_set_district` (IN regid bigint(20), IN districtid bigint(20))
 COMMENT 'Add a registrant to a district'
 BEGIN
 	INSERT INTO REGISTRANT_DISTRICTS (`REGISTRANT_ID`,`DISTRICT_ID`) VALUES (regid,districtid);
     COMMIT;
 END $$
 
-DROP PROCEDURE IF EXISTS `weavr`.`registrant_unset_district` $$
-CREATE PROCEDURE `weavr`.`registrant_unset_district` (IN regid bigint(20), IN districtid bigint(20))
+DROP PROCEDURE IF EXISTS `VOICE`.`registrant_unset_district` $$
+CREATE PROCEDURE `VOICE`.`registrant_unset_district` (IN regid bigint(20), IN districtid bigint(20))
 COMMENT 'Remove a registrant to a district'
 BEGIN
 	UPDATE `REGISTRANT_DISTRICTS` RD SET `ACTIVE` = 0 WHERE RD.REGISTRANT_ID = regid and RD.DISTRICT_ID = districtid;
     COMMIT;
 END $$
 
-DROP PROCEDURE IF EXISTS `weavr`.`registrant_unset_approved` $$
-CREATE PROCEDURE `weavr`.`registrant_unset_approved` (IN regid bigint(20))
+DROP PROCEDURE IF EXISTS `VOICE`.`registrant_unset_approved` $$
+CREATE PROCEDURE `VOICE`.`registrant_unset_approved` (IN regid bigint(20))
 COMMENT 'Remove approval of registrant.'
 BEGIN
 	UPDATE `REGISTRANTS` SET `APPROVAL_STATE` = 0 WHERE REGISTRANT_ID = regid;
@@ -532,8 +528,8 @@ BEGIN
 END $$
 
 
-DROP PROCEDURE IF EXISTS `weavr`.`registrant_set_approved` $$
-CREATE PROCEDURE `weavr`.`registrant_set_approved` (IN regid bigint(20))
+DROP PROCEDURE IF EXISTS `VOICE`.`registrant_set_approved` $$
+CREATE PROCEDURE `VOICE`.`registrant_set_approved` (IN regid bigint(20))
 COMMENT 'Approve registrant.'
 BEGIN
 /* Business rules:
@@ -561,8 +557,8 @@ BEGIN
     COMMIT;
 END $$
 
-DROP PROCEDURE IF EXISTS `weavr`.`registrant_set_rejected` $$
-CREATE PROCEDURE `weavr`.`registrant_set_rejected` (IN regid bigint(20))
+DROP PROCEDURE IF EXISTS `VOICE`.`registrant_set_rejected` $$
+CREATE PROCEDURE `VOICE`.`registrant_set_rejected` (IN regid bigint(20))
 COMMENT 'Reject registrant.'
 BEGIN
 	UPDATE REGISTRANTS
@@ -577,22 +573,22 @@ DELIMITER ; $$
 
 /** USER, USER ROLES **/
 DELIMITER $$
-DROP PROCEDURE IF EXISTS `weavr`.`users_list` $$
-CREATE PROCEDURE `weavr`.`users_list` ()
+DROP PROCEDURE IF EXISTS `VOICE`.`users_list` $$
+CREATE PROCEDURE `VOICE`.`users_list` ()
 BEGIN
 	SELECT USERID,USERNAME,EMAIL from USERS;
 END $$
 
 /* NOTE: hash and salt must be generated outside of database. */
-DROP PROCEDURE IF EXISTS `weavr`.`users_add` $$
-CREATE PROCEDURE `weavr`.`users_add` (IN username varchar(256),IN email varchar(256), IN passwordhash varchar(256), IN hashalg varchar(50),IN salt varchar(50),OUT newid bigint(20))
+DROP PROCEDURE IF EXISTS `VOICE`.`users_add` $$
+CREATE PROCEDURE `VOICE`.`users_add` (IN username varchar(256),IN email varchar(256), IN passwordhash varchar(256), IN hashalg varchar(50),IN salt varchar(50),OUT newid bigint(20))
 BEGIN
 	INSERT INTO `USERS` (`USER_NAME`,`EMAIL`,`PWD_HASH`,`HASH_ALGORITHM`,`SALT`) VALUES (username,email,passwordhash,hashalg,salt);    
     SELECT LAST_INSERT_ID() INTO newid;
     COMMIT;
 END $$
-DROP PROCEDURE IF EXISTS `weavr`.`users_update_password` $$
-CREATE PROCEDURE `weavr`.`users_update_password` (IN userid bigint(20),IN passwordhash varchar(256), IN hashalg varchar(50),IN salt varchar(50))
+DROP PROCEDURE IF EXISTS `VOICE`.`users_update_password` $$
+CREATE PROCEDURE `VOICE`.`users_update_password` (IN userid bigint(20),IN passwordhash varchar(256), IN hashalg varchar(50),IN salt varchar(50))
 COMMENT 'Update a user password'
 BEGIN		
 	UPDATE `USERS` 
@@ -603,15 +599,15 @@ BEGIN
 	WHERE `USERS`.`USER_ID`=userid;
     COMMIT;
 END $$
-DROP PROCEDURE IF EXISTS `weavr`.`users_update_email` $$
-CREATE PROCEDURE `weavr`.`users_update_email` (IN userid bigint(20),IN email varchar(256))
+DROP PROCEDURE IF EXISTS `VOICE`.`users_update_email` $$
+CREATE PROCEDURE `VOICE`.`users_update_email` (IN userid bigint(20),IN email varchar(256))
 COMMENT 'Update a user email address'
 BEGIN		
 	UPDATE `USERS` SET `EMAIL`=email WHERE `USERS`.`USER_ID`=userid;
     COMMIT;
 END $$
-DROP PROCEDURE IF EXISTS `weavr`.`users_add_role` $$
-CREATE PROCEDURE `weavr`.`users_add_role` (IN userid bigint(20), IN roleid bigint (20), IN username varchar(256), IN role varchar(64))
+DROP PROCEDURE IF EXISTS `VOICE`.`users_add_role` $$
+CREATE PROCEDURE `VOICE`.`users_add_role` (IN userid bigint(20), IN roleid bigint (20), IN username varchar(256), IN role varchar(64))
 COMMENT 'Can use combination of ID or name in either user or role, IDs being preferred'
 BEGIN
 	IF (userid != NULL and roleid != NULL) THEN
@@ -626,15 +622,15 @@ BEGIN
     COMMIT;
 END $$
 
-DROP PROCEDURE IF EXISTS `weavr`.`users_add_role` $$
-CREATE PROCEDURE `weavr`.`users_add_role` (IN userid bigint(20), IN roleid bigint (20))
+DROP PROCEDURE IF EXISTS `VOICE`.`users_add_role` $$
+CREATE PROCEDURE `VOICE`.`users_add_role` (IN userid bigint(20), IN roleid bigint (20))
 BEGIN
 	INSERT INTO `USERS_ROLES` (`USER_ID`,`ROLE_ID`) VALUES (userid,roleid);
     COMMIT;
 END $$
 
-DROP PROCEDURE IF EXISTS `weavr`.`users_delete` $$
-CREATE PROCEDURE `weavr`.`users_delete` (IN username varchar(256),IN userid bigint(20))
+DROP PROCEDURE IF EXISTS `VOICE`.`users_delete` $$
+CREATE PROCEDURE `VOICE`.`users_delete` (IN username varchar(256),IN userid bigint(20))
 BEGIN
 	IF username != NULL THEN
 		DELETE FROM `USERS` WHERE `USERS`.`USER_NAME` = username;
@@ -647,21 +643,21 @@ DELIMITER ; $$
 
 /** ETHNICITIES **/
 DELIMITER $$
-DROP PROCEDURE IF EXISTS `weavr`.`ethnicities_list` $$
-CREATE PROCEDURE `weavr`.`ethnicities_list` ()
+DROP PROCEDURE IF EXISTS `VOICE`.`ethnicities_list` $$
+CREATE PROCEDURE `VOICE`.`ethnicities_list` ()
 BEGIN
 	SELECT * FROM ETHNICITIES;
 END $$
 
-DROP PROCEDURE IF EXISTS `weavr`.`ethnicities_add` $$
-CREATE PROCEDURE `weavr`.`ethnicities_add` (IN acode char(2), IN avalue varchar(15))
+DROP PROCEDURE IF EXISTS `VOICE`.`ethnicities_add` $$
+CREATE PROCEDURE `VOICE`.`ethnicities_add` (IN acode char(2), IN avalue varchar(15))
 BEGIN
 	INSERT INTO `ETHNICITIES` (`ETHNICITYCD`,`ETHNICITY`) VALUES (acode,avalue);
     COMMIT;
 END $$
 
-DROP PROCEDURE IF EXISTS `weavr`.`ethnicities_delete` $$
-CREATE PROCEDURE `weavr`.`ethnicities_delete` (IN acode char(2))
+DROP PROCEDURE IF EXISTS `VOICE`.`ethnicities_delete` $$
+CREATE PROCEDURE `VOICE`.`ethnicities_delete` (IN acode char(2))
 BEGIN
 	DELETE FROM `ETHNICITIES` WHERE `ETHNICITIES`.`ETHNICITYCD` = acode;	
     COMMIT;
@@ -670,22 +666,22 @@ DELIMITER ; $$
 
 /** DISTRICTS **/
 DELIMITER $$
-DROP PROCEDURE IF EXISTS `weavr`.`districts_list` $$
-CREATE PROCEDURE `weavr`.`districts_list` ()
+DROP PROCEDURE IF EXISTS `VOICE`.`districts_list` $$
+CREATE PROCEDURE `VOICE`.`districts_list` ()
 BEGIN
 	SELECT * FROM DISTRICTS;
 END $$
 
-DROP PROCEDURE IF EXISTS `weavr`.`districts_add` $$
-CREATE PROCEDURE `weavr`.`districts_add` (IN avalue varchar(128), OUT newid bigint(20))
+DROP PROCEDURE IF EXISTS `VOICE`.`districts_add` $$
+CREATE PROCEDURE `VOICE`.`districts_add` (IN avalue varchar(128), OUT newid bigint(20))
 BEGIN
 	INSERT INTO `DISTRICTS` (`DISTRICT`) VALUES (avalue);
     SELECT LAST_INSERT_ID() into newid;
     COMMIT;
 END $$
 
-DROP PROCEDURE IF EXISTS `weavr`.`districts_delete` $$
-CREATE PROCEDURE `weavr`.`districts_delete` (IN anid bigint(20))
+DROP PROCEDURE IF EXISTS `VOICE`.`districts_delete` $$
+CREATE PROCEDURE `VOICE`.`districts_delete` (IN anid bigint(20))
 BEGIN
 	DELETE FROM `DISTRICTS` WHERE `DISTRICTS`.`DISTRICT_ID` = anid;
 END $$
@@ -693,27 +689,27 @@ DELIMITER ; $$
 
 /** ABILITY SETS **/
 delimiter $$
-DROP PROCEDURE IF EXISTS `weavr`.`abilitysets_list` $$
-CREATE PROCEDURE `weavr`.`abilitysets_list` ()
+DROP PROCEDURE IF EXISTS `VOICE`.`abilitysets_list` $$
+CREATE PROCEDURE `VOICE`.`abilitysets_list` ()
 BEGIN
 	SELECT * FROM `ABILITY_SETS`;
 END $$
 
-DROP PROCEDURE IF EXISTS `weavr`.`abilitysets_get` $$
-CREATE PROCEDURE `weavr`.`abilitysets_get` (IN absetid bigint(20))
+DROP PROCEDURE IF EXISTS `VOICE`.`abilitysets_get` $$
+CREATE PROCEDURE `VOICE`.`abilitysets_get` (IN absetid bigint(20))
 BEGIN
 	SELECT * FROM `ABILITY_SETS` WHERE `ABILITY_SETS`.`ABILITY_SET_ID` = absetid;
 END $$
 
-DROP PROCEDURE IF EXISTS `weavr`.`abilitysets_add` $$
-CREATE PROCEDURE `weavr`.`abilitysets_add` (IN avalue varchar(64))
+DROP PROCEDURE IF EXISTS `VOICE`.`abilitysets_add` $$
+CREATE PROCEDURE `VOICE`.`abilitysets_add` (IN avalue varchar(64))
 BEGIN
 	INSERT INTO `ABILITY_SETS` (`ABILITY_SETS`) VALUES (avalue);
     COMMIT;
 END $$
 
-DROP PROCEDURE IF EXISTS `weavr`.`abilitysets_delete` $$
-CREATE PROCEDURE `weavr`.`abilitysets_delete` (IN anid bigint(20))
+DROP PROCEDURE IF EXISTS `VOICE`.`abilitysets_delete` $$
+CREATE PROCEDURE `VOICE`.`abilitysets_delete` (IN anid bigint(20))
 BEGIN
 	DELETE FROM `ABILITY_SETS` WHERE `ABILITY_SETS`.`ABILITY_SET_ID` = anid;
     COMMIT;
@@ -722,21 +718,21 @@ delimiter ; $$
 
 /** ABILITIES **/
 delimiter $$
-DROP PROCEDURE IF EXISTS `weavr`.`abilities_list` $$
-CREATE PROCEDURE `weavr`.`abilities_list` ()
+DROP PROCEDURE IF EXISTS `VOICE`.`abilities_list` $$
+CREATE PROCEDURE `VOICE`.`abilities_list` ()
 BEGIN
 	SELECT * FROM ABILITIES;
 END $$
 
-DROP PROCEDURE IF EXISTS `weavr`.`abilities_add` $$
-CREATE PROCEDURE `weavr`.`abilities_add` (IN aname varchar(256),IN adesc longblob)
+DROP PROCEDURE IF EXISTS `VOICE`.`abilities_add` $$
+CREATE PROCEDURE `VOICE`.`abilities_add` (IN aname varchar(256),IN adesc longblob)
 BEGIN
 	INSERT INTO `ABILITIES` (`ABILITY_NAME`,`ABILITY_DESCRIPTION`) VALUES (aname,adesc);
     COMMIT;
 END $$
 
-DROP PROCEDURE IF EXISTS `weavr`.`abilities_delete` $$
-CREATE PROCEDURE `weavr`.`abilities_delete` (IN anid bigint(20))
+DROP PROCEDURE IF EXISTS `VOICE`.`abilities_delete` $$
+CREATE PROCEDURE `VOICE`.`abilities_delete` (IN anid bigint(20))
 BEGIN
 	DELETE FROM `ABILITIES` WHERE `ABILITIES`.`ABILITY_ID` = anid;
     COMMIT;
@@ -745,8 +741,8 @@ delimiter ; $$
 
 /** ABILITY SETS - ABILITIES **/
 delimiter $$
-DROP PROCEDURE IF EXISTS `weavr`.`abilityset_abilities_list` $$
-CREATE PROCEDURE `weavr`.`abilityset_abilities_list` (IN aid bigint(20))
+DROP PROCEDURE IF EXISTS `VOICE`.`abilityset_abilities_list` $$
+CREATE PROCEDURE `VOICE`.`abilityset_abilities_list` (IN aid bigint(20))
 BEGIN
 	SELECT 
 		_AS.ABILITY_SET_NAME as 'Ability Set',
@@ -761,15 +757,15 @@ BEGIN
         WHERE ASA.ABILITY_SET_ID = aid;        
 END $$
 
-DROP PROCEDURE IF EXISTS `weavr`.`abilityset_abilities_add` $$
-CREATE PROCEDURE `weavr`.`abilityset_abilities_add` (IN asid bigint(20),IN aid bigint(20),IN enabled tinyint(1),IN available tinyint(1), IN visible tinyint(1) )
+DROP PROCEDURE IF EXISTS `VOICE`.`abilityset_abilities_add` $$
+CREATE PROCEDURE `VOICE`.`abilityset_abilities_add` (IN asid bigint(20),IN aid bigint(20),IN enabled tinyint(1),IN available tinyint(1), IN visible tinyint(1) )
 BEGIN
 	INSERT INTO `ABILITY_SET_ABILITIES` (ABILITY_SET_ABILITIES,`ABILITY_ID`,`ENABLED`,`AVAILABLE`,`VISIBLE`) VALUES (asid,aid,enabled,available,visible);
     COMMIT;
 END $$
 
-DROP PROCEDURE IF EXISTS `weavr`.`abilityset_abilities_delete` $$
-CREATE PROCEDURE `weavr`.`abilityset_abilities_delete` (IN asid bigint(20),IN aid bigint(20))
+DROP PROCEDURE IF EXISTS `VOICE`.`abilityset_abilities_delete` $$
+CREATE PROCEDURE `VOICE`.`abilityset_abilities_delete` (IN asid bigint(20),IN aid bigint(20))
 BEGIN
 	DELETE FROM `ABILITY_SET_ABILITIES` WHERE `ABILITY_SET_ABILITIES`.`ABILITY_SET_ID`=asid and `ABILITY_ID` = aid;
     COMMIT;
@@ -778,21 +774,21 @@ DELIMITER ;
 
 /** ROLES **/
 delimiter $$
-DROP PROCEDURE IF EXISTS `weavr`.`roles_list` $$
-CREATE PROCEDURE `weavr`.`roles_list` ()
+DROP PROCEDURE IF EXISTS `VOICE`.`roles_list` $$
+CREATE PROCEDURE `VOICE`.`roles_list` ()
 BEGIN
 	SELECT * FROM ROLES;
 END $$
 
-DROP PROCEDURE IF EXISTS `weavr`.`roles_add` $$
-CREATE PROCEDURE `weavr`.`roles_add` (IN role varchar(64))
+DROP PROCEDURE IF EXISTS `VOICE`.`roles_add` $$
+CREATE PROCEDURE `VOICE`.`roles_add` (IN role varchar(64))
 BEGIN
 	INSERT INTO `ROLES` (`ROLE_DESCRIPTION`) VALUES (role);
     COMMIT;
 END $$
 
-DROP PROCEDURE IF EXISTS `weavr`.`roles_delete` $$
-CREATE PROCEDURE `weavr`.`roles_delete` (IN roleid bigint(20))
+DROP PROCEDURE IF EXISTS `VOICE`.`roles_delete` $$
+CREATE PROCEDURE `VOICE`.`roles_delete` (IN roleid bigint(20))
 BEGIN
 	DELETE FROM `ROLES` WHERE `ROLES`.`ROLE_ID` = roleid;
     COMMIT;
@@ -801,8 +797,8 @@ delimiter ; $$
 
 /** ABILITY SETS - ROLES **/
 delimiter $$
-DROP PROCEDURE IF EXISTS `weavr`.`ability_set_roles_list` $$
-CREATE PROCEDURE `weavr`.`ability_set_roles_list` (IN asid bigint(20))
+DROP PROCEDURE IF EXISTS `VOICE`.`ability_set_roles_list` $$
+CREATE PROCEDURE `VOICE`.`ability_set_roles_list` (IN asid bigint(20))
 BEGIN
 	SELECT
 		Abset.ABILITY_SET_NAME as 'Ability Set Name',
@@ -813,15 +809,15 @@ BEGIN
     WHERE ASR.ABILITY_SET_ID = asid;
 END $$
 
-DROP PROCEDURE IF EXISTS `weavr`.`ability_set_roles_add` $$
-CREATE PROCEDURE `weavr`.`ability_set_roles_add` (IN roleid bigint(20), IN absetid bigint(20))
+DROP PROCEDURE IF EXISTS `VOICE`.`ability_set_roles_add` $$
+CREATE PROCEDURE `VOICE`.`ability_set_roles_add` (IN roleid bigint(20), IN absetid bigint(20))
 BEGIN
 	INSERT INTO `ABILITY_SET_ROLES` (`ROLE_ID`,`ABILITY_SET_ID`) VALUES (roleid,absetid);
     COMMIT;
 END $$
 
-DROP PROCEDURE IF EXISTS `weavr`.`ability_set_roles_delete` $$
-CREATE PROCEDURE `weavr`.`ability_set_roles_delete` (IN roleid bigint(20), IN absetid bigint(20))
+DROP PROCEDURE IF EXISTS `VOICE`.`ability_set_roles_delete` $$
+CREATE PROCEDURE `VOICE`.`ability_set_roles_delete` (IN roleid bigint(20), IN absetid bigint(20))
 BEGIN
 	DELETE FROM `ABILITY_SET_ROLES` WHERE `ABILITY_SET_ROLES`.`ROLE_ID` = roleid and `ABILITY_SET_ROLES`.`ABILITY_SET_ID` = absetid;
     COMMIT;
@@ -830,16 +826,16 @@ delimiter ; $$
 
 /** PARTIES, STATE_PARTIES **/
 delimiter $$
-DROP PROCEDURE IF EXISTS `weavr`.`state_parties_list` $$
-CREATE PROCEDURE `weavr`.`state_parties_list` (IN statecode varchar(3))
+DROP PROCEDURE IF EXISTS `VOICE`.`state_parties_list` $$
+CREATE PROCEDURE `VOICE`.`state_parties_list` (IN statecode varchar(3))
 BEGIN
 	SELECT 
 		SP.PARTYCD FROM `STATE_PARTIES` SP
         WHERE
 		SP.STATECD = statecode;
 END $$
-DROP PROCEDURE IF EXISTS `weavr`.`parties_list` $$
-CREATE PROCEDURE `weavr`.`parties_list` ()
+DROP PROCEDURE IF EXISTS `VOICE`.`parties_list` $$
+CREATE PROCEDURE `VOICE`.`parties_list` ()
 BEGIN
 	SELECT
 		PARTYCD as 'PARTY CODE',
@@ -848,28 +844,28 @@ BEGIN
         PARTIES;
 END $$
 
-DROP PROCEDURE IF EXISTS `weavr`.`parties_add` $$
-CREATE PROCEDURE `weavr`.`parties_add` (IN partycd varchar(16), IN party varchar(64))
+DROP PROCEDURE IF EXISTS `VOICE`.`parties_add` $$
+CREATE PROCEDURE `VOICE`.`parties_add` (IN partycd varchar(16), IN party varchar(64))
 BEGIN
 	INSERT INTO `PARTIES` (`PARTYCD`,`PARTY`) VALUES (partycd,party);
     COMMIT;
 END $$
 
-DROP PROCEDURE IF EXISTS `weavr`.`state_parties_add` $$
-CREATE PROCEDURE `weavr`.`state_parties_add` (IN partycd varchar(16), IN statecd varchar(3))
+DROP PROCEDURE IF EXISTS `VOICE`.`state_parties_add` $$
+CREATE PROCEDURE `VOICE`.`state_parties_add` (IN partycd varchar(16), IN statecd varchar(3))
 BEGIN
 	INSERT INTO `STATE_PARTIES` (`PARTYCD`,`STATECD`) VALUES (partycd,statecd);
     COMMIT;
 END $$
 
-DROP PROCEDURE IF EXISTS `weavr`.`parties_delete` $$
-CREATE PROCEDURE `weavr`.`parties_delete` (IN partycd varchar(16))
+DROP PROCEDURE IF EXISTS `VOICE`.`parties_delete` $$
+CREATE PROCEDURE `VOICE`.`parties_delete` (IN partycd varchar(16))
 BEGIN
 	DELETE FROM `PARTIES` WHERE `PARTIES`.`PARTYCD` = partycd;
 	COMMIT;
 END $$
-DROP PROCEDURE IF EXISTS `weavr`.`state_parties_delete` $$
-CREATE PROCEDURE `weavr`.`state_parties_delete` (IN partycd varchar(16),IN statecd varchar(3))
+DROP PROCEDURE IF EXISTS `VOICE`.`state_parties_delete` $$
+CREATE PROCEDURE `VOICE`.`state_parties_delete` (IN partycd varchar(16),IN statecd varchar(3))
 BEGIN
 	DELETE FROM `PARTIES` WHERE `PARTIES`.`PARTYCD` = partycd AND `PARTIES`.`STATECD` = statecd;
 	COMMIT;
@@ -878,8 +874,8 @@ delimiter ; $$
 
 /** STATES, COUNTRIES, COUNTIES **/
 delimiter $$
-DROP PROCEDURE IF EXISTS `weavr`.`counties_list` $$
-CREATE PROCEDURE `weavr`.`counties_list` (IN statecode varchar(3))
+DROP PROCEDURE IF EXISTS `VOICE`.`counties_list` $$
+CREATE PROCEDURE `VOICE`.`counties_list` (IN statecode varchar(3))
 BEGIN
 	SELECT 
 		C.COUNTYCD as `County Code`,
@@ -889,8 +885,8 @@ BEGIN
 		C.STATECD = statecode;
 END $$
 
-DROP PROCEDURE IF EXISTS `weavr`.`state_list` $$
-CREATE PROCEDURE `weavr`.`state_list` (IN countrycd varchar(3))
+DROP PROCEDURE IF EXISTS `VOICE`.`state_list` $$
+CREATE PROCEDURE `VOICE`.`state_list` (IN countrycd varchar(3))
 BEGIN
 	SELECT 
 		S.StateCD as `State Code`,
@@ -900,8 +896,8 @@ BEGIN
 		S.COUNTRYCD = countrycd;
 END $$
 
-DROP PROCEDURE IF EXISTS `weavr`.`countries_list` $$
-CREATE PROCEDURE `weavr`.`countries_list` ()
+DROP PROCEDURE IF EXISTS `VOICE`.`countries_list` $$
+CREATE PROCEDURE `VOICE`.`countries_list` ()
 BEGIN
 	SELECT 
 		C.CountryCD as `Country Code`,
@@ -909,43 +905,43 @@ BEGIN
         FROM `COUNTRIES` C;
 END $$
 
-DROP PROCEDURE IF EXISTS `weavr`.`countries_add` $$
-CREATE PROCEDURE `weavr`.`countries_add` (IN countrycd varchar(3), IN country varchar(64))
+DROP PROCEDURE IF EXISTS `VOICE`.`countries_add` $$
+CREATE PROCEDURE `VOICE`.`countries_add` (IN countrycd varchar(3), IN country varchar(64))
 BEGIN
 	INSERT INTO `COUNTRIES` (`COUNTRYCD`,`COUNTRY`) VALUES (countrycd,country);
     COMMIT;
 END $$
 
-DROP PROCEDURE IF EXISTS `weavr`.`states_add` $$
-CREATE PROCEDURE `weavr`.`states_add` (IN countrycd varchar(3), IN statecd varchar(3), IN state varchar(64))
+DROP PROCEDURE IF EXISTS `VOICE`.`states_add` $$
+CREATE PROCEDURE `VOICE`.`states_add` (IN countrycd varchar(3), IN statecd varchar(3), IN state varchar(64))
 BEGIN
 	INSERT INTO `STATES` (`STATECD`,`COUNTRYCD`,`STATE`) VALUES (statecd,countrycd,state);
     COMMIT;
 END $$
 
-DROP PROCEDURE IF EXISTS `weavr`.`counties_add` $$
-CREATE PROCEDURE `weavr`.`counties_add` (IN statecd varchar(3), IN countycd varchar(3), IN county varchar(64))
+DROP PROCEDURE IF EXISTS `VOICE`.`counties_add` $$
+CREATE PROCEDURE `VOICE`.`counties_add` (IN statecd varchar(3), IN countycd varchar(3), IN county varchar(64))
 BEGIN
 	INSERT INTO `COUNTIES` (`COUNTYCD`,`STATECD`,`COUNTRY`) VALUES (countycd,statecd,country);
     COMMIT;
 END $$
 
-DROP PROCEDURE IF EXISTS `weavr`.`counties_delete` $$
-CREATE PROCEDURE `weavr`.`counties_delete` (IN countycd varchar(3),IN statecd varchar(3))
+DROP PROCEDURE IF EXISTS `VOICE`.`counties_delete` $$
+CREATE PROCEDURE `VOICE`.`counties_delete` (IN countycd varchar(3),IN statecd varchar(3))
 BEGIN
 	DELETE FROM `COUNTIES` WHERE `COUNTYCD` = countycd and `STATECD`=statecd;
     COMMIT;
 END $$
 
-DROP PROCEDURE IF EXISTS `weavr`.`states_delete` $$
-CREATE PROCEDURE `weavr`.`states_delete` (IN countrycd varchar(3),IN statecd varchar(3))
+DROP PROCEDURE IF EXISTS `VOICE`.`states_delete` $$
+CREATE PROCEDURE `VOICE`.`states_delete` (IN countrycd varchar(3),IN statecd varchar(3))
 BEGIN
 	DELETE FROM `STATES` WHERE `STATES`.`COUNTRYCD` = countrycd and `STATES`.`STATECD`=statecd;
     COMMIT;
 END $$
 
-DROP PROCEDURE IF EXISTS `weavr`.`countries_delete` $$
-CREATE PROCEDURE `weavr`.`countries_delete` (IN countrycd varchar(3))
+DROP PROCEDURE IF EXISTS `VOICE`.`countries_delete` $$
+CREATE PROCEDURE `VOICE`.`countries_delete` (IN countrycd varchar(3))
 BEGIN
 	DELETE FROM `COUNTRIES` WHERE `COUNTRIES`.`COUNTRYCD` = countrycd;
     COMMIT;

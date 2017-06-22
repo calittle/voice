@@ -1,21 +1,17 @@
-/* ************************************************************ */
-/* ** Web-based Election Application and Voting Registration ** */
-/* *************************  WEAVR  ************************** */
-/* ************************************************************ */
 /* 	
 	AUTHOR: 		Charles Little (little_charles1@columbusstate.edu)
 	CREATION DATE:	22-June-2017
-	FILENAME:		weavr-test.sql
+	FILENAME:		VOICE-test.sql
 	PURPOSE:		Testing scripts for DML
 */
 SET autocommit=0;
 USE vorem;
-SET @newUserid = 3;
-SET @regid = 2;
-SET @districtid = 2;
+SET @newUserid = 0;
+SET @regid = 0;
+SET @districtid = 0;
 SET @locid = 0;
-SET @electionid=6;
-SET @measureid=1;
+SET @electionid=0;
+SET @measureid=0;
 SET @ballotid=0;
 
 -- Create a sample user and registrant for the user.

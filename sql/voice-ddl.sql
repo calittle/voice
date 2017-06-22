@@ -1,40 +1,36 @@
-/* ************************************************************ */
-/* ** Web-based Election Application and Voting Registration ** */
-/* *************************  WEAVR  ************************** */
-/* ************************************************************ */
 /* 	
 	AUTHOR: 		Charles Little (little_charles1@columbusstate.edu)
 	CREATION DATE:	22-June-2017
-	FILENAME:		weavr-ddl.sql
+	FILENAME:		VOICE-ddl.sql
 	PURPOSE:		Schema Creation (DDL)
 */
 -- Run this script as privileged user.
-DROP DATABASE IF EXISTS weavr;
-CREATE database weavr CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE weavr;
+DROP DATABASE IF EXISTS VOICE;
+CREATE database VOICE CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE VOICE;
 
 SET autocommit=0;
 START TRANSACTION;
 
--- weavrsys user should be used by applications wanting to manage the database structures.
-DROP USER IF EXISTS 'weavrsys'@'%';
-CREATE USER 'weavrsys'@'%' IDENTIFIED BY '1385362127Maya@123@';
-GRANT ALL ON weavr.* TO 'weavrsys'@'%';
+-- VOICEsys user should be used by applications wanting to manage the database structures.
+DROP USER IF EXISTS 'VOICEsys'@'%';
+CREATE USER 'VOICEsys'@'%' IDENTIFIED BY '1385362127Maya@123@';
+GRANT ALL ON VOICE.* TO 'VOICEsys'@'%';
 
--- weavrADMIN user should be used to execute ALL procedures in administrative capacity.
-DROP USER IF EXISTS 'weavradmin'@'%';
-CREATE USER 'weavradmin'@'%' IDENTIFIED BY '1385362127Maya@123@';
+-- VOICEADMIN user should be used to execute ALL procedures in administrative capacity.
+DROP USER IF EXISTS 'VOICEadmin'@'%';
+CREATE USER 'VOICEadmin'@'%' IDENTIFIED BY '1385362127Maya@123@';
 GRANT EXECUTE  
-	ON weavr.*
-    TO 'weavradmin'@'%';
+	ON VOICE.*
+    TO 'VOICEadmin'@'%';
 
--- weavr user should be used to execute user-based procedures only.
-DROP USER IF EXISTS 'weavr'@'%';
-CREATE USER 'weavr'@'%' IDENTIFIED BY '1385362127Maya@123@';
+-- VOICE user should be used to execute user-based procedures only.
+DROP USER IF EXISTS 'VOICE'@'%';
+CREATE USER 'VOICE'@'%' IDENTIFIED BY '1385362127Maya@123@';
 -- TODO define specific procedures. NEEDS REFINEMENT
 GRANT EXECUTE  
-	ON weavr.*
-    TO 'weavr'@'%';
+	ON VOICE.*
+    TO 'VOICE'@'%';
 
 COMMIT;
 START TRANSACTION;
@@ -245,8 +241,8 @@ NOTE: Have noticed that sometimes the AUTO_INCREMENT parameter doesn't "stick" o
 	  will try altering table after creating and prior to creation of foreign key. If you try to add a location
       and receive "ERROR Code 1364. Field 'LOCATION_ID' doesn't have a default value", run the following:
       
-      ALTER TABLE `weavr`.`REG_LOC` DROP FOREIGN KEY `registrants_reg_loc_fk`;
-	  ALTER TABLE `weavr`.`REG_LOC` DROP INDEX `registrants_reg_loc_fk` ;
+      ALTER TABLE `VOICE`.`REG_LOC` DROP FOREIGN KEY `registrants_reg_loc_fk`;
+	  ALTER TABLE `VOICE`.`REG_LOC` DROP INDEX `registrants_reg_loc_fk` ;
       ALTER TABLE `LOCATIONS` CHANGE `LOCATION_ID` `LOCATION_ID` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Primary key.';
       ALTER TABLE REG_LOC ADD CONSTRAINT locations_reg_loc_fk FOREIGN KEY (LOCATION_ID) REFERENCES LOCATIONS (LOCATION_ID) ON DELETE NO ACTION ON UPDATE NO ACTION; 
 
@@ -482,12 +478,12 @@ REFERENCES REGISTRANTS (REGISTRANT_ID)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION;
 
-ALTER TABLE `weavr`.`REGISTRANTS` 
+ALTER TABLE `VOICE`.`REGISTRANTS` 
 ADD INDEX `reg_party_state_fk_idx` (`PARTYCD` ASC, `STATECD` ASC);
-ALTER TABLE `weavr`.`REGISTRANTS` 
+ALTER TABLE `VOICE`.`REGISTRANTS` 
 ADD CONSTRAINT `reg_party_state_fk`
   FOREIGN KEY (`PARTYCD` , `STATECD`)
-  REFERENCES `weavr`.`STATE_PARTIES` (`PARTYCD` , `STATECD`)
+  REFERENCES `VOICE`.`STATE_PARTIES` (`PARTYCD` , `STATECD`)
   ON DELETE NO ACTION
   ON UPDATE NO ACTION;
 
