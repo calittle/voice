@@ -1,11 +1,7 @@
 /* 	
 	AUTHOR: 		Charles Little (little_charles1@columbusstate.edu)
 	CREATION DATE:	22-June-2017
-<<<<<<< HEAD:sql/voice-ddl.sql
-	FILENAME:		VOICE-ddl.sql
-=======
 	FILENAME:		voice-ddl.sql
->>>>>>> f9cd65767db2ecd887e187db794e67435b686e5c:sql/voice-ddl.sql
 	PURPOSE:		Schema Creation (DDL)
 */
 -- Run this script as privileged user.

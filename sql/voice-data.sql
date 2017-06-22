@@ -1,11 +1,7 @@
 /* 	
 	AUTHOR: 		Charles Little (little_charles1@columbusstate.edu)
 	CREATION DATE:	22-June-2017
-<<<<<<< HEAD:sql/voice-data.sql
-	FILENAME:		VOICE-data.sql
-=======
 	FILENAME:		voice-data.sql
->>>>>>> f9cd65767db2ecd887e187db794e67435b686e5c:sql/voice-data.sql
 	PURPOSE:		Data Population
 */
 SET autocommit=0;
