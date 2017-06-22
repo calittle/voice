@@ -1,11 +1,7 @@
-/* ************************************************************ */
-/* ** Web-based Election Application and Voting Registration ** */
-/* *************************  WEAVR  ************************** */
-/* ************************************************************ */
 /* 	
 	AUTHOR: 		Charles Little (little_charles1@columbusstate.edu)
 	CREATION DATE:	22-June-2017
-	FILENAME:		weavr-data.sql
+	FILENAME:		voice-data.sql
 	PURPOSE:		Data Population
 */
 SET autocommit=0;
