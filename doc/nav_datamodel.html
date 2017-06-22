@@ -1,0 +1,1319 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=iso-8859-15">
+<style>
+      .table {
+        background-color:#F5F5FF;
+        border-left:4px solid gray;
+        border-bottom:4px solid gray;
+        border-top:4px solid gray;
+        border-right:4px solid gray;
+        margin-bottom:3em;
+        margin-left:2em;
+        margin-right:2em;
+        padding:1em;
+      }
+      .tableNameHeading h1 {
+          display: inline;
+        font-family: Segoe UI, Arial, sans-serif;
+        font-size:125%;
+        font-weight:bold;
+      }
+        
+      .tableNameHeading h2 {
+        display: inline;
+        font-family: Segoe UI, Arial, sans-serif;
+        font-size:115%;
+        font-weight:normal;
+      }
+      
+      .tableComment { 
+        background-color:#e4efff; margin-bottom:20px;
+      }
+      
+      .tableDefinition { 
+        padding:2px;
+        border-collapse:collapse;
+        margin-top:1em;
+      }
+
+      .tdTableDefinition {
+        padding-right:10px;
+        vertical-align:top;
+        border-top:1px solid #C0C0C0;
+      }
+
+      .tdLogicalColName {
+        width:20em;
+      }
+      
+      .tdPhysicalColName {
+        width:20em;
+      }
+      
+      .tdDataType {
+        width:10em;
+      }
+
+      .tdPkFlag {
+        width:4em;
+      }
+
+      .tdNullFlag {
+        width:9em;
+      }
+
+      .tdTableHeading {
+        padding:2px;
+        font-family: Segoe UI, Arial, sans-serif;
+        font-weight: bold;
+        vertical-align:top;
+        border-bottom: 1px solid #C0C0C0;
+        background-color: rgb(240,240,240);
+      }
+      
+      .subTitle {
+        font-family: Segoe UI, Arial, sans-serif;
+        font-weight: bold;
+      }
+
+      .references {
+      }
+      .comment {
+        color:#666666;
+        margin-left:3em;
+        padding:0.25em;
+      }
+    </style>
+<title>WEAVR - Data Model</title>
+</head>
+<body>
+<center>
+<h2>WEAVR</h2>
+</center>
+<h3>List of tables</h3>
+<ul>
+<li>
+<a href="#Abilities">Abilities</a>
+</li>
+<li>
+<a href="#Ability Set Abilities">Ability Set Abilities</a>
+</li>
+<li>
+<a href="#Ability Set Roles">Ability Set Roles</a>
+</li>
+<li>
+<a href="#Ability Sets">Ability Sets</a>
+</li>
+<li>
+<a href="#Affirmations">Affirmations</a>
+</li>
+<li>
+<a href="#Audit">Audit</a>
+</li>
+<li>
+<a href="#Ballots">Ballots</a>
+</li>
+<li>
+<a href="#Counties">Counties</a>
+</li>
+<li>
+<a href="#Countries">Countries</a>
+</li>
+<li>
+<a href="#Districts">Districts</a>
+</li>
+<li>
+<a href="#Election Districts">Election Districts</a>
+</li>
+<li>
+<a href="#Elections">Elections</a>
+</li>
+<li>
+<a href="#Ethnicites">Ethnicites</a>
+</li>
+<li>
+<a href="#Genders">Genders</a>
+</li>
+<li>
+<a href="#Locations">Locations</a>
+</li>
+<li>
+<a href="#Measures">Measures</a>
+</li>
+<li>
+<a href="#Options">Options</a>
+</li>
+<li>
+<a href="#Parties">Parties</a>
+</li>
+<li>
+<a href="#REGISTRANT_LOCATIONS">REGISTRANT_LOCATIONS</a>
+</li>
+<li>
+<a href="#Registrant Affirmations">Registrant Affirmations</a>
+</li>
+<li>
+<a href="#Registrant Districts">Registrant Districts</a>
+</li>
+<li>
+<a href="#Registrant Party">Registrant Party</a>
+</li>
+<li>
+<a href="#Registrants">Registrants</a>
+</li>
+<li>
+<a href="#Roles">Roles</a>
+</li>
+<li>
+<a href="#State Affirmations">State Affirmations</a>
+</li>
+<li>
+<a href="#State Parties">State Parties</a>
+</li>
+<li>
+<a href="#States">States</a>
+</li>
+<li>
+<a href="#User Roles">User Roles</a>
+</li>
+<li>
+<a href="#Users">Users</a>
+</li>
+</ul>
+<div class="tableNameHeading">
+<h1>Abilities<a name="Abilities"></a>
+</h1>
+<h2>
+      (Physical Name: ABILITIES)
+      </h2>
+</div>
+<div class="table">
+<table class="tableDefinition" width="100%">
+<tr>
+<td class="tdTableHeading tdLogicalColName">Logical Column Name</td><td class="tdTableHeading tdPhysicalColName">Physical Column Name</td><td class="tdTableHeading tdDataType">Type</td><td class="tdTableHeading tdPkFlag">PK</td><td class="tdTableHeading tdNullFlag">Nullable</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Ability ID (PK)</td><td class="tdTableDefinition">ABILITY_ID</td><td class="tdTableDefinition">BIGINT</td><td class="tdTableDefinition" nowrap>PK</td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Ability Name</td><td class="tdTableDefinition">ABILITY_NAME</td><td class="tdTableDefinition">VARCHAR(256)</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Ability Description</td><td class="tdTableDefinition">ABILITY_DESCRIPTION</td><td class="tdTableDefinition">VARCHAR(0)</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+</table>
+<div class="references">
+<p class="subTitle">Referenced By</p>
+<ul>
+<li>
+<a href="#Ability Set Abilities">Ability Set Abilities</a> referencing (Ability ID)</li>
+</ul>
+</div>
+</div>
+<div class="tableNameHeading">
+<h1>Ability Set Abilities<a name="Ability Set Abilities"></a>
+</h1>
+<h2>
+      (Physical Name: ABILITY_SET_ABILITIES)
+      </h2>
+</div>
+<div class="table">
+<table class="tableDefinition" width="100%">
+<tr>
+<td class="tdTableHeading tdLogicalColName">Logical Column Name</td><td class="tdTableHeading tdPhysicalColName">Physical Column Name</td><td class="tdTableHeading tdDataType">Type</td><td class="tdTableHeading tdPkFlag">PK</td><td class="tdTableHeading tdNullFlag">Nullable</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Ability Set ID (PK)
+                &nbsp;(<a href="#Ability Sets">FK</a>)
+              </td><td class="tdTableDefinition">ABILITY_SET_ID</td><td class="tdTableDefinition">BIGINT</td><td class="tdTableDefinition" nowrap>PK</td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Ability ID (PK)
+                &nbsp;(<a href="#Abilities">FK</a>)
+              </td><td class="tdTableDefinition">ABILITY_ID</td><td class="tdTableDefinition">BIGINT</td><td class="tdTableDefinition" nowrap>PK</td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Enabled</td><td class="tdTableDefinition">ENABLED</td><td class="tdTableDefinition">BOOLEAN</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Available</td><td class="tdTableDefinition">AVAILABLE</td><td class="tdTableDefinition">BOOLEAN</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Visible</td><td class="tdTableDefinition">VISIBLE</td><td class="tdTableDefinition">BOOLEAN</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+</table>
+<div class="references">
+<p class="subTitle">References</p>
+<ul>
+<li>
+<a href="#Ability Sets">Ability Sets</a> through (Ability Set ID)</li>
+<li>
+<a href="#Abilities">Abilities</a> through (Ability ID)</li>
+</ul>
+</div>
+</div>
+<div class="tableNameHeading">
+<h1>Ability Set Roles<a name="Ability Set Roles"></a>
+</h1>
+<h2>
+      (Physical Name: ABILITY_SET_ROLES)
+      </h2>
+</div>
+<div class="table">
+<table class="tableDefinition" width="100%">
+<tr>
+<td class="tdTableHeading tdLogicalColName">Logical Column Name</td><td class="tdTableHeading tdPhysicalColName">Physical Column Name</td><td class="tdTableHeading tdDataType">Type</td><td class="tdTableHeading tdPkFlag">PK</td><td class="tdTableHeading tdNullFlag">Nullable</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Role ID (PK)
+                &nbsp;(<a href="#Roles">FK</a>)
+              </td><td class="tdTableDefinition">ROLE_ID</td><td class="tdTableDefinition">BIGINT</td><td class="tdTableDefinition" nowrap>PK</td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Ability Set ID (PK)
+                &nbsp;(<a href="#Ability Sets">FK</a>)
+              </td><td class="tdTableDefinition">ABILITY_SET_ID</td><td class="tdTableDefinition">BIGINT</td><td class="tdTableDefinition" nowrap>PK</td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+</table>
+<div class="references">
+<p class="subTitle">References</p>
+<ul>
+<li>
+<a href="#Roles">Roles</a> through (Role ID)</li>
+<li>
+<a href="#Ability Sets">Ability Sets</a> through (Ability Set ID)</li>
+</ul>
+</div>
+</div>
+<div class="tableNameHeading">
+<h1>Ability Sets<a name="Ability Sets"></a>
+</h1>
+<h2>
+      (Physical Name: ABILILTY_SETS)
+      </h2>
+</div>
+<div class="table">
+<table class="tableDefinition" width="100%">
+<tr>
+<td class="tdTableHeading tdLogicalColName">Logical Column Name</td><td class="tdTableHeading tdPhysicalColName">Physical Column Name</td><td class="tdTableHeading tdDataType">Type</td><td class="tdTableHeading tdPkFlag">PK</td><td class="tdTableHeading tdNullFlag">Nullable</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Ability Set ID (PK)</td><td class="tdTableDefinition">ABILITY_SET_ID</td><td class="tdTableDefinition">BIGINT</td><td class="tdTableDefinition" nowrap>PK</td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Ability Set Name</td><td class="tdTableDefinition">ABILITY_SET_NAME</td><td class="tdTableDefinition">VARCHAR(64)</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+</table>
+<div class="references">
+<p class="subTitle">Referenced By</p>
+<ul>
+<li>
+<a href="#Ability Set Abilities">Ability Set Abilities</a> referencing (Ability Set ID)</li>
+<li>
+<a href="#Ability Set Roles">Ability Set Roles</a> referencing (Ability Set ID)</li>
+</ul>
+</div>
+</div>
+<div class="tableNameHeading">
+<h1>Affirmations<a name="Affirmations"></a>
+</h1>
+<h2>
+      (Physical Name: AFFIRMATIONS)
+      </h2>
+</div>
+<div class="table">
+<table class="tableDefinition" width="100%">
+<tr>
+<td class="tdTableHeading tdLogicalColName">Logical Column Name</td><td class="tdTableHeading tdPhysicalColName">Physical Column Name</td><td class="tdTableHeading tdDataType">Type</td><td class="tdTableHeading tdPkFlag">PK</td><td class="tdTableHeading tdNullFlag">Nullable</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Affirm ID (PK)</td><td class="tdTableDefinition">AFFIRMID</td><td class="tdTableDefinition">BIGINT</td><td class="tdTableDefinition" nowrap>PK</td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Affirmation</td><td class="tdTableDefinition">AFFIRMATION</td><td class="tdTableDefinition">VARCHAR(0)</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+</table>
+<div class="references">
+<p class="subTitle">Referenced By</p>
+<ul>
+<li>
+<a href="#State Affirmations">State Affirmations</a> referencing (Affirm ID)</li>
+</ul>
+</div>
+</div>
+<div class="tableNameHeading">
+<h1>Audit<a name="Audit"></a>
+</h1>
+<h2>
+      (Physical Name: AUDIT)
+      </h2>
+</div>
+<div class="table">
+<table class="tableDefinition" width="100%">
+<tr>
+<td class="tdTableHeading tdLogicalColName">Logical Column Name</td><td class="tdTableHeading tdPhysicalColName">Physical Column Name</td><td class="tdTableHeading tdDataType">Type</td><td class="tdTableHeading tdPkFlag">PK</td><td class="tdTableHeading tdNullFlag">Nullable</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Audit ID (PK)</td><td class="tdTableDefinition">AUDIT_ID</td><td class="tdTableDefinition">BIGINT</td><td class="tdTableDefinition" nowrap>PK</td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Timestamp</td><td class="tdTableDefinition">TIMESTAMP</td><td class="tdTableDefinition">TIMESTAMP</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Activity</td><td class="tdTableDefinition">ACTIVITY</td><td class="tdTableDefinition">VARCHAR(0)</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap></td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">User ID
+                &nbsp;(<a href="#Users">FK</a>)
+              </td><td class="tdTableDefinition">USER_ID</td><td class="tdTableDefinition">BIGINT</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+</table>
+<div class="references">
+<p class="subTitle">References</p>
+<ul>
+<li>
+<a href="#Users">Users</a> through (User ID)</li>
+</ul>
+</div>
+</div>
+<div class="tableNameHeading">
+<h1>Ballots<a name="Ballots"></a>
+</h1>
+<h2>
+      (Physical Name: BALLOT)
+      </h2>
+</div>
+<div class="table">
+<table class="tableDefinition" width="100%">
+<tr>
+<td class="tdTableHeading tdLogicalColName">Logical Column Name</td><td class="tdTableHeading tdPhysicalColName">Physical Column Name</td><td class="tdTableHeading tdDataType">Type</td><td class="tdTableHeading tdPkFlag">PK</td><td class="tdTableHeading tdNullFlag">Nullable</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Ballot ID (PK)</td><td class="tdTableDefinition">BALLOT_ID</td><td class="tdTableDefinition">BIGINT</td><td class="tdTableDefinition" nowrap>PK</td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Election ID (PK)
+                &nbsp;(<a href="#Elections">FK</a>)
+              
+                &nbsp;(<a href="#Measures">FK</a>)
+              
+                &nbsp;(<a href="#Options">FK</a>)
+              </td><td class="tdTableDefinition">ELECTIONID</td><td class="tdTableDefinition">BIGINT</td><td class="tdTableDefinition" nowrap>PK</td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Measure ID (PK)
+                &nbsp;(<a href="#Measures">FK</a>)
+              
+                &nbsp;(<a href="#Options">FK</a>)
+              </td><td class="tdTableDefinition">MEASURE_ID</td><td class="tdTableDefinition">BIGINT</td><td class="tdTableDefinition" nowrap>PK</td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Option ID (PK)
+                &nbsp;(<a href="#Options">FK</a>)
+              </td><td class="tdTableDefinition">OPTION_ID</td><td class="tdTableDefinition">BIGINT</td><td class="tdTableDefinition" nowrap>PK</td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Timestamp</td><td class="tdTableDefinition">TIMESTAMP</td><td class="tdTableDefinition">TIMESTAMP</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+</table>
+<div class="references">
+<p class="subTitle">References</p>
+<ul>
+<li>
+<a href="#Elections">Elections</a> through (Election ID)</li>
+<li>
+<a href="#Measures">Measures</a> through (Measure ID, Election ID)</li>
+<li>
+<a href="#Options">Options</a> through (Option ID, Measure ID, Election ID)</li>
+</ul>
+</div>
+</div>
+<div class="tableNameHeading">
+<h1>Counties<a name="Counties"></a>
+</h1>
+<h2>
+      (Physical Name: COUNTIES)
+      </h2>
+</div>
+<div class="table">
+<table class="tableDefinition" width="100%">
+<tr>
+<td class="tdTableHeading tdLogicalColName">Logical Column Name</td><td class="tdTableHeading tdPhysicalColName">Physical Column Name</td><td class="tdTableHeading tdDataType">Type</td><td class="tdTableHeading tdPkFlag">PK</td><td class="tdTableHeading tdNullFlag">Nullable</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">County Code (PK)</td><td class="tdTableDefinition">COUNTYCD</td><td class="tdTableDefinition">VARCHAR(64)</td><td class="tdTableDefinition" nowrap>PK</td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">State Code (PK)
+                &nbsp;(<a href="#States">FK</a>)
+              </td><td class="tdTableDefinition">STATECD</td><td class="tdTableDefinition">VARCHAR(3)</td><td class="tdTableDefinition" nowrap>PK</td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">County</td><td class="tdTableDefinition">COUNTY</td><td class="tdTableDefinition">VARCHAR(64)</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap></td>
+</tr>
+</table>
+<div class="references">
+<p class="subTitle">References</p>
+<ul>
+<li>
+<a href="#States">States</a> through (State Code)</li>
+</ul>
+<p class="subTitle">Referenced By</p>
+<ul>
+<li>
+<a href="#Locations">Locations</a> referencing (County Code)</li>
+</ul>
+</div>
+</div>
+<div class="tableNameHeading">
+<h1>Countries<a name="Countries"></a>
+</h1>
+<h2>
+      (Physical Name: COUNTRIES)
+      </h2>
+</div>
+<div class="table">
+<table class="tableDefinition" width="100%">
+<tr>
+<td class="tdTableHeading tdLogicalColName">Logical Column Name</td><td class="tdTableHeading tdPhysicalColName">Physical Column Name</td><td class="tdTableHeading tdDataType">Type</td><td class="tdTableHeading tdPkFlag">PK</td><td class="tdTableHeading tdNullFlag">Nullable</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Country Code (PK)</td><td class="tdTableDefinition">COUNTRYCD</td><td class="tdTableDefinition">VARCHAR(3)</td><td class="tdTableDefinition" nowrap>PK</td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Country</td><td class="tdTableDefinition">COUNTRY</td><td class="tdTableDefinition">VARCHAR(64)</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+</table>
+<div class="references">
+<p class="subTitle">Referenced By</p>
+<ul>
+<li>
+<a href="#Locations">Locations</a> referencing (Country Code)</li>
+<li>
+<a href="#States">States</a> referencing (Country Code)</li>
+</ul>
+</div>
+</div>
+<div class="tableNameHeading">
+<h1>Districts<a name="Districts"></a>
+</h1>
+<h2>
+      (Physical Name: DISTRICTS)
+      </h2>
+</div>
+<div class="table">
+<table class="tableDefinition" width="100%">
+<tr>
+<td class="tdTableHeading tdLogicalColName">Logical Column Name</td><td class="tdTableHeading tdPhysicalColName">Physical Column Name</td><td class="tdTableHeading tdDataType">Type</td><td class="tdTableHeading tdPkFlag">PK</td><td class="tdTableHeading tdNullFlag">Nullable</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">District ID (PK)</td><td class="tdTableDefinition">DISTRICT_ID</td><td class="tdTableDefinition">BIGINT</td><td class="tdTableDefinition" nowrap>PK</td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">District</td><td class="tdTableDefinition">DISTRICT</td><td class="tdTableDefinition">VARCHAR(128)</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+</table>
+<div class="references">
+<p class="subTitle">Referenced By</p>
+<ul>
+<li>
+<a href="#Registrant Districts">Registrant Districts</a> referencing (District ID)</li>
+<li>
+<a href="#Election Districts">Election Districts</a> referencing (District ID)</li>
+</ul>
+</div>
+</div>
+<div class="tableNameHeading">
+<h1>Election Districts<a name="Election Districts"></a>
+</h1>
+<h2>
+      (Physical Name: ELECTION_DISTRICTS)
+      </h2>
+</div>
+<div class="table">
+<table class="tableDefinition" width="100%">
+<tr>
+<td class="tdTableHeading tdLogicalColName">Logical Column Name</td><td class="tdTableHeading tdPhysicalColName">Physical Column Name</td><td class="tdTableHeading tdDataType">Type</td><td class="tdTableHeading tdPkFlag">PK</td><td class="tdTableHeading tdNullFlag">Nullable</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Election ID (PK)
+                &nbsp;(<a href="#Elections">FK</a>)
+              </td><td class="tdTableDefinition">ELECTIONID</td><td class="tdTableDefinition">BIGINT</td><td class="tdTableDefinition" nowrap>PK</td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">District ID (PK)
+                &nbsp;(<a href="#Districts">FK</a>)
+              </td><td class="tdTableDefinition">DISTRICT_ID</td><td class="tdTableDefinition">BIGINT</td><td class="tdTableDefinition" nowrap>PK</td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+</table>
+<div class="references">
+<p class="subTitle">References</p>
+<ul>
+<li>
+<a href="#Elections">Elections</a> through (Election ID)</li>
+<li>
+<a href="#Districts">Districts</a> through (District ID)</li>
+</ul>
+</div>
+</div>
+<div class="tableNameHeading">
+<h1>Elections<a name="Elections"></a>
+</h1>
+<h2>
+      (Physical Name: ELECTIONS)
+      </h2>
+</div>
+<div class="table">
+<table class="tableDefinition" width="100%">
+<tr>
+<td class="tdTableHeading tdLogicalColName">Logical Column Name</td><td class="tdTableHeading tdPhysicalColName">Physical Column Name</td><td class="tdTableHeading tdDataType">Type</td><td class="tdTableHeading tdPkFlag">PK</td><td class="tdTableHeading tdNullFlag">Nullable</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Election ID (PK)</td><td class="tdTableDefinition">ELECTIONID</td><td class="tdTableDefinition">BIGINT</td><td class="tdTableDefinition" nowrap>PK</td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Election Name</td><td class="tdTableDefinition">ELECTION_NAME</td><td class="tdTableDefinition">VARCHAR(256)</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Election Detail</td><td class="tdTableDefinition">ELECTION_DETAIL</td><td class="tdTableDefinition">CLOB</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap></td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Start Date</td><td class="tdTableDefinition">DATE_START</td><td class="tdTableDefinition">TIMESTAMP</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">End Date</td><td class="tdTableDefinition">DATE_END</td><td class="tdTableDefinition">TIMESTAMP</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+</table>
+<div class="references">
+<p class="subTitle">Referenced By</p>
+<ul>
+<li>
+<a href="#Measures">Measures</a> referencing (Election ID)</li>
+<li>
+<a href="#Election Districts">Election Districts</a> referencing (Election ID)</li>
+<li>
+<a href="#Ballots">Ballots</a> referencing (Election ID)</li>
+</ul>
+</div>
+</div>
+<div class="tableNameHeading">
+<h1>Ethnicites<a name="Ethnicites"></a>
+</h1>
+<h2>
+      (Physical Name: ETHNICITIES)
+      </h2>
+</div>
+<div class="table">
+<table class="tableDefinition" width="100%">
+<tr>
+<td class="tdTableHeading tdLogicalColName">Logical Column Name</td><td class="tdTableHeading tdPhysicalColName">Physical Column Name</td><td class="tdTableHeading tdDataType">Type</td><td class="tdTableHeading tdPkFlag">PK</td><td class="tdTableHeading tdNullFlag">Nullable</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Ethnicity Code (PK)</td><td class="tdTableDefinition">ETHNICITYCD</td><td class="tdTableDefinition">CHAR</td><td class="tdTableDefinition" nowrap>PK</td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Ethnicity</td><td class="tdTableDefinition">ETHNICITY</td><td class="tdTableDefinition">VARCHAR(15)</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+</table>
+<div class="references">
+<p class="subTitle">Referenced By</p>
+<ul>
+<li>
+<a href="#Registrants">Registrants</a> referencing (Ethnicity Code)</li>
+</ul>
+</div>
+</div>
+<div class="tableNameHeading">
+<h1>Genders<a name="Genders"></a>
+</h1>
+<h2>
+      (Physical Name: GENDERS)
+      </h2>
+</div>
+<div class="table">
+<table class="tableDefinition" width="100%">
+<tr>
+<td class="tdTableHeading tdLogicalColName">Logical Column Name</td><td class="tdTableHeading tdPhysicalColName">Physical Column Name</td><td class="tdTableHeading tdDataType">Type</td><td class="tdTableHeading tdPkFlag">PK</td><td class="tdTableHeading tdNullFlag">Nullable</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Gender Code (PK)</td><td class="tdTableDefinition">GENDER_CD</td><td class="tdTableDefinition">VARCHAR(16)</td><td class="tdTableDefinition" nowrap>PK</td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Gender</td><td class="tdTableDefinition">GENDER</td><td class="tdTableDefinition">VARCHAR(16)</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+</table>
+<div class="references">
+<p class="subTitle">Referenced By</p>
+<ul>
+<li>
+<a href="#Registrants">Registrants</a> referencing (Gender Code)</li>
+</ul>
+</div>
+</div>
+<div class="tableNameHeading">
+<h1>Locations<a name="Locations"></a>
+</h1>
+<h2>
+      (Physical Name: Locations)
+      </h2>
+</div>
+<div class="table">
+<table class="tableDefinition" width="100%">
+<tr>
+<td class="tdTableHeading tdLogicalColName">Logical Column Name</td><td class="tdTableHeading tdPhysicalColName">Physical Column Name</td><td class="tdTableHeading tdDataType">Type</td><td class="tdTableHeading tdPkFlag">PK</td><td class="tdTableHeading tdNullFlag">Nullable</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Location ID (PK)</td><td class="tdTableDefinition">LOCATIONID</td><td class="tdTableDefinition">BIGINT</td><td class="tdTableDefinition" nowrap>PK</td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr>
+<td colspan="4">
+<div class="comment">Primary key.</div>
+</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Street Number</td><td class="tdTableDefinition">STREET_NUM</td><td class="tdTableDefinition">INTEGER</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Street Name</td><td class="tdTableDefinition">Street_NAME</td><td class="tdTableDefinition">VARCHAR(256)</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Unit Number</td><td class="tdTableDefinition">UNIT_NUM</td><td class="tdTableDefinition">VARCHAR(256)</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap></td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">City</td><td class="tdTableDefinition">City</td><td class="tdTableDefinition">VARCHAR(256)</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Postal Code</td><td class="tdTableDefinition">POST_CODE</td><td class="tdTableDefinition">VARCHAR(256)</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Country Code
+                &nbsp;(<a href="#Countries">FK</a>)
+              </td><td class="tdTableDefinition">COUNTRYCD</td><td class="tdTableDefinition">VARCHAR(3)</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">County Code
+                &nbsp;(<a href="#Counties">FK</a>)
+              </td><td class="tdTableDefinition">COUNTYCD</td><td class="tdTableDefinition">VARCHAR(64)</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">State Code
+                &nbsp;(<a href="#States">FK</a>)
+              </td><td class="tdTableDefinition">STATECD</td><td class="tdTableDefinition">VARCHAR(3)</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+</table>
+<div class="references">
+<p class="subTitle">References</p>
+<ul>
+<li>
+<a href="#Countries">Countries</a> through (Country Code)</li>
+<li>
+<a href="#States">States</a> through (State Code)</li>
+<li>
+<a href="#Counties">Counties</a> through (County Code)</li>
+</ul>
+<p class="subTitle">Referenced By</p>
+<ul>
+<li>
+<a href="#REGISTRANT_LOCATIONS">REGISTRANT_LOCATIONS</a> referencing (Location ID)</li>
+</ul>
+</div>
+</div>
+<div class="tableNameHeading">
+<h1>Measures<a name="Measures"></a>
+</h1>
+<h2>
+      (Physical Name: MEASURES)
+      </h2>
+</div>
+<div class="table">
+<table class="tableDefinition" width="100%">
+<tr>
+<td class="tdTableHeading tdLogicalColName">Logical Column Name</td><td class="tdTableHeading tdPhysicalColName">Physical Column Name</td><td class="tdTableHeading tdDataType">Type</td><td class="tdTableHeading tdPkFlag">PK</td><td class="tdTableHeading tdNullFlag">Nullable</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Measure ID (PK)</td><td class="tdTableDefinition">MEASURE_ID</td><td class="tdTableDefinition">BIGINT</td><td class="tdTableDefinition" nowrap>PK</td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Election ID (PK)
+                &nbsp;(<a href="#Elections">FK</a>)
+              </td><td class="tdTableDefinition">ELECTIONID</td><td class="tdTableDefinition">BIGINT</td><td class="tdTableDefinition" nowrap>PK</td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Measure Detail</td><td class="tdTableDefinition">MEASURE_DETAIL</td><td class="tdTableDefinition">VARCHAR(0)</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+</table>
+<div class="references">
+<p class="subTitle">References</p>
+<ul>
+<li>
+<a href="#Elections">Elections</a> through (Election ID)</li>
+</ul>
+<p class="subTitle">Referenced By</p>
+<ul>
+<li>
+<a href="#Options">Options</a> referencing (Measure ID, Election ID)</li>
+<li>
+<a href="#Ballots">Ballots</a> referencing (Measure ID, Election ID)</li>
+</ul>
+</div>
+</div>
+<div class="tableNameHeading">
+<h1>Options<a name="Options"></a>
+</h1>
+<h2>
+      (Physical Name: OPTIONS)
+      </h2>
+</div>
+<div class="table">
+<table class="tableDefinition" width="100%">
+<tr>
+<td class="tdTableHeading tdLogicalColName">Logical Column Name</td><td class="tdTableHeading tdPhysicalColName">Physical Column Name</td><td class="tdTableHeading tdDataType">Type</td><td class="tdTableHeading tdPkFlag">PK</td><td class="tdTableHeading tdNullFlag">Nullable</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Option ID (PK)</td><td class="tdTableDefinition">OPTION_ID</td><td class="tdTableDefinition">BIGINT</td><td class="tdTableDefinition" nowrap>PK</td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Measure ID (PK)
+                &nbsp;(<a href="#Measures">FK</a>)
+              </td><td class="tdTableDefinition">MEASURE_ID</td><td class="tdTableDefinition">BIGINT</td><td class="tdTableDefinition" nowrap>PK</td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Election ID (PK)
+                &nbsp;(<a href="#Measures">FK</a>)
+              </td><td class="tdTableDefinition">ELECTIONID</td><td class="tdTableDefinition">BIGINT</td><td class="tdTableDefinition" nowrap>PK</td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Option Detail</td><td class="tdTableDefinition">OPTION_DETAIL</td><td class="tdTableDefinition">VARCHAR(0)</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+</table>
+<div class="references">
+<p class="subTitle">References</p>
+<ul>
+<li>
+<a href="#Measures">Measures</a> through (Measure ID, Election ID)</li>
+</ul>
+<p class="subTitle">Referenced By</p>
+<ul>
+<li>
+<a href="#Ballots">Ballots</a> referencing (Option ID, Measure ID, Election ID)</li>
+</ul>
+</div>
+</div>
+<div class="tableNameHeading">
+<h1>Parties<a name="Parties"></a>
+</h1>
+<h2>
+      (Physical Name: PARTIES)
+      </h2>
+</div>
+<div class="table">
+<table class="tableDefinition" width="100%">
+<tr>
+<td class="tdTableHeading tdLogicalColName">Logical Column Name</td><td class="tdTableHeading tdPhysicalColName">Physical Column Name</td><td class="tdTableHeading tdDataType">Type</td><td class="tdTableHeading tdPkFlag">PK</td><td class="tdTableHeading tdNullFlag">Nullable</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Party Code (PK)</td><td class="tdTableDefinition">PARTYCD</td><td class="tdTableDefinition">VARCHAR(16)</td><td class="tdTableDefinition" nowrap>PK</td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Party</td><td class="tdTableDefinition">Party</td><td class="tdTableDefinition">VARCHAR(64)</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+</table>
+<div class="references">
+<p class="subTitle">Referenced By</p>
+<ul>
+<li>
+<a href="#State Parties">State Parties</a> referencing (Party Code)</li>
+</ul>
+</div>
+</div>
+<div class="tableNameHeading">
+<h1>REGISTRANT_LOCATIONS<a name="REGISTRANT_LOCATIONS"></a>
+</h1>
+<h2>
+      (Physical Name: REG_LOC)
+      </h2>
+</div>
+<div class="table">
+<table class="tableDefinition" width="100%">
+<tr>
+<td class="tdTableHeading tdLogicalColName">Logical Column Name</td><td class="tdTableHeading tdPhysicalColName">Physical Column Name</td><td class="tdTableHeading tdDataType">Type</td><td class="tdTableHeading tdPkFlag">PK</td><td class="tdTableHeading tdNullFlag">Nullable</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Location ID (PK)
+                &nbsp;(<a href="#Locations">FK</a>)
+              </td><td class="tdTableDefinition">LOCATIONID</td><td class="tdTableDefinition">BIGINT</td><td class="tdTableDefinition" nowrap>PK</td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr>
+<td colspan="4">
+<div class="comment">Primary key.</div>
+</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Registrant ID (PK)
+                &nbsp;(<a href="#Registrants">FK</a>)
+              </td><td class="tdTableDefinition">REGISTRANTID</td><td class="tdTableDefinition">BIGINT</td><td class="tdTableDefinition" nowrap>PK</td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Mailing Address Flag</td><td class="tdTableDefinition">IS_MAILING</td><td class="tdTableDefinition">BOOLEAN</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr>
+<td colspan="4">
+<div class="comment">ted REGISTRANT entity.</div>
+</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Residence Address Flag</td><td class="tdTableDefinition">IS_RESIDENCE</td><td class="tdTableDefinition">BOOLEAN</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr>
+<td colspan="4">
+<div class="comment">elated REGISTRANT entity.</div>
+</td>
+</tr>
+</table>
+<div class="references">
+<p class="subTitle">References</p>
+<ul>
+<li>
+<a href="#Registrants">Registrants</a> through (Registrant ID)</li>
+<li>
+<a href="#Locations">Locations</a> through (Location ID)</li>
+</ul>
+</div>
+</div>
+<div class="tableNameHeading">
+<h1>Registrant Affirmations<a name="Registrant Affirmations"></a>
+</h1>
+<h2>
+      (Physical Name: REGISTRANT_AFFIRM)
+      </h2>
+</div>
+<div class="table">
+<table class="tableDefinition" width="100%">
+<tr>
+<td class="tdTableHeading tdLogicalColName">Logical Column Name</td><td class="tdTableHeading tdPhysicalColName">Physical Column Name</td><td class="tdTableHeading tdDataType">Type</td><td class="tdTableHeading tdPkFlag">PK</td><td class="tdTableHeading tdNullFlag">Nullable</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Registrant ID (PK)
+                &nbsp;(<a href="#Registrants">FK</a>)
+              </td><td class="tdTableDefinition">REGISTRANTID</td><td class="tdTableDefinition">BIGINT</td><td class="tdTableDefinition" nowrap>PK</td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">State Code
+                &nbsp;(<a href="#State Affirmations">FK</a>)
+              </td><td class="tdTableDefinition">STATECD</td><td class="tdTableDefinition">VARCHAR(3)</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Affirm ID
+                &nbsp;(<a href="#State Affirmations">FK</a>)
+              </td><td class="tdTableDefinition">AFFIRMID</td><td class="tdTableDefinition">BIGINT</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+</table>
+<div class="references">
+<p class="subTitle">References</p>
+<ul>
+<li>
+<a href="#Registrants">Registrants</a> through (Registrant ID)</li>
+<li>
+<a href="#State Affirmations">State Affirmations</a> through (State Code, Affirm ID)</li>
+</ul>
+</div>
+</div>
+<div class="tableNameHeading">
+<h1>Registrant Districts<a name="Registrant Districts"></a>
+</h1>
+<h2>
+      (Physical Name: REGISTRANT_DISTRICTS)
+      </h2>
+</div>
+<div class="table">
+<table class="tableDefinition" width="100%">
+<tr>
+<td class="tdTableHeading tdLogicalColName">Logical Column Name</td><td class="tdTableHeading tdPhysicalColName">Physical Column Name</td><td class="tdTableHeading tdDataType">Type</td><td class="tdTableHeading tdPkFlag">PK</td><td class="tdTableHeading tdNullFlag">Nullable</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Registrant ID (PK)
+                &nbsp;(<a href="#Registrants">FK</a>)
+              </td><td class="tdTableDefinition">REGISTRANTID</td><td class="tdTableDefinition">BIGINT</td><td class="tdTableDefinition" nowrap>PK</td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">District ID (PK)
+                &nbsp;(<a href="#Districts">FK</a>)
+              </td><td class="tdTableDefinition">DISTRICT_ID</td><td class="tdTableDefinition">BIGINT</td><td class="tdTableDefinition" nowrap>PK</td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+</table>
+<div class="references">
+<p class="subTitle">References</p>
+<ul>
+<li>
+<a href="#Registrants">Registrants</a> through (Registrant ID)</li>
+<li>
+<a href="#Districts">Districts</a> through (District ID)</li>
+</ul>
+</div>
+</div>
+<div class="tableNameHeading">
+<h1>Registrant Party<a name="Registrant Party"></a>
+</h1>
+<h2>
+      (Physical Name: REGISTRANT_PARTY)
+      </h2>
+</div>
+<div class="table">
+<table class="tableDefinition" width="100%">
+<tr>
+<td class="tdTableHeading tdLogicalColName">Logical Column Name</td><td class="tdTableHeading tdPhysicalColName">Physical Column Name</td><td class="tdTableHeading tdDataType">Type</td><td class="tdTableHeading tdPkFlag">PK</td><td class="tdTableHeading tdNullFlag">Nullable</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Registrant ID (PK)
+                &nbsp;(<a href="#Registrants">FK</a>)
+              </td><td class="tdTableDefinition">REGISTRANTID</td><td class="tdTableDefinition">BIGINT</td><td class="tdTableDefinition" nowrap>PK</td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">State Code
+                &nbsp;(<a href="#State Parties">FK</a>)
+              </td><td class="tdTableDefinition">STATECD</td><td class="tdTableDefinition">VARCHAR(3)</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Party Code
+                &nbsp;(<a href="#State Parties">FK</a>)
+              </td><td class="tdTableDefinition">PARTYCD</td><td class="tdTableDefinition">VARCHAR(16)</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+</table>
+<div class="references">
+<p class="subTitle">References</p>
+<ul>
+<li>
+<a href="#Registrants">Registrants</a> through (Registrant ID)</li>
+<li>
+<a href="#State Parties">State Parties</a> through (State Code, Party Code)</li>
+</ul>
+</div>
+</div>
+<div class="tableNameHeading">
+<h1>Registrants<a name="Registrants"></a>
+</h1>
+<h2>
+      (Physical Name: Registrants)
+      </h2>
+<p class="comment">This table contains voter registrant information.</p>
+</div>
+<div class="table">
+<table class="tableDefinition" width="100%">
+<tr>
+<td class="tdTableHeading tdLogicalColName">Logical Column Name</td><td class="tdTableHeading tdPhysicalColName">Physical Column Name</td><td class="tdTableHeading tdDataType">Type</td><td class="tdTableHeading tdPkFlag">PK</td><td class="tdTableHeading tdNullFlag">Nullable</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Registrant ID (PK)</td><td class="tdTableDefinition">REGISTRANTID</td><td class="tdTableDefinition">BIGINT</td><td class="tdTableDefinition" nowrap>PK</td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">First Name</td><td class="tdTableDefinition">F_NAME</td><td class="tdTableDefinition">VARCHAR(256)</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Middle Name</td><td class="tdTableDefinition">M_NAME</td><td class="tdTableDefinition">VARCHAR(256)</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Last Name</td><td class="tdTableDefinition">L_NAME</td><td class="tdTableDefinition">VARCHAR(256)</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Suffix</td><td class="tdTableDefinition">Suffix</td><td class="tdTableDefinition">VARCHAR(256)</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Date of Birth</td><td class="tdTableDefinition">DOB</td><td class="tdTableDefinition">DATE</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Phone</td><td class="tdTableDefinition">Phone</td><td class="tdTableDefinition">VARCHAR(64)</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">State ID</td><td class="tdTableDefinition">STATEID</td><td class="tdTableDefinition">VARCHAR(256)</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Federal ID</td><td class="tdTableDefinition">FEDERAL_ID</td><td class="tdTableDefinition">VARCHAR(32)</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr>
+<td colspan="4">
+<div class="comment">123-45-6789</div>
+</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Gender Code
+                &nbsp;(<a href="#Genders">FK</a>)
+              </td><td class="tdTableDefinition">GENDER_CD</td><td class="tdTableDefinition">VARCHAR(16)</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Ethnicity Code
+                &nbsp;(<a href="#Ethnicites">FK</a>)
+              </td><td class="tdTableDefinition">ETHNICITYCD</td><td class="tdTableDefinition">CHAR</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Is Approved</td><td class="tdTableDefinition">IS_APPROVED</td><td class="tdTableDefinition">BOOLEAN</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">User ID
+                &nbsp;(<a href="#Users">FK</a>)
+              </td><td class="tdTableDefinition">USER_ID</td><td class="tdTableDefinition">BIGINT</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+</table>
+<div class="references">
+<p class="subTitle">References</p>
+<ul>
+<li>
+<a href="#Ethnicites">Ethnicites</a> through (Ethnicity Code)</li>
+<li>
+<a href="#Genders">Genders</a> through (Gender Code)</li>
+<li>
+<a href="#Users">Users</a> through (User ID)</li>
+</ul>
+<p class="subTitle">Referenced By</p>
+<ul>
+<li>
+<a href="#REGISTRANT_LOCATIONS">REGISTRANT_LOCATIONS</a> referencing (Registrant ID)</li>
+<li>
+<a href="#Registrant Affirmations">Registrant Affirmations</a> referencing (Registrant ID)</li>
+<li>
+<a href="#Registrant Party">Registrant Party</a> referencing (Registrant ID)</li>
+<li>
+<a href="#Registrant Districts">Registrant Districts</a> referencing (Registrant ID)</li>
+</ul>
+</div>
+</div>
+<div class="tableNameHeading">
+<h1>Roles<a name="Roles"></a>
+</h1>
+<h2>
+      (Physical Name: ROLES)
+      </h2>
+</div>
+<div class="table">
+<table class="tableDefinition" width="100%">
+<tr>
+<td class="tdTableHeading tdLogicalColName">Logical Column Name</td><td class="tdTableHeading tdPhysicalColName">Physical Column Name</td><td class="tdTableHeading tdDataType">Type</td><td class="tdTableHeading tdPkFlag">PK</td><td class="tdTableHeading tdNullFlag">Nullable</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Role ID (PK)</td><td class="tdTableDefinition">ROLE_ID</td><td class="tdTableDefinition">BIGINT</td><td class="tdTableDefinition" nowrap>PK</td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Role Description</td><td class="tdTableDefinition">ROLE_DESCRIPTION</td><td class="tdTableDefinition">VARCHAR(64)</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Parent ID</td><td class="tdTableDefinition">PARENT_ID</td><td class="tdTableDefinition">BIGINT</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap></td>
+</tr>
+</table>
+<div class="references">
+<p class="subTitle">Referenced By</p>
+<ul>
+<li>
+<a href="#User Roles">User Roles</a> referencing (Role ID)</li>
+<li>
+<a href="#Ability Set Roles">Ability Set Roles</a> referencing (Role ID)</li>
+</ul>
+</div>
+</div>
+<div class="tableNameHeading">
+<h1>State Affirmations<a name="State Affirmations"></a>
+</h1>
+<h2>
+      (Physical Name: STATE_AFFIRMATIONS)
+      </h2>
+</div>
+<div class="table">
+<table class="tableDefinition" width="100%">
+<tr>
+<td class="tdTableHeading tdLogicalColName">Logical Column Name</td><td class="tdTableHeading tdPhysicalColName">Physical Column Name</td><td class="tdTableHeading tdDataType">Type</td><td class="tdTableHeading tdPkFlag">PK</td><td class="tdTableHeading tdNullFlag">Nullable</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">State Code (PK)
+                &nbsp;(<a href="#States">FK</a>)
+              </td><td class="tdTableDefinition">STATECD</td><td class="tdTableDefinition">VARCHAR(3)</td><td class="tdTableDefinition" nowrap>PK</td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Affirm ID (PK)
+                &nbsp;(<a href="#Affirmations">FK</a>)
+              </td><td class="tdTableDefinition">AFFIRMID</td><td class="tdTableDefinition">BIGINT</td><td class="tdTableDefinition" nowrap>PK</td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+</table>
+<div class="references">
+<p class="subTitle">References</p>
+<ul>
+<li>
+<a href="#States">States</a> through (State Code)</li>
+<li>
+<a href="#Affirmations">Affirmations</a> through (Affirm ID)</li>
+</ul>
+<p class="subTitle">Referenced By</p>
+<ul>
+<li>
+<a href="#Registrant Affirmations">Registrant Affirmations</a> referencing (State Code, Affirm ID)</li>
+</ul>
+</div>
+</div>
+<div class="tableNameHeading">
+<h1>State Parties<a name="State Parties"></a>
+</h1>
+<h2>
+      (Physical Name: STATE_PARTIES)
+      </h2>
+</div>
+<div class="table">
+<table class="tableDefinition" width="100%">
+<tr>
+<td class="tdTableHeading tdLogicalColName">Logical Column Name</td><td class="tdTableHeading tdPhysicalColName">Physical Column Name</td><td class="tdTableHeading tdDataType">Type</td><td class="tdTableHeading tdPkFlag">PK</td><td class="tdTableHeading tdNullFlag">Nullable</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">State Code (PK)
+                &nbsp;(<a href="#States">FK</a>)
+              </td><td class="tdTableDefinition">STATECD</td><td class="tdTableDefinition">VARCHAR(3)</td><td class="tdTableDefinition" nowrap>PK</td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Party Code (PK)
+                &nbsp;(<a href="#Parties">FK</a>)
+              </td><td class="tdTableDefinition">PARTYCD</td><td class="tdTableDefinition">VARCHAR(16)</td><td class="tdTableDefinition" nowrap>PK</td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+</table>
+<div class="references">
+<p class="subTitle">References</p>
+<ul>
+<li>
+<a href="#States">States</a> through (State Code)</li>
+<li>
+<a href="#Parties">Parties</a> through (Party Code)</li>
+</ul>
+<p class="subTitle">Referenced By</p>
+<ul>
+<li>
+<a href="#Registrant Party">Registrant Party</a> referencing (State Code, Party Code)</li>
+</ul>
+</div>
+</div>
+<div class="tableNameHeading">
+<h1>States<a name="States"></a>
+</h1>
+<h2>
+      (Physical Name: STATES)
+      </h2>
+</div>
+<div class="table">
+<table class="tableDefinition" width="100%">
+<tr>
+<td class="tdTableHeading tdLogicalColName">Logical Column Name</td><td class="tdTableHeading tdPhysicalColName">Physical Column Name</td><td class="tdTableHeading tdDataType">Type</td><td class="tdTableHeading tdPkFlag">PK</td><td class="tdTableHeading tdNullFlag">Nullable</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">State Code (PK)</td><td class="tdTableDefinition">STATECD</td><td class="tdTableDefinition">VARCHAR(3)</td><td class="tdTableDefinition" nowrap>PK</td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Country Code (PK)
+                &nbsp;(<a href="#Countries">FK</a>)
+              </td><td class="tdTableDefinition">COUNTRYCD</td><td class="tdTableDefinition">VARCHAR(3)</td><td class="tdTableDefinition" nowrap>PK</td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">State</td><td class="tdTableDefinition">STATE</td><td class="tdTableDefinition">VARCHAR(64)</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+</table>
+<div class="references">
+<p class="subTitle">References</p>
+<ul>
+<li>
+<a href="#Countries">Countries</a> through (Country Code)</li>
+</ul>
+<p class="subTitle">Referenced By</p>
+<ul>
+<li>
+<a href="#Locations">Locations</a> referencing (State Code)</li>
+<li>
+<a href="#State Affirmations">State Affirmations</a> referencing (State Code)</li>
+<li>
+<a href="#State Parties">State Parties</a> referencing (State Code)</li>
+<li>
+<a href="#Counties">Counties</a> referencing (State Code)</li>
+</ul>
+</div>
+</div>
+<div class="tableNameHeading">
+<h1>User Roles<a name="User Roles"></a>
+</h1>
+<h2>
+      (Physical Name: USER_ROLES)
+      </h2>
+</div>
+<div class="table">
+<table class="tableDefinition" width="100%">
+<tr>
+<td class="tdTableHeading tdLogicalColName">Logical Column Name</td><td class="tdTableHeading tdPhysicalColName">Physical Column Name</td><td class="tdTableHeading tdDataType">Type</td><td class="tdTableHeading tdPkFlag">PK</td><td class="tdTableHeading tdNullFlag">Nullable</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">User ID (PK)
+                &nbsp;(<a href="#Users">FK</a>)
+              </td><td class="tdTableDefinition">USER_ID</td><td class="tdTableDefinition">BIGINT</td><td class="tdTableDefinition" nowrap>PK</td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Role ID (PK)
+                &nbsp;(<a href="#Roles">FK</a>)
+              </td><td class="tdTableDefinition">ROLE_ID</td><td class="tdTableDefinition">BIGINT</td><td class="tdTableDefinition" nowrap>PK</td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+</table>
+<div class="references">
+<p class="subTitle">References</p>
+<ul>
+<li>
+<a href="#Roles">Roles</a> through (Role ID)</li>
+<li>
+<a href="#Users">Users</a> through (User ID)</li>
+</ul>
+</div>
+</div>
+<div class="tableNameHeading">
+<h1>Users<a name="Users"></a>
+</h1>
+<h2>
+      (Physical Name: USERS)
+      </h2>
+</div>
+<div class="table">
+<table class="tableDefinition" width="100%">
+<tr>
+<td class="tdTableHeading tdLogicalColName">Logical Column Name</td><td class="tdTableHeading tdPhysicalColName">Physical Column Name</td><td class="tdTableHeading tdDataType">Type</td><td class="tdTableHeading tdPkFlag">PK</td><td class="tdTableHeading tdNullFlag">Nullable</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">User ID (PK)</td><td class="tdTableDefinition">USER_ID</td><td class="tdTableDefinition">BIGINT</td><td class="tdTableDefinition" nowrap>PK</td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">User Name</td><td class="tdTableDefinition">USER_NAME</td><td class="tdTableDefinition">VARCHAR(256)</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Password Hash</td><td class="tdTableDefinition">PWD_HASH</td><td class="tdTableDefinition">VARCHAR(256)</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr>
+<td colspan="4">
+<div class="comment">Hashed password</div>
+</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Hash Algorithm</td><td class="tdTableDefinition">HASH_ALGORITHM</td><td class="tdTableDefinition">VARCHAR(50)</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Salt</td><td class="tdTableDefinition">SALT</td><td class="tdTableDefinition">VARCHAR(50)</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap></td>
+</tr>
+<tr>
+<td colspan="4">
+<div class="comment">For salting passwords - allows nulls for development process</div>
+</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">Email</td><td class="tdTableDefinition">EMAIL</td><td class="tdTableDefinition">VARCHAR(256)</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+</table>
+<div class="references">
+<p class="subTitle">Referenced By</p>
+<ul>
+<li>
+<a href="#User Roles">User Roles</a> referencing (User ID)</li>
+<li>
+<a href="#Audit">Audit</a> referencing (User ID)</li>
+<li>
+<a href="#Registrants">Registrants</a> referencing (User ID)</li>
+</ul>
+</div>
+</div>
+</body>
+</html>

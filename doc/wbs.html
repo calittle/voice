@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>WEAVR Documentation Site</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css?family=Slabo+27px%7CTrocchi" rel="stylesheet"/>
+    <meta name="theme-color" content="#ffffff">
+    <link href="../css/bootstrap.min.css" rel="stylesheet">
+
+    <link rel=stylesheet href="../css/mystyles.css"/>
+    <link rel=stylesheet href="css/mystyles.css"/>
+    <link href="https://fonts.googleapis.com/css?family=Lora|Raleway|Source+Code+Pro" rel="stylesheet">
+
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-default">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbarCollapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="index.html">
+WEAVR Doc
+                    </a>
+                </div>
+                <div class="collapse navbar-collapse" id="navbarCollapse">
+                    <ul class="nav navbar-nav">
+                        <li class=""><a href="index.html">Home</a></li>
+                        <li class="dropdown active">
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                            Project<span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a href="#"><b>Proposal</b></a></li>
+                                <li><a href="scope.html">Scope</a></li>
+                                <li><a href="risks.html">Assumptions/Risks</a></li>
+                                <li><a href="milestones.html">Milestones</a></li>
+								<li><a href="objectives.html">Learning Objectives</a></li>
+								<li role="separator" class="divider"></li>
+                                <li><a href="#"><b>Project</b></a></li>
+                                <li><a href="datamodel.html">Data Model</a></li>
+                                <li><a href="security.html">Security</a></li>
+                                <li><a href="requirements.html">Requirements</a></li>
+								<li class="active"><a href="wbs.html">WBS</a></li>
+								<li><a href="files/time_log.docx" target="_blank">Time Log</a></li>
+                            </ul>
+                        </li>
+
+                    </ul>
+                                        <ul class="nav navbar-nav navbar-right">
+				      <!--<li><a href="#"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>-->
+				      <li><a href="/weavr"><span class="glyphicon glyphicon-log-in"></span> WEAVR</a></li>
+				    </ul>
+                </div>
+        </nav>
+        <h1 class="sr-only">Home</h1>
+    </header>
+	<div class="container">
+	    <section>
+		    <div class="jumbotron">
+	            <h3>Scope</h3>
+	        </div>
+	        <div class="panel panel-default">
+	            <div class="panel-heading">
+	                <h3>Purpose</h3>
+	            </div>
+	            <div class="panel-body">
+	                <p>The purpose of this project is to demonstrate understanding of concepts learned during the course of pursuing a degree in Information Technology, with a focus on specific courses and their curricula. The focus areas of this project include data modeling, database design, application development, system development, user interface design, transactional processing, system integration, and data protection. This project also serves an additional purpose to demonstrate the ability to making voting easier for citizens.
+	                </p>
+	            </div>
+	        </div>
+	        <div class="panel panel-default">
+	            <div class="panel-heading">
+	                <h3>Objective</h3>
+	            </div>
+	            <div class="panel-body">
+	                <p>The objective of this project is to provide a secure, accessible, internet-enabled application that is built on a current technology standards platform for the purpose of providing voter registration and management, ballot management, and voting. This system will provide functionality with most current browsers on devices with an internet connection, and will also provide features for offline use and manual registration for traditional, non-computer users. This system will expand methods for voting by creating a system for voting activities that can operate without the need for polling workers, temporary facilities, or specific operating hours. 
+	                </p>
+	            </div>
+	        </div>
+	        <div class="panel panel-default">
+	            <div class="panel-heading">
+	                <h3>High-Level Requirements (Scope)</h3>
+	            </div>
+	            <div class="panel-body">
+	                <p>This project will consist of multiple browser-based applications. The Voter Registration Application will provide the ability for a new or existing voter to login, register to vote, or update their existing registration, and logout. The Ballot Casting Application will provide the ability for an existing voter to login, view available ballots, cast a ballot, and logout. The Administration Application will provide the ability for designated users to administer voter registrations, enter manual registrations, create and configure ballots, and administer ballot casting by opening or closing voting windows, and tabulating ballots cast.</p><p>These applications will include a data model suitable for deployment to a RDBMS that provides encryption of data at rest and in transit, robust scalability, and transactional activity such as rollback. These applications will be designed to be deployed on a standard J2EE application server that supports secure, encrypted communications, scalability, user authentication and authorization models, and web service deployment. This project will be designed to support external service integration through web services, allowing easy integration to an enterprise service bus, for features such as address validation. This project is expected to be completed within 180 hours.</p>
+	            </div>
+	        </div>
+	        
+	    </section>
+    </div>
+    <nav id="pagefooter" class="navbar navbar-default navbar-fixed-bottom navbar-inverse">
+        <div class="container">
+            <div class="col-xs-12 text-center navbar-text">
+            <p class="text-muted">Copyright &copy; 2017 <a href="mailto:little_charles1@columbusstate.edu">Charles Little</a>, All rights reserved.</p>
+            </div>
+        </div>
+    </nav>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    </body>
+</html>

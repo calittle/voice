@@ -1,0 +1,144 @@
+/* 
+	Headings: 	Raleway
+	Text:		Lora
+	Form:		Source Code Pro
+
+Hints:
+.hide           remove from screen, display, and screen readers. 
+.sr-only        remove from display, but present for screen readers.
+                ** Note **
+                Be careful using .hide, because it will pass validation
+                but that means you're missing content. Be sure to check
+                pages to ensure that necessary navigational aids are present!
+.navbar-brand   this class doesn't like SVG in it. Use something else.
+
+Color palette from https://color.adobe.com/Sea-Wolf-color-theme-782171/
+#DC3522 - red
+#D9CB9E - tan
+#374140 - warm gray
+#2A2C2B - dark warm gray
+#1E1E20 - warm black
+*/
+small {font-size: 1.5rem;font-style:italic;}
+td {
+    padding: 1em;
+}
+.img-responsive{
+    margin:0 auto;
+}
+.btn-send {
+    font-weight: 300;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 20px;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+body { 
+    /*background: url(images/gallery/fractures1-full.jpg) no-repeat center center fixed; */
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;    
+    font-family: 'Lora', serif;
+    background-color:#2A2C2B;
+    color: #1E1E20;
+    font-size: 1.5em !important;
+}
+.bhover{
+height:100%;
+float:left;
+overflow:hidden;
+position:relative;
+text-align:center;
+cursor:default;
+}
+
+.bhover img {
+-webkit-transition:all .4s linear;
+transition:all .4s linear;
+}
+
+/* When hovering... */
+.bhover:hover img{
+-ms-transform:scale(1.2);
+-webkit-transform:scale(1.2);
+transform:scale(1.2);    
+}
+
+.navbar-brand > img {
+    height: 25px;
+}
+.navbar {
+    font-family: 'Raleway', serif;
+}
+header .navbar {
+    font-size: 1.55em;
+}
+#intropic {
+    height:150px;   
+    background-color:#DC3522;
+}
+#pagefooter .container .navbar-text p,
+#pagefooter .container .navbar-text,
+#pagefooter .container,
+#pagefooter
+{
+    padding-bottom: 0px !important;
+    padding-top: 0px !important;
+    margin-top:0px !important;
+    margin-bottom:0px !important;    
+    min-height: 20px !important;
+    /* wow this was a pain in the neck */
+}
+h1, h2, h3 {
+    font-family: 'Raleway', serif;
+}
+.jumbotron, .panel-heading {
+    background-color:#D9CB9E !important;
+}
+.panel-body {
+    background-color:fLoralwhite;    
+}
+label,button.btn {
+    font-size: 1.5em;
+}
+button.btn{
+    color: #374140;
+    background-color:#D9CB9E;    
+}
+input,textarea {
+    font-family: 'Source Code Pro', monospace;
+}
+aside {
+    background-color: #ddd;
+    margin: 1em;
+    padding: 1.5em;
+    font-style: italic;
+}
+
+figure img{
+    display: block;
+    width: auto;
+    height: auto;
+    margin: 0 auto;
+    padding: 0.5em;
+    border: 1px solid #2A2C2B;
+    -webkit-box-shadow: 2px 2px 2px 0px rgba(0,0,0,0.24);  
+}
+figcaption {
+    padding-top: 0.25em;
+    margin: 0 auto;
+    display: table;
+    font-style: italic;
+    color:#2A2C2B;    
+}
+blockquote{
+   margin: 1em;
+   padding: 2em;
+   -webkit-box-shadow: 2px 2px 2px 0px rgba(0,0,0,0.24);    
+   border: 1px dotted;
+}
