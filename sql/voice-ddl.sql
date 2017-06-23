@@ -5,34 +5,38 @@
 	PURPOSE:		Schema Creation (DDL)
 */
 -- Run this script as privileged user.
-DROP DATABASE IF EXISTS VOICE;
-CREATE database VOICE CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE VOICE;
+
 
 SET autocommit=0;
 START TRANSACTION;
 
 -- VOICEsys user should be used by applications wanting to manage the database structures.
-DROP USER IF EXISTS 'VOICEsys'@'%';
-CREATE USER 'VOICEsys'@'%' IDENTIFIED BY '1385362127Maya@123@';
-GRANT ALL ON VOICE.* TO 'VOICEsys'@'%';
+DROP USER IF EXISTS 'VOICEsys'@'localhost';
+CREATE USER 'VOICEsys'@'localhost' IDENTIFIED BY '1385362127Maya@123@';
+GRANT ALL ON VOICE.* TO 'VOICEsys'@'localhost' IDENTIFIED BY '1385362127Maya@123@';
 
 -- VOICEADMIN user should be used to execute ALL procedures in administrative capacity.
-DROP USER IF EXISTS 'VOICEadmin'@'%';
-CREATE USER 'VOICEadmin'@'%' IDENTIFIED BY '1385362127Maya@123@';
+DROP USER IF EXISTS 'VOICEadmin'@'localhost';
+CREATE USER 'VOICEadmin'@'localhost' IDENTIFIED BY '1385362127Maya@123@';
 GRANT EXECUTE  
 	ON VOICE.*
-    TO 'VOICEadmin'@'%';
+    TO 'VOICEadmin'@'localhost';
 
 -- VOICE user should be used to execute user-based procedures only.
-DROP USER IF EXISTS 'VOICE'@'%';
-CREATE USER 'VOICE'@'%' IDENTIFIED BY '1385362127Maya@123@';
+DROP USER IF EXISTS 'VOICE'@'localhost';
+CREATE USER 'VOICE'@'localhost' IDENTIFIED BY '1385362127Maya@123@';
 -- TODO define specific procedures. NEEDS REFINEMENT
 GRANT EXECUTE  
 	ON VOICE.*
-    TO 'VOICE'@'%';
+    TO 'VOICE'@'localhost';
 
 COMMIT;
+
+DROP DATABASE IF EXISTS VOICE;
+CREATE database VOICE CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE VOICE;
+
+
 START TRANSACTION;
 CREATE TABLE ABILITIES (
                 ABILITY_ID BIGINT AUTO_INCREMENT NOT NULL,

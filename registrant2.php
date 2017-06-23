@@ -1,7 +1,11 @@
+<?php
+# connect to database (perhaps via include?)	
+# get chosen state affirmations and party.
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-        <title>VOICE &#9745;</title>
+    <title>VOICE &#9745;</title>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -9,7 +13,6 @@
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link rel=stylesheet href="css/mystyles.css"/>    
     <link href="https://fonts.googleapis.com/css?family=Lora|Raleway|Source+Code+Pro" rel="stylesheet">
-
     <!--[if lt IE 9]>
       <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -31,7 +34,7 @@
                 <div class="collapse navbar-collapse" id="navbarCollapse">
                     <ul class="nav navbar-nav">
                         <li ><a href="index.html">Home</a></li>
-                        <li class="active"><a href="register.html">Register</a></li>
+                        <li class="active"><a href="user.html">Register</a></li>
                         <li><a href="#">My Account</a></li>
 						<li><a href="doc/">About</a></li>
                     </ul>
@@ -46,43 +49,34 @@
 	<div class="container">
 	    <section>
 			<div class="jumbotron">
-	            <h3>Register to Vote</h3>
-				<p>Registering to vote is easy. First, you'll need to create a <strong>User</strong> account - this is used to login to VOICE. Then, you'll need to enter some registration information to register to vote. Once this is submitted and approved, you'll be able to vote. Let's get started!</p>
+	            <h3>Register to Vote (Page 3)</h3>
+				<p>Almost done! You need to affirm the following statements for your chosen registration state, and if you wish, may select a political party affiliation.</p>
 	        </div>	
 			<div class="well well-lg">
-				<form>
+				<form method="POST" action="registrant2_form.php">
+					<!-- Note: in a single-state implementation you could simply hard-code this value and not use this input -->
 					<div class="form-group">
-				    <label for="usernameInput">User Name</label>
-				    <p class="help-block">Pick a username that's unique. You can use your email address if you like.</p>
+				    	<label for="stateInput">Registration State</label>
+						<p class="help-block">Choose the state in which you are registering</p>
 						<div class="input-group">
-							<span class="input-group-addon"><span class="glyphicon glyphicon-user"></span></span>
-							<input type="text" class="form-control" id="usernameInput" name="usernameInput" required="true">
+							<select class="form-control required" id="stateInput" name="stateInput" required="true">
+								<option value="">-- Select State --</option>
+<?php
+/* query database to populate:
+Affirmations
+Party
+*/
+echo "<option value='GA'>GA (Georgia)</option>"
+?>	
+							</select>
 						</div>
-				  </div>
-				  <div class="form-group">
-				    <label for="emailInput">Email address</label>
-				    <p class="help-block">Enter your email address. This will be used to recover your password only.</p>
-					<div class="input-group">
-							<span class="input-group-addon"><span class="glyphicon glyphicon-envelope"></span></span>
-							<input type="email" class="form-control" name="emailInput" id="emailInput" required="true">				    
 					</div>
-				  </div>
-				  <div class="form-group">
-				    <label for="passwordInput">Password</label>
-				    <p class="help-block">Choose a sufficiently strong password, e.g. 8+ characters, mixed case, with alphanumerics and special characters.</p>
-					<div class="input-group">
-							<span class="input-group-addon"><span class="glyphicon glyphicon-lock"></span></span>
-							<input type="password" class="form-control" name="passwordInput" id="passwordInput" required="true">
-					</div>
-					<span class="label label-default" id="passstrength"></span>
-				  </div>
-				  <button type="submit" class="btn btn-default">Submit</button>
+				  <button type="submit" class="btn btn-default">Register!</button>
 				</form>
 			</div>  
 	    </section>
 	    <div class="progress">
-			<div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 25%;">
-				<span class="sr-only">25% Complete</span>
+			<div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 75%;">
 			</div>
 		</div>
     </div>
@@ -96,44 +90,26 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+	
 <script>
 $(document).ready(function($) {
-	$('#passwordInput').keyup(function(e) {
-     var strongRegex = new RegExp("^(?=.{8,})(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*\\W).*$", "g");
-     var mediumRegex = new RegExp("^(?=.{7,})(((?=.*[A-Z])(?=.*[a-z]))|((?=.*[A-Z])(?=.*[0-9]))|((?=.*[a-z])(?=.*[0-9]))).*$", "g");
-     var enoughRegex = new RegExp("(?=.{6,}).*", "g");
-     if (false == enoughRegex.test($(this).val())) {
-             $('#passstrength').html('Please enter more characters.');
-     } else if (strongRegex.test($(this).val())) {
-             $('#passstrength').removeClass().addClass('label label-success');
-             $('#passstrength').html('oOo Strong like bull!');
-     } else if (mediumRegex.test($(this).val())) {
-             $('#passstrength').removeClass().addClass('label label-warning');
-             $('#passstrength').html('Ok, but can you do more? Keep going!');
-     } else {
-             $('#passstrength').removeClass().addClass('label label-danger');
-             $('#passstrength').html('This is weak; add more characters!');
-     }
-     return true;
-	});
 	
+	$('#birthDateInput').mask("9999-99-99",{placeholder:"yyyy-mm-dd}"});
+	jQuery.validator.addMethod("lettersonly", function(value, element) {return this.optional(element) || /^[a-zA-Z\s]+$/i.test(value);}, "Letters/spaces only please.");
+	$('.input-group.date').datepicker({
+	    startView: 2,
+	    format: "yyyy-mm-dd",
+	    autoclose: true
+	});
 	$('form').validate({
-	    rules: {
-	        usernameInput: {
+	    rules: {	        
+	        firstNameInput: {
 	            minlength: 3,
 	            maxlength: 256,
-	            required: true
+	            lettersonly: true,
+	            required: true		        
 	        },
-	        emailInput: {
-	            minlength: 5,
-	            maxlength: 256,
-	            required: true
-	        },
-	        passwordInput: {
-	            minlength: 8,
-	            maxlength: 64,
-	            required: true
-	        }
+	        stateInput: {required:true}
 	    },
 	    highlight: function(element) {
 	        $(element).closest('.form-group').addClass('has-error');

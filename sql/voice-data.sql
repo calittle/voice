@@ -33,7 +33,7 @@ INSERT INTO `ETHNICITIES` (`ETHNICITYCD`, `ETHNICITY`) VALUES ('AI', 'American I
 --
 -- GENDERS
 --
-INSERT INTO `GENDERS` (`GENDERCD`, `GENDER`) VALUES ('MALE', 'Male'), ('FEMALE', 'Female'), ('OTHER', 'Other'), ('TRANSGENDER', 'Transgender');
+INSERT INTO `GENDERS` (`GENDERCD`, `GENDER`) VALUES ('MALE', 'Male'), ('FEMALE', 'Female'), ('OTHER', 'Other');
 --
 -- ROLES
 --
