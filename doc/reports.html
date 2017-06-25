@@ -69,58 +69,53 @@ VOICE Doc
 	    <section>
 		    <div class="panel panel-default">
 	            <div class="panel-heading">
-	                <h3>Work Breakdown Structure (WBS)</h3>
+	                <h3>Project Performance Report</h3>
+	                <h4>VOICE - Vote Online Interactive Civic Enablement</h4>
+	                <h4>Project Manager: Charles Little</h4>
+	                <h4>Date Prepared: 24 June 2017</h4>
+	                <h4>Sponsor: Dr. Hayden Wimmer</h4>
 	            </div>
 				<div class="panel-body">
-<h1>Web-based Election Application and Voting Registration</h1>
-	<h2>Elaboration</h2>
-		<h3>User Interface</h3>
-			<ol><li>Technical Specifications</li><li>Functional Specifications</li></ol>
-		<h3>Data Model</h3>
-			<ol><li>Define Entities</li><li>Define Relationships</li><li>Technical Specifications</li></ol>
-		<h3>Service Interfaces</h3>
-			<ol><li>Technical Specifications</li><li>Functional Specifications</li></ol>
-		<h3>Reports</h3>
-			<ol><li>Functional Specifications</li><li>Technical Specifications</li><li>Design</li></ol>
-		<h3>Environment</h3>
-			<ol><li>Software Requirements</li><li>Hardware Requirements</li></ol>
-	<h2>Construction</h2>
-		<h3>Platform</h3>
-			<ol><li>Build development platform</li></ol>
-		<h3>Development</h3>
-			<ol><li>User Interfaces<ol><li>Build web pages</li><li>Unit Test web pages</li></ol></li></ol>
-			<ol><li>Database<ol><li>Build SQL tables</li><li>Build SQL relationships</li></ol></li></ol>
-			<ol><li>Interfaces<ol><li>Build interfaces</li><li>Build interface test endpoints</li><li>Unit test interfaces</li></ol></li></ol>
-			<ol><li>Reports<ol><li>Build reports</li><li>Unit test reports</li></ol></li></ol>
-	<h2>Testing</h2>
-		<h3>User Interface</h3>
-<ol><li>Verify functionality against specification</li>
-<li>Verify design against specification</li>
-<li>Perform integration testing</li>
-<li>Perform acceptance testing</li></ol>
-		<h3>Data Model</h3>
-<ol><li>Verify entities</li>
-<li>Verify relationships</li>
-<li>Perform integration testing</li>
-<li>Perform acceptance testing</li></ol>
-		<h3>Interfaces</h3>
-<ol><li>Verify design and function</li>
-<li>Perform integration testing</li>
-<li>Perform acceptance testing</li></ol>
-		<h3>Reports</h3>
-<ol><li>Verify design and function</li>
-<li>Perform integration testing</li>
-<li>Perform acceptance testing</li></ol>
-		<h3>Integration Testing
-		<h3>Documentation</h3>
-<ol><li>Build administration documentation</li>
-<li>Build end-user documentation</li>
-<li>Integration documentation into web application</li></ol>
-		<h3>Deploy</h3>
-<ol><li>Build deployment packages/installers</li>
-<li>Make available via GitHub</li></ol>
-	<h2>Closure</h2>
-		<h3>Wrap-up / Lessons Learned</h3>			
+					<strong>Accomplishments for This Reporting Period:</strong>
+					<ul>
+<li>Started and completed functional requirements definition after review of voting registration requirements for the state of Georgia, and survey of similar requirements for other states.</li>
+<li>Started and completed technical requirements definition based on initial project proposal and desired end-state of the system.</li>
+<li>Generated work breakdown structure (WBS) based on technical and functional requirements and the needs of the project. </li>
+<li>Started and completed design of Data Model as iterative process. Initial data model was refined and developed to final model.</li>
+<li>Started and completed hardware procurement decision process. Reviewed cost, time, and complexities of using IaaS or SaaS offerings from Amazon Web Services and 1and1 hosting, versus construction/configuration of hardware/software at home office. Decision was taken for to perform construction/configuration option for maximum flexibility and availability of existing hardware components to be repurposed at no cost.</li>
+<li>Completed solution design based on technical and functional requirements.</li>
+<li>Installed LAMP stack using Ubuntu 16.04, Apache, MySQL, and PHP. </li>
+<li>Started development work:
+	<ul>
+	<li>Created and tested DDL scripts to create schema entities and relations.</li>
+	<li>Created and tested DML scripts to generate stored procedures according to design. </li>
+	<li>Created and tested DML scripts to insert static configuration data into schema.</li>
+	<li>Created and tested DML scripts for unit testing stored procedures.</li>
+	<li>Started construction of HTML/PHP pages</li>
+	</ul></li>
+</ul>
+<strong>Accomplishments Planned but not Completed This Reporting Period:</strong>
+<ul><li>None.</li></ul>
+<strong>Root Cause of Variances</strong>
+<ul><li>Not applicable; plan is currently on schedule.</li></ul>
+<strong>Planned Corrective or Preventive Action</strong>
+<ul><li>Review remaining tasks and durations in project plan and compare to delivery date. Adjust working hours per day to crash schedule, or review scope for task removal if plan may miss delivery date.</li></ul>
+<strong>Planned Accomplishments for Next Reporting Period</strong>
+<ul><li>Complete development work by 30 June 2017.</li>
+<li>Start and complete Unit Testing by 7 July 2017.</li>
+<li>Complete final project documentation and delivery by 9 July 2017</li></ul>
+<strong>New Risks Identified</strong>
+<ul><li>Developer has concerns that PHP development process may be slowed due to learning secure development practices for that platform. Will work to mitigate by crashing project plan by extending work day hours.</li>
+	<li>Developer has concerns that Javascript development process may be slowed due to selection of Bootstrap framework, which utilizes JQuery. Will work to mitigate by trying to use provided functions of JQuery rather than developing from scratch.
+	</li>
+</ul>
+<strong>Issues</strong>
+<ul><li>Hardware platform on initial build exhibited stability issues with X graphical user interface and NVidia Geforce drivers for Ubuntu. Resolved by reinstalling Ubuntu with headless server configuration and no X window interface.</li>
+<li>Final solution design centralizes business logic in stored procedures at data layer (initial design was to use logic in middleware layer, e.g. Java application server classes). Design change results in work breakdown structure shift to require a MySQL developer instead of Java developer. </li>
+<li>Unfamiliarity with MySQL development conventions slowed initial development. Resolved by crashing project plan by adding more hours to work day to compensate.</li></ul>
+<strong>Comments</strong>
+<ul><li>Project is progressing well despite initial build issues and overall complexity. Expect project will conclude with scope successfully met</li></ul>
+
 	            </div>	
            </div>   
 	    </section>
