@@ -1,3 +1,7 @@
+<?php 
+	session_start();
+	include 'ac.php'; 
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,7 +13,13 @@
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link rel=stylesheet href="css/mystyles.css"/>    
     <link href="https://fonts.googleapis.com/css?family=Lora|Raleway|Source+Code+Pro" rel="stylesheet">
-
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="194x194" href="favicon-194x194.png">
+	<link rel="icon" type="image/png" sizes="192x192" href="android-chrome-192x192.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+	<link rel="manifest" href="manifest.json">
+	<link rel="mask-icon" href="safari-pinned-tab.svg" color="#5bbad5">
     <!--[if lt IE 9]>
       <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -26,18 +36,11 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" href="index.html">VOICE</a>
+                    <a class="navbar-brand" href="/voice">VOICE</a>
                 </div>
-                <div class="collapse navbar-collapse" id="navbarCollapse">
-                    <ul class="nav navbar-nav">
-                        <li ><a href="index.html">Home</a></li>
-                        <li class="active"><a href="user.html">Register</a></li>
-                        <li><a href="account.html">My Account</a></li>
-						<li><a href="doc/">About</a></li>
-                    </ul>
-                    <ul class="nav navbar-nav navbar-right">
-				      <li><a href="#"><span class="glyphicon glyphicon-lock"></span> Admin</a></li>
-				    </ul>
+				<div class="collapse navbar-collapse" id="navbarCollapse">
+                    <?php include 'menu_left.php'?>                    
+                    <?php include 'menu_right.php'?>
                 </div>
 	        </div>
         </nav>
@@ -50,6 +53,8 @@
 				<p>Your registration has been submitted. Once approved, you'll receive a voter registration card and an email notification. Then, you can login to vote!</p>
 	        </div>	
 	    </section>
+	    <div class="well well-lg">
+		    <?=print_r($_SESSION)?>
 	    <div class="progress">
 			<div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 100%;">
 

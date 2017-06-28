@@ -1,11 +1,78 @@
-<?php
-# connect to database (perhaps via include?)	
+<?php 
+	session_start();
+	include 'ac.php'; 
+	
+	# note: if the user has returned from a previous page (e.g. history->back) 
+	# we *could* repopulate from what was entered previously.
+	# or we just let the browser handle it.
+	
+		try {
+			
+			$pdo 	= new PDO(DSN,DBUSER,DBPASS,array(PDO::ATTR_PERSISTENT => true));			
 
+			$stmt	= $pdo->prepare('CALL state_list(?)');
+			$stmt -> bindParam(1,$a='USA');
+			$states = array();
+			if ($stmt->execute()){
+				while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
+					$states[]=$row;
+				}
+			}else{
+				$errs = $stmt->errorInfo();	
+				if (!empty($errs[1])) {						
+					switch ($errs[1]){
+						default:
+							error_log(print_r('Error '.$errs[1].': '.$errs[2], TRUE)); 								
+					}
+				}
+			}
+			
+			$stmt	= $pdo->prepare('CALL ethnicities_list()');						
+			$eths = array();
+			if ($stmt->execute()){
+				while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
+					$eths[]=$row;
+				}
+			}else{
+				$errs = $stmt->errorInfo();	
+				if (!empty($errs[1])) {						
+						switch ($errs[1]){
+							default:
+								error_log(print_r('Error '.$errs[1].': '.$errs[2], TRUE)); 								
+						}
+				}
+			}
+			
+			$stmt	= $pdo->prepare('CALL genders_list()');						
+			$genders = array();
+			if ($stmt->execute()){
+				while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
+					$genders[]=$row;
+				}
+			}else{
+				$errs = $stmt->errorInfo();	
+				if (!empty($errs[1])) {						
+					switch ($errs[1]){
+						default:
+							error_log(print_r('Error '.$errs[1].': '.$errs[2], TRUE)); 								
+					}
+				}
+			}
+			
+			
+		}catch (PDOException $e){			
+			echo($e->getMessage());
+			die();
+		}
+		finally{
+			$stmt = null;
+			$pdo = null;			
+		}							
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-        <title>VOICE &#9745;</title>
+    <title>VOICE &#9745;</title>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -13,7 +80,7 @@
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link rel=stylesheet href="css/mystyles.css"/>    
     <link href="https://fonts.googleapis.com/css?family=Lora|Raleway|Source+Code+Pro" rel="stylesheet">
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.0/css/bootstrap-datepicker.min.css" />
+	<link rel="stylesheet" href="css/bootstrap-datepicker.min.css" />
     <!--[if lt IE 9]>
       <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -30,18 +97,11 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" href="index.html">VOICE</a>
+                    <a class="navbar-brand" href="/voice">VOICE</a>
                 </div>
                 <div class="collapse navbar-collapse" id="navbarCollapse">
-                    <ul class="nav navbar-nav">
-                        <li ><a href="index.html">Home</a></li>
-                        <li class="active"><a href="user.html">Register</a></li>
-                        <li><a href="#">My Account</a></li>
-						<li><a href="doc/">About</a></li>
-                    </ul>
-                    <ul class="nav navbar-nav navbar-right">
-				      <li><a href="#"><span class="glyphicon glyphicon-lock"></span> Admin</a></li>
-				    </ul>
+                    <?php include 'menu_left.php'?>                    
+                    <?php include 'menu_right.php'?>
                 </div>
 	        </div>
         </nav>
@@ -49,7 +109,7 @@
     </header>
 	<div class="container">
 	    <section>
-			<div class="jumbotron">
+			<div class="alert alert-info alert-dismissible" role="alert" id="headerdiv">
 	            <h3>Register to Vote (Page 2)</h3>
 				<p>Now we need to know about you, the voter. Fill out the information below. </p>
 	        </div>	
@@ -116,7 +176,7 @@
 					<div class="form-group">
 				    	<label for="fedIdInput">Last 4 digits of SSN</label>
 						<p class="help-block">Please enter last four digits of your Social Security Number.</p>
-						<div class="input-group date">
+						<div class="input-group">
 							<span class="input-group-addon"><span class="glyphicon glyphicon-tag"></span></span>							
 							<input type="text" class="form-control" id="fedIdInput" name="fedIdInput" >
 						</div>
@@ -130,15 +190,11 @@
 							<select class="form-control required" id="stateInput" name="stateInput" required>
 								<option value="">-- Select State --</option>
 <?php
-/* query database to populate:
-Gender
-Ethnicity
-Party
-State
-*/
-echo "<option value='GA'>GA (Georgia)</option>";
-echo "<option value='NC'>NC (North Carolina)</option>";
-?>	
+	foreach ($states as $row){
+		print '<option value="'.$row['State Code'].'">'.$row['State'].' ('.$row['State Code'].')</option>';
+	}
+	?>
+
 							</select>
 						</div>
 					</div>
@@ -150,14 +206,10 @@ echo "<option value='NC'>NC (North Carolina)</option>";
 							<select class="form-control" id="ethnicityInput" name="ethnicityInput">
 								<option value="">-- Select Ethnicity --</option>
 <?php
-echo "<option value='AI'>American Indian</option>";
-echo "<option value='AN'>Alaskan Native</option>";
-echo "<option value='AS'>Asian</option>";
-echo "<option value='BL'>Black, not of Hispanic origin</option>";
-echo "<option value='HS'>Hispanic</option>";
-echo "<option value='PI'>Pacific Islander</option>";
-echo "<option value='WH'>White, not of Hispanic origin</option>";
-?>	
+	foreach ($eths as $row){
+		print '<option value="'.$row['ETHNICITYCD'].'">'.$row['ETHNICITY'].'</option>';
+	}
+	?>
 							</select>
 						</div>
 					</div>
@@ -168,10 +220,10 @@ echo "<option value='WH'>White, not of Hispanic origin</option>";
 							<select class="form-control" id="genderInput" name="genderInput">
 								<option value="">-- Select Gender --</option>
 <?php
-echo "<option value='FEMALE'>Female</option>";
-echo "<option value='MALE'>Male</option>";
-echo "<option value='OTHER'>Other</option>";
-?>	
+	foreach ($genders as $row){
+		print '<option value="'.$row['GENDERCD'].'">'.$row['GENDER'].'</option>';
+	}
+	?>
 							</select>
 						</div>
 					</div>
@@ -193,11 +245,11 @@ echo "<option value='OTHER'>Other</option>";
             </div>
         </div>
     </nav>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.0/js/bootstrap-datepicker.min.js" integrity="sha256-FOV0q1Ks/eXoUwtkcN6OxWV4u9OSq7LDomNYnfF/0Ys=" crossorigin="anonymous"></script>
-	<script src="https://raw.githubusercontent.com/digitalBush/jquery.maskedinput/1.4.1/dist/jquery.maskedinput.min.js"></script>
+    <script src="js/jquery.min.js"></script>
+    <script src="js/jquery.validate.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+	<script src="js/bootstrap-datepicker.min.js"></script>
+	<script src="js/jquery.maskedinput.min.js"></script>
 	
 <script>
 $(document).ready(function($) {

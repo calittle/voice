@@ -1,3 +1,7 @@
+<?php
+	session_start();
+	$thispage = 'index';
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,7 +13,14 @@
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link rel=stylesheet href="css/mystyles.css"/>
     <link href="https://fonts.googleapis.com/css?family=Lora|Raleway|Source+Code+Pro" rel="stylesheet">
-
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="194x194" href="favicon-194x194.png">
+<link rel="icon" type="image/png" sizes="192x192" href="android-chrome-192x192.png">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+<link rel="manifest" href="manifest.json">
+<link rel="mask-icon" href="safari-pinned-tab.svg" color="#5bbad5">
+<meta name="theme-color" content="#ffffff">
     <!--[if lt IE 9]>
       <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -26,18 +37,13 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" href="index.html">VOICE</a>
+                    <a class="navbar-brand" href="/voice">VOICE</a>
                 </div>
-                <div class="collapse navbar-collapse" id="navbarCollapse">
-                    <ul class="nav navbar-nav">
-                        <li class="active"><a href="index.html">Home</a></li>
-                        <li><a href="user.html">Register</a></li>
-                        <li><a href="account.html">My Account</a></li>
-						<li><a href="doc/">About</a></li>
-                    </ul>
-                    <ul class="nav navbar-nav navbar-right">
-				      <li><a href="#"><span class="glyphicon glyphicon-lock"></span> Admin</a></li>
-				    </ul>
+                <div class="collapse navbar-collapse" id="navbarCollapse">                    
+                    <?php
+	                    include 'menu_left.php';                    
+						include 'menu_right.php';
+						?>       
                 </div>
 	        </div>
         </nav>
@@ -48,14 +54,21 @@
 			<div class="jumbotron">
 	            <h1>Welcome to VOICE.</h1>
 				<p>Hi!<br/><br/>New here? A few things you can do: <em>register to vote</em>, or if you've already done that, you can <em>administer your account</em>. But maybe you're here to exercise your civic duty and <em>vote!</em></p>
+		</div>
+		<div class="alert alert-info alert-dismissible" role="alert" id="logoutdiv" hidden>
+		    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			</button>
+			<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+			<span class="sr-only">Message:</span>You have been logged out.
 		</div>	
 		<div class="row">
 		  <div class="col-md-4"><div class="well"><a href="#"><h1 class="text-center"><span class="glyphicon glyphicon-ok"></span> Vote</h1></a></div></div>
-		  <div class="col-md-4"><div class="well"><a href="user.html"><h1 class="text-center"><span class="glyphicon glyphicon-user"></span> Register</h1></a></div></div>
-		  <div class="col-md-4"><div class="well"><a href="account.html"><h1 class="text-center"><span class="glyphicon glyphicon-wrench"></span> My Account</h1></a></div></div>
+		  <div class="col-md-4"><div class="well"><a href="user.php"><h1 class="text-center"><span class="glyphicon glyphicon-user"></span> Register</h1></a></div></div>
+		  <div class="col-md-4"><div class="well"><a href="#"><h1 class="text-center"><span class="glyphicon glyphicon-wrench"></span> My Account</h1></a></div></div>
 		</div>       
 <div class="well well-sm">
-	<p class="text-center">What is VOICE? It is <strong>V</strong>ote-<strong>O</strong>nline <strong>I</strong>nteractive <strong>C</strong>ivic <strong>E</strong>nablement. It's a rather unwieldy acronym for an online voting system!
+	<p class="text-center text-muted">What is VOICE? It is <strong>V</strong>ote-<strong>O</strong>nline <strong>I</strong>nteractive <strong>C</strong>ivic <strong>E</strong>nablement. It's a rather unwieldy acronym for an online voting system!</p>
 </div>
 	    </section>
     </div>
@@ -66,7 +79,16 @@
             </div>
         </div>
     </nav>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/purl.min.js"></script>
+    <script>
+	$(document).ready(function($) {
+		if ($.url().param('x')=='logout'){
+			$('#logoutdiv').show();
+		}
+	});
+	</script>
+
     </body>
 </html>

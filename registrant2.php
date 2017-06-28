@@ -1,6 +1,65 @@
-<?php
-# connect to database (perhaps via include?)	
-# get chosen state affirmations and party.
+<?php 
+	session_start();
+	include 'ac.php'; 
+	# pull out any needed registration variables.
+	# note: for many more variables it's better to pull out the array
+	# that way we don't have to access the session array more than once.
+	# Example:
+	#	$regdata = $_SESSION['regdata1'];
+	#	$state   = $regdata['stateInput'];
+	# But, for only a single variable or two, this is fine:
+	$state = $_SESSION['regdata']['stateInput'];
+	
+	
+	# get Affirmations and Parties.
+	# state_parties_list(statecd)
+	# get_affirmations(statecd)
+	try {
+			
+			$pdo 	= new PDO(DSN,DBUSER,DBPASS,array(PDO::ATTR_PERSISTENT => true));			
+
+			$stmt	= $pdo->prepare('CALL state_parties_list(?)');
+			$stmt -> bindParam(1,$state);
+			$parties = array();
+			if ($stmt->execute()){
+				while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
+					$parties[]=$row;
+				}
+			}else{
+				$errs = $stmt->errorInfo();	
+				if (!empty($errs[1])) {						
+					switch ($errs[1]){
+						default:							
+							error_log(print_r('Error '.$errs[1].': '.$errs[2], TRUE)); 								
+					}
+				}
+			}						
+			
+			$stmt	= $pdo->prepare('CALL get_affirmations(?)');
+			$stmt -> bindParam(1,$state);
+			$affirms = array();
+			if ($stmt->execute()){
+				while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
+					$affirms[]=$row;
+				}
+			}else{
+				$errs = $stmt->errorInfo();	
+				if (!empty($errs[1])) {						
+					switch ($errs[1]){
+						default:							
+							error_log(print_r('Error '.$errs[1].': '.$errs[2], TRUE)); 								
+					}
+				}
+			}
+			
+		}catch (PDOException $e){
+			echo($e->getMessage());
+			die();
+		}
+		finally{
+			$stmt = null;
+			$pdo = null;			
+		}		
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -29,18 +88,11 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" href="index.html">VOICE</a>
+                    <a class="navbar-brand" href="/voice">VOICE</a>
                 </div>
                 <div class="collapse navbar-collapse" id="navbarCollapse">
-                    <ul class="nav navbar-nav">
-                        <li ><a href="index.html">Home</a></li>
-                        <li class="active"><a href="user.html">Register</a></li>
-                        <li><a href="#">My Account</a></li>
-						<li><a href="doc/">About</a></li>
-                    </ul>
-                    <ul class="nav navbar-nav navbar-right">
-				      <li><a href="#"><span class="glyphicon glyphicon-lock"></span> Admin</a></li>
-				    </ul>
+                    <?php include 'menu_left.php'?>                    
+                    <?php include 'menu_right.php'?>
                 </div>
 	        </div>
         </nav>
@@ -48,26 +100,40 @@
     </header>
 	<div class="container">
 	    <section>
-			<div class="jumbotron">
+			<div class="alert alert-info alert-dismissible" role="alert" id="headerdiv">
 	            <h3>Register to Vote (Page 3)</h3>
-				<p>Almost done! You need to affirm the following statements for your chosen registration state, and if you wish, may select a political party affiliation.</p>
+				<p>Almost done! You need to affirm the following statements for your chosen registration state<?=' ('.$state.')'?>, and if you wish, may select a political party affiliation.</p>
 	        </div>	
 			<div class="well well-lg">
-				<form method="POST" action="registrant2_form.php">
-					<!-- Note: in a single-state implementation you could simply hard-code this value and not use this input -->
+				<form method="POST" action="registrant2_form.php">					
+						<p class="help-block">States require registrants to meet certain qualifications to register to vote. By ticking the checkbox below, you swear or affirm that you meet these qualifications. Your selected registration state<?=' ('.$state.')'?> states that registrants must:</p>
+						<?php
+	print '<ul>';
+	foreach ($affirms as $row){
+		print '<li vid="'.$row['AFFIRM_ID'].'">'.$row['AFFIRMATION'].'</li>';
+	}
+	print '</ul>';
+	?>	
+					<div class="form-group form-check has-danger">
+				    	<label for="affirmInput" class="form-check-label">
+							<input type="checkbox" class="form-check-input" id="affirmInput" name="affirmInput" value="1">		
+							By ticking this checkbox, you swear or affirm you meet the above qualifications.
+						
+						</label>
+					</div>
+<hr/>
 					<div class="form-group">
-				    	<label for="stateInput">Registration State</label>
-						<p class="help-block">Choose the state in which you are registering</p>
+				    	<label for="partyInput">Party Affiliation</label>
+						<p class="help-block">Optionally select a party affiliation.</p>
 						<div class="input-group">
-							<select class="form-control required" id="stateInput" name="stateInput" required="true">
-								<option value="">-- Select State --</option>
+							<select class="form-control required" id="partyInput" name="partyInput" required="false">
+								<option value="">-- Select Party --</option>
 <?php
-/* query database to populate:
-Affirmations
-Party
-*/
-echo "<option value='GA'>GA (Georgia)</option>"
-?>	
+	foreach ($parties as $row){
+		print '<option value="'.$row['PARTYCD'].'">'.$row['PARTY'].' ('.$row['PARTYCD'].')</option>';
+	}
+	?>
+
 							</select>
 						</div>
 					</div>
@@ -75,6 +141,14 @@ echo "<option value='GA'>GA (Georgia)</option>"
 				</form>
 			</div>  
 	    </section>
+	    <div class="alert alert-danger alert-dismissible" role="alert" id="errormessagediv" hidden>
+		    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			</button>
+			<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+			<span class="sr-only">Error:</span>
+			<span id="errormessage"></span>
+		</div>
 	    <div class="progress">
 			<div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 75%;">
 			</div>
@@ -87,29 +161,15 @@ echo "<option value='GA'>GA (Georgia)</option>"
             </div>
         </div>
     </nav>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <script src="js/jquery.min.js"></script>
+    <script src="js/jquery.validate.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
 	
 <script>
-$(document).ready(function($) {
-	
-	$('#birthDateInput').mask("9999-99-99",{placeholder:"yyyy-mm-dd}"});
-	jQuery.validator.addMethod("lettersonly", function(value, element) {return this.optional(element) || /^[a-zA-Z\s]+$/i.test(value);}, "Letters/spaces only please.");
-	$('.input-group.date').datepicker({
-	    startView: 2,
-	    format: "yyyy-mm-dd",
-	    autoclose: true
-	});
+$(document).ready(function($) {	
 	$('form').validate({
 	    rules: {	        
-	        firstNameInput: {
-	            minlength: 3,
-	            maxlength: 256,
-	            lettersonly: true,
-	            required: true		        
-	        },
-	        stateInput: {required:true}
+	        partyInput: {required:false}
 	    },
 	    highlight: function(element) {
 	        $(element).closest('.form-group').addClass('has-error');
@@ -126,6 +186,57 @@ $(document).ready(function($) {
 	            error.insertAfter(element);
 	        }
 	    }
+	});
+	var request;
+	$('form').submit(function(event){
+		event.preventDefault();
+		if (request){request.abort();}
+		var $form = $(this);
+		var $inputs = $form.find("input, button");
+		var serialdata = $form.serialize();
+		$inputs.prop("disabled",true);
+		request = $.ajax({
+			url: "registrant2_form.php",
+			type: "post",
+			data: serialdata,
+			success: function(data){
+				var o;
+				var sucksess=false;
+				var msg='';
+				try{
+					o = JSON.parse(data);
+					sucksess = o['success'];
+					msg = o['msg'];
+				}catch(err){
+					msg = err;
+				}
+				if (sucksess==true){
+					console.log('Registrant created: ' + data);
+					$('#formdiv').fadeOut(500);
+					$('#errormessagediv').hide();
+					window.location.href = "final.php";
+				}
+				else{
+					console.log('Registration failure. Err=' + msg + '\n Data returned was:' + data);
+					this.error(this.xhr,'System administrators have been notified.',' You can try again...');
+				}
+			},
+			error: function(jqXHR, textStatus, errorThrown){
+				$('#errormessage').html("There was a problem with your registrant information. " + textStatus + errorThrown);
+				$('#errormessagediv').show();		
+				$inputs.prop("disabled",false)
+			}
+		});
+		//request.done(function (response,textStatus,jqXHR){
+		//	$('#formdiv').fadeOut(1000);
+		//	$('#successdiv').show();
+		//});
+		request.fail(function (jqXHR, textStatus, errorThrown){
+			$('#errormessage').html("There was a problem with your registrant information: " + textStatus + errorThrown);
+			$('#errormessagediv').show();		
+			$inputs.prop("disabled",false)
+		});
+		//request.always(function(){$inputs.prop("disabled",false)});
 	});
 });
 </script>

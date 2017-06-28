@@ -7,21 +7,17 @@
 use VOICE;
 START TRANSACTION;
 
-/* STUB 
 DELIMITER $$
-DROP PROCEDURE IF EXISTS `VOICE`.`X` $$
-CREATE PROCEDURE `VOICE`.`X` (
-	IN X bigint(20),
-    OUT X bigint(20)
+DROP PROCEDURE IF EXISTS `VOICE`.`get_login` $$
+CREATE PROCEDURE `VOICE`.`get_login` (
+	IN username varchar(256)
 )
-COMMENT 'X'
+COMMENT 'Get a password hash.'
 BEGIN
 	-- SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'X';
-    SELECT LAST_INSERT_ID() INTO regid;
-    COMMIT;
+	SELECT PWD_HASH,USER_ID FROM USERS WHERE USER_NAME = username LIMIT 1;
 END $$
 DELIMITER ; $$
-*/
 
 /** Receipt and Details **/
 DELIMITER $$
@@ -580,6 +576,12 @@ BEGIN
 END $$
 
 /* NOTE: hash and salt must be generated outside of database. */
+DROP PROCEDURE IF EXISTS `VOICE`.`users_add2` $$
+CREATE PROCEDURE `VOICE`.`users_add2` (IN username varchar(256),IN email varchar(256), IN passwordhash varchar(256), IN hashalg varchar(50),IN salt varchar(50))
+BEGIN
+	INSERT INTO `USERS` (`USER_NAME`,`EMAIL`,`PWD_HASH`,`HASH_ALGORITHM`,`SALT`) VALUES (username,email,passwordhash,hashalg,salt);    
+    COMMIT;
+END $$
 DROP PROCEDURE IF EXISTS `VOICE`.`users_add` $$
 CREATE PROCEDURE `VOICE`.`users_add` (IN username varchar(256),IN email varchar(256), IN passwordhash varchar(256), IN hashalg varchar(50),IN salt varchar(50),OUT newid bigint(20))
 BEGIN
@@ -661,6 +663,27 @@ CREATE PROCEDURE `VOICE`.`ethnicities_delete` (IN acode char(2))
 BEGIN
 	DELETE FROM `ETHNICITIES` WHERE `ETHNICITIES`.`ETHNICITYCD` = acode;	
     COMMIT;
+END $$
+DELIMITER ; $$
+/** GENDERS **/
+DELIMITER $$
+DROP PROCEDURE IF EXISTS `VOICE`.`genders_list` $$
+CREATE PROCEDURE `VOICE`.`genders_list` ()
+BEGIN
+	SELECT * FROM GENDERS;
+END $$
+
+DROP PROCEDURE IF EXISTS `VOICE`.`genders_add` $$
+CREATE PROCEDURE `VOICE`.`genders_add` (IN avalue varchar(16), IN bvalue varchar(16))
+BEGIN
+	INSERT INTO `GENDERS` (`GENDERCD`,`GENDER`) VALUES (avalue,bvalue);
+    COMMIT;
+END $$
+
+DROP PROCEDURE IF EXISTS `VOICE`.`genders_delete` $$
+CREATE PROCEDURE `VOICE`.`genders_delete` (IN gendercd varchar(16))
+BEGIN
+	DELETE FROM `GENDERS` WHERE `GENDERS`.`GENDERCD` = gendercd;
 END $$
 DELIMITER ; $$
 
@@ -830,10 +853,14 @@ DROP PROCEDURE IF EXISTS `VOICE`.`state_parties_list` $$
 CREATE PROCEDURE `VOICE`.`state_parties_list` (IN statecode varchar(3))
 BEGIN
 	SELECT 
-		SP.PARTYCD FROM `STATE_PARTIES` SP
+		SP.PARTYCD,
+        P.PARTY
+        FROM `STATE_PARTIES` SP
+        INNER JOIN `PARTIES` P ON P.PARTYCD = SP.PARTYCD
         WHERE
 		SP.STATECD = statecode;
 END $$
+
 DROP PROCEDURE IF EXISTS `VOICE`.`parties_list` $$
 CREATE PROCEDURE `VOICE`.`parties_list` ()
 BEGIN
