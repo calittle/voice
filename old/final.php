@@ -49,14 +49,16 @@
 	<div class="container">
 	    <section>
 			<div class="jumbotron">
-	            <h3>Thank you.</h3>
-				<p>Your registration has been submitted. Once approved, you'll receive a voter registration card and an email notification. Then, you can login to vote!</p>
+	            <h3>Thank you. Now what?</h3>
+				<p>Your registration information has been saved.  Once you <a href="locations.php">add a residence</a>, your registration will be reviewed for approval. Once approved, you'll receive a voter registration card and an email notification.<br/><br/>
+				<a href="locations.php"><button type="button" class="btn btn-default">Add a Location</button></a>
+				</p>
 	        </div>	
 	    </section>
 	    <div class="well well-lg">
 		    <?=print_r($_SESSION)?>
 	    <div class="progress">
-			<div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 100%;">
+			<div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 100%;">
 
 			</div>
 		</div>

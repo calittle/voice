@@ -19,6 +19,7 @@ Color palette from https://color.adobe.com/Sea-Wolf-color-theme-782171/
 #2A2C2B - dark warm gray
 #1E1E20 - warm black
 */
+
 small {font-size: 1.5rem;font-style:italic;}
 td {
     padding: 1em;
@@ -36,6 +37,7 @@ td {
 html {
   position: relative;
   min-height: 100%;
+/*  font-size: 8px; */
 }
 body { 
     /*background: url(images/gallery/fractures1-full.jpg) no-repeat center center fixed; */

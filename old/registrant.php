@@ -1,5 +1,6 @@
 <?php 
 	session_start();
+	$thispage='registrant';
 	include 'ac.php'; 
 	
 	# note: if the user has returned from a previous page (e.g. history->back) 
@@ -9,9 +10,10 @@
 		try {
 			
 			$pdo 	= new PDO(DSN,DBUSER,DBPASS,array(PDO::ATTR_PERSISTENT => true));			
-
+			#country parameter is HARD CODED for this implementation.
+			$queryState = 'USA';
 			$stmt	= $pdo->prepare('CALL state_list(?)');
-			$stmt -> bindParam(1,$a='USA');
+			$stmt -> bindParam(1,$queryState);
 			$states = array();
 			if ($stmt->execute()){
 				while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
@@ -204,7 +206,7 @@
 						<p class="help-block">This question is asked to comply with federal regulations and is optional.</p>
 						<div class="input-group">
 							<select class="form-control" id="ethnicityInput" name="ethnicityInput">
-								<option value="">-- Select Ethnicity --</option>
+								<option value="UN" selected>-- Select Ethnicity --</option>
 <?php
 	foreach ($eths as $row){
 		print '<option value="'.$row['ETHNICITYCD'].'">'.$row['ETHNICITY'].'</option>';
@@ -218,7 +220,7 @@
 						<p class="help-block">This question is asked to comply with federal regulations and is optional.</p>
 						<div class="input-group">
 							<select class="form-control" id="genderInput" name="genderInput">
-								<option value="">-- Select Gender --</option>
+								<option value="UNS" selected>-- Select Gender --</option>
 <?php
 	foreach ($genders as $row){
 		print '<option value="'.$row['GENDERCD'].'">'.$row['GENDER'].'</option>';
@@ -234,7 +236,7 @@
 			</div>  
 	    </section>
 	    <div class="progress">
-			<div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 50%;">
+			<div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 50%;">
 			</div>
 		</div>
     </div>

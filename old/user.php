@@ -92,7 +92,7 @@
 				Your user account has been created. Please proceed to the <a href="registrant.php">next step</a>. <A href="registrant.php"><button type="button" class="btn btn-default">Next</button></A>
 		</div>
 	    <div class="progress">
-			<div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 25%;">
+			<div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 25%;">
 			</div>
 		</div>
     </div>

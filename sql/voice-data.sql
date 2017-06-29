@@ -29,11 +29,11 @@ INSERT INTO `PARTIES` (`PARTYCD`,`PARTY`) VALUES ('UNS','Unspecified');
 --
 -- ETHNICITIES
 --
-INSERT INTO `ETHNICITIES` (`ETHNICITYCD`, `ETHNICITY`) VALUES ('AI', 'American Indian'),('AN', 'Alaskan Native'),('AS', 'Asian'),('BL', 'Black'),('HS', 'Hispanic'),('PI', 'Pac. Islander'),('WH', 'White');
+INSERT INTO `ETHNICITIES` (`ETHNICITYCD`, `ETHNICITY`) VALUES ('UN','Unspecified'),('AI', 'American Indian'),('AN', 'Alaskan Native'),('AS', 'Asian'),('BL', 'Black'),('HS', 'Hispanic'),('PI', 'Pac. Islander'),('WH', 'White');
 --
 -- GENDERS
 --
-INSERT INTO `GENDERS` (`GENDERCD`, `GENDER`) VALUES ('MALE', 'Male'), ('FEMALE', 'Female'), ('OTHER', 'Other');
+INSERT INTO `GENDERS` (`GENDERCD`, `GENDER`) VALUES ('MALE', 'Male'), ('FEMALE', 'Female'), ('OTHER', 'Other'),('UNS','Unspecified');
 --
 -- ROLES
 --

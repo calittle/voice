@@ -14,20 +14,38 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
 
 			$stmt	= $pdo->prepare('CALL registrant_add(?,?,?,?,?,?,?,?,?,?,?,?,?,?,@newid)');
 			# FN,MN,LN,SUF (256,BD,TEL64,SID256,FID32,GEN16,ETH2,AFFtinyint1,STATE3,PARTY16,USERID
-			$stmt -> bindParam(1,$a=$regdata['firstNameInput']);
-			$stmt -> bindParam(2,$a=$regdata['middleNameInput']);						
-			$stmt -> bindParam(3,$a=$regdata['lastNameInput']);
-			$stmt -> bindParam(4,$a=$regdata['suffixNameInput']);
-			$stmt -> bindParam(5,$a=$regdata['birthDateInput']);			
-			$stmt -> bindParam(6,$a=$regdata['phoneInput']);
-			$stmt -> bindParam(7,$a=$regdata['stateIdInput']);						
-			$stmt -> bindParam(8,$a=$regdata['fedIdInput']);
-			$stmt -> bindParam(9,$a=$regdata['genderInput']);
-			$stmt -> bindParam(10,$a=$regdata['ethnicityInput']);			
-			$stmt -> bindParam(11,$a=$regdata['affirmInput']);
-			$stmt -> bindParam(12,$a=$regdata['stateInput']);						
-			$stmt -> bindParam(13,$a=$regdata['partyInput']);
-			$stmt -> bindParam(14,$a=$uid);						
+
+			# Note: due to quirk of bindParam, it doesn't bind the value until query is executed, so can't reuse same variable.
+			$a=$regdata['firstNameInput'];
+			$stmt -> bindParam(1,$a);
+			$b=$regdata['middleNameInput'];
+			$stmt -> bindParam(2,$b);						
+			$c=$regdata['lastNameInput'];
+			$stmt -> bindParam(3,$c);
+			$d=$regdata['suffixNameInput'];
+			$stmt -> bindParam(4,$d);
+			$e=$regdata['birthDateInput'];
+			$stmt -> bindParam(5,$e);			
+			$f=$regdata['phoneInput'];
+			$stmt -> bindParam(6,$f);
+			$g=$regdata['stateIdInput'];
+			$stmt -> bindParam(7,$g);						
+			$h=$regdata['fedIdInput'];
+			$stmt -> bindParam(8,$h);
+
+			# these can possess null values, but not empty string (will fail constraints).
+			# use ternary operator to populate with null.
+			$i=empty($regdata['genderInput'])? null:$regdata['genderInput'];
+			$stmt -> bindParam(9,$i);
+			$j=empty($regdata['ethnicityInput'])?null:$regdata['ethnicityInput'];
+			$stmt -> bindParam(10,$j);			
+			$k=empty($regdata['affirmInput'])?null:$regdata['affirmInput'];
+			$stmt -> bindParam(11,$k);
+			$l=$regdata['stateInput'];
+			$stmt -> bindParam(12,$l);						
+			$m=$regdata['partyInput'];
+			$stmt -> bindParam(13,$m);
+			$stmt -> bindParam(14,$uid);						
 			$stmt -> execute();
 			$stmt -> closeCursor();
 			$errs = $stmt->errorInfo();						

@@ -247,7 +247,7 @@ BEGIN
         R.REGISTRANT_ID as 'Registrant ID',
         P.PARTY as 'Party Affiliation',
         S.STATE as 'State',
-        CONCAT(L.STREET_NUM,' ',L.STREET_NAME,' ',L.UNIT_NUM,' ',L.CITY,',',L.STATECD,' ',L.POST_CODE) as 'Location'
+        CONCAT(L.STREET_NAME1,' ',L.STREET_NAME2,' ',L.CITY,',',L.STATECD,' ',L.POSTALCODE) as 'Location'
 	FROM REGISTRANTS R
     INNER JOIN GENDERS G on G.GENDERCD = R.GENDERCD
     INNER JOIN ETHNICITIES E on E.ETHNICITYCD = R.ETHNICITYCD
@@ -258,30 +258,67 @@ BEGIN
     WHERE R.REGISTRANT_ID = regid and RL.IS_RESIDENCE = 1;
 END $$
 
+DELIMITER $$
+DROP PROCEDURE IF EXISTS `VOICE`.`get_ids` $$
+CREATE PROCEDURE `VOICE`.`get_ids` (IN regid bigint(20), IN uid bigint(20))
+COMMENT 'Get a registrant, location, and user id'
+BEGIN
+	IF regid >= 0 THEN
+		SELECT 
+			R.REGISTRANT_ID,
+			R.USER_ID
+			FROM REGISTRANTS R
+			INNER JOIN USERS U ON U.USER_ID = R.USER_ID
+			WHERE R.REGISTRANT_ID = regid
+		UNION ALL
+		SELECT 
+			RL.LOCATION_ID,
+			RL.REGISTRANT_ID
+			FROM REG_LOC RL        
+			WHERE RL.IS_RESIDENCE = 1 AND RL.REGISTRANT_ID = regid;
+	ELSEIF uid >= 0 THEN
+		SELECT 
+			R.REGISTRANT_ID,
+			R.USER_ID
+			FROM REGISTRANTS R
+			INNER JOIN USERS U ON U.USER_ID = R.USER_ID
+			WHERE R.USER_ID = uid
+		UNION ALL
+		SELECT 
+			RL.LOCATION_ID,
+			RL.REGISTRANT_ID as 'IGNORE'
+			FROM REG_LOC RL        
+			WHERE RL.IS_RESIDENCE = 1 AND RL.REGISTRANT_ID = regid;    
+    END IF;
+END $$
+DELIMITER ; $$
+
+
 DROP PROCEDURE IF EXISTS `VOICE`.`registrant_get_basic` $$
 CREATE PROCEDURE `VOICE`.`registrant_get_basic` (IN regid bigint(20))
 COMMENT 'Get a specific registrant'
 BEGIN
 	SELECT 
-		CONCAT(R.F_NAME,' ',R.M_NAME,' ',R.L_NAME,' ',R.Suffix) as 'Name',
-        R.DOB as 'Date of Birth',
-        R.Phone as 'Phone',
-        R.STATEID as 'State ID',
-        R.FEDERAL_ID as 'Federal ID',
-        G.GENDER as 'Gender',
-        E.ETHNICITY as 'Ethnicity',
-        R.APPROVAL_STATE as 'Approval State',
-        R.AFFIRM_STATE as 'Affirmation State',
-        P.PARTY as 'Party Affiliation',
-		S.STATE as 'State',
-        R.USER_ID as 'User ID',
-        R.REGISTRANT_ID as 'Registrant ID'
-	FROM REGISTRANTS R
-    INNER JOIN GENDERS G on G.GENDERCD = R.GENDERCD
-    INNER JOIN ETHNICITIES E on E.ETHNICITYCD = R.ETHNICITYCD
-    INNER JOIN PARTIES P on P.PARTYCD = R.PARTYCD
-    INNER JOIN STATES S on S.STATECD = R.STATECD
-    WHERE R.REGISTRANT_ID = regid;
+			CONCAT(R.F_NAME,' ',R.M_NAME,' ',R.L_NAME,' ',R.Suffix) as 'Name',
+			R.DOB as 'Date of Birth',
+			R.Phone as 'Phone',
+			R.STATEID as 'State ID',
+			R.FEDERAL_ID as 'Federal ID',
+			G.GENDER as 'Gender',
+			E.ETHNICITY as 'Ethnicity',
+			R.APPROVAL_STATE as 'Approval State',
+			R.AFFIRM_STATE as 'Affirmation State',
+			P.PARTY as 'Party Affiliation',
+			S.STATE as 'State',
+			R.USER_ID as 'User ID',
+			R.REGISTRANT_ID as 'Registrant ID',
+            CALL registrant_get_residenceaddr(regid) as 'Residence'
+		FROM REGISTRANTS R
+		INNER JOIN GENDERS G on G.GENDERCD = R.GENDERCD
+		INNER JOIN ETHNICITIES E on E.ETHNICITYCD = R.ETHNICITYCD
+		INNER JOIN PARTIES P on P.PARTYCD = R.PARTYCD
+		INNER JOIN STATES S on S.STATECD = R.STATECD
+		WHERE R.REGISTRANT_ID = regid;			
 END $$
 
 DROP PROCEDURE IF EXISTS `VOICE`.`locations_delete` $$
@@ -302,6 +339,7 @@ BEGIN
 	END IF;
 END $$
 
+DELIMITER $$
 DROP PROCEDURE IF EXISTS `VOICE`.`locations_add` $$
 CREATE PROCEDURE `VOICE`.`locations_add` (
     IN streetname1 varchar(256),
@@ -341,8 +379,8 @@ BEGIN
     INSERT INTO `REG_LOC` (`LOCATION_ID`,`REGISTRANT_ID`,`IS_MAILING`,`IS_RESIDENCE`)
 		VALUES (locid,regid,ismailing,isresidence);
     COMMIT;
-    
 END $$
+DELIMITER ; $$
 
 DROP PROCEDURE IF EXISTS `VOICE`.`registrant_get_mailingaddr` $$
 CREATE PROCEDURE `VOICE`.`registrant_get_mailingaddr` (
@@ -357,7 +395,7 @@ DROP PROCEDURE IF EXISTS `VOICE`.`registrant_get_residenceaddr` $$
 CREATE PROCEDURE `VOICE`.`registrant_get_residenceaddr` (
     IN regid bigint(20)
 )
-COMMENT 'Get the mailing address of a registrant. '
+COMMENT 'Get the residence address of a registrant. '
 BEGIN
 	CALL locations_get(regid,null,null,1);
 END $$
@@ -381,7 +419,7 @@ BEGIN
 	CALL locations_get(regid,locid,null,null);
 END $$
 
-
+DELIMITER $$
 DROP PROCEDURE IF EXISTS `VOICE`.`locations_get` $$
 CREATE PROCEDURE `VOICE`.`locations_get` (
     IN regid bigint(20),
@@ -394,54 +432,59 @@ BEGIN
 	IF regid = NULL THEN
 		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Must provide Registrant ID value.';
 	ELSEIF bmail != null THEN
-		SELECT 
+		SELECT
+			L.`LOCATION_ID` as 'Location ID',
 			L.`STREET_NAME1` as 'Address Line 1',
             L.`STREET_NAME2` as 'Address Line 2',
             CONCAT(L.`CITY`,' ',L.`STATECD`,' ',L.`POSTALCODE`) as 'CSZ',
             L.`COUNTYCD` as 'County',
             L.`COUNTRYCD` as 'Country'
 		FROM LOCATIONS L 
-        INNER JOIN REG_LOC RL ON RL.LOCATION_ID = locid
+        INNER JOIN REG_LOC RL ON RL.LOCATION_ID = L.LOCATION_ID
         WHERE RL.REGISTRANT_ID = regid and RL.IS_MAILING=1;
     ELSEIF bres != null THEN
 		SELECT 
+			L.`LOCATION_ID` as 'Location ID',
 			L.`STREET_NAME1` as 'Address Line 1',
             L.`STREET_NAME2` as 'Address Line 2',
             CONCAT(L.`CITY`,' ',L.`STATECD`,' ',L.`POSTALCODE`) as 'CSZ',
             L.`COUNTYCD` as 'County',
             L.`COUNTRYCD` as 'Country'
 		FROM LOCATIONS L 
-        INNER JOIN REG_LOC RL ON RL.LOCATION_ID = locid
+        INNER JOIN REG_LOC RL ON RL.LOCATION_ID = L.LOCATION_ID
         WHERE RL.REGISTRANT_ID = regid and RL.IS_RESIDENCE = 1;
     ELSEIF locid != null  THEN
-		SELECT 
+		SELECT 		
 			L.`STREET_NAME1` as 'Address Line 1',
             L.`STREET_NAME2` as 'Address Line 2',
             CONCAT(L.`CITY`,' ',L.`STATECD`,' ',L.`POSTALCODE`) as 'CSZ',
             L.`COUNTYCD` as 'County',
-            L.`COUNTRYCD` as 'Country'
+            L.`COUNTRYCD` as 'Country',
+            IF(RL.`IS_MAILING` = '1',
+				IF(RL.`IS_RESIDENCE`='1','Mailing and Residence','Mailing'),
+				IF(RL.`IS_RESIDENCE`='1','Residence','')
+			)as 'Residence Type'            
 		FROM LOCATIONS L 
         INNER JOIN REG_LOC RL ON RL.LOCATION_ID = locid
         WHERE RL.REGISTRANT_ID = regid and RL.LOCATION_ID = locid;
     ELSE 
 		SELECT 
+			L.`LOCATION_ID` as 'Location ID',
 			L.`STREET_NAME1` as 'Address Line 1',
             L.`STREET_NAME2` as 'Address Line 2',
             CONCAT(L.`CITY`,' ',L.`STATECD`,' ',L.`POSTALCODE`) as 'CSZ',
             L.`COUNTYCD` as 'County',
-            L.`COUNTRYCD` as 'Country'
+            L.`COUNTRYCD` as 'Country',
+			IF(RL.`IS_MAILING` = '1',
+				IF(RL.`IS_RESIDENCE`='1','Mailing and Residence','Mailing'),
+				IF(RL.`IS_RESIDENCE`='1','Residence','')
+			)as 'Residence Type'
 		FROM LOCATIONS L 
-        INNER JOIN REG_LOC RL ON RL.LOCATION_ID = locid
+        INNER JOIN REG_LOC RL ON RL.LOCATION_ID = L.LOCATION_ID
         WHERE RL.REGISTRANT_ID = regid;
 	END IF;
-    
-    INSERT INTO `LOCATIONS` (`STREET_NAME1`,`STREET_NAME2`,`CITY`,`POSTALCODE`,`COUNTYCD`,`STATECD`,`COUNTRYCD`)
-	VALUES (streetname1,streetname2,city,postalcode,countycd,statecd,countrycd);
-	SELECT LAST_INSERT_ID() INTO locid;
-    INSERT INTO `REG_LOC` (`LOCATION_ID`,`REGISTRANT_ID`,`IS_MAILING`,`IS_RESIDENCE`)
-		VALUES (locid,regid,ismailing,isresidence);
-    COMMIT;
 END $$
+DELIMITER ; $$
 
 
 DROP PROCEDURE IF EXISTS `VOICE`.`districts_add` $$
@@ -905,8 +948,8 @@ DROP PROCEDURE IF EXISTS `VOICE`.`counties_list` $$
 CREATE PROCEDURE `VOICE`.`counties_list` (IN statecode varchar(3))
 BEGIN
 	SELECT 
-		C.COUNTYCD as `County Code`,
-        C.COUNTY as `County`
+		C.COUNTYCD as `COUNTYCD`,
+        C.COUNTY as `COUNTY`
         FROM `COUNTIES` C
         WHERE
 		C.STATECD = statecode;

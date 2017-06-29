@@ -64,8 +64,8 @@
 		</div>	
 		<div class="row">
 		  <div class="col-md-4"><div class="well"><a href="#"><h1 class="text-center"><span class="glyphicon glyphicon-ok"></span> Vote</h1></a></div></div>
-		  <div class="col-md-4"><div class="well"><a href="user.php"><h1 class="text-center"><span class="glyphicon glyphicon-user"></span> Register</h1></a></div></div>
-		  <div class="col-md-4"><div class="well"><a href="#"><h1 class="text-center"><span class="glyphicon glyphicon-wrench"></span> My Account</h1></a></div></div>
+		  <div class="col-md-4"><div class="well"><a href="register.php"><h1 class="text-center"><span class="glyphicon glyphicon-user"></span> Register</h1></a></div></div>
+		  <div class="col-md-4"><div class="well"><a href="account.php"><h1 class="text-center"><span class="glyphicon glyphicon-wrench"></span> My Account</h1></a></div></div>
 		</div>       
 <div class="well well-sm">
 	<p class="text-center text-muted">What is VOICE? It is <strong>V</strong>ote-<strong>O</strong>nline <strong>I</strong>nteractive <strong>C</strong>ivic <strong>E</strong>nablement. It's a rather unwieldy acronym for an online voting system!</p>

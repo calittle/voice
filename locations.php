@@ -1,19 +1,19 @@
 <?php 
 	session_start();
 	include 'ac.php'; 
-	$thispage='addlocation';
+	$thispage='locations';
 	
-	/*
 	try {
-			
+			# See if there are any locations.
+					
 			$pdo 	= new PDO(DSN,DBUSER,DBPASS,array(PDO::ATTR_PERSISTENT => true));			
 
-			$stmt	= $pdo->prepare('CALL state_parties_list(?)');
-			$stmt -> bindParam(1,$state);
-			$parties = array();
+			$stmt	= $pdo->prepare('CALL registrant_get_addresses(?)');
+			$stmt -> bindParam(1,$_SESSION['rid']);
+			$locations = array();
 			if ($stmt->execute()){
 				while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
-					$parties[]=$row;
+					$locations[]=$row;
 				}
 			}else{
 				$errs = $stmt->errorInfo();	
@@ -23,24 +23,7 @@
 							error_log(print_r('Error '.$errs[1].': '.$errs[2], TRUE)); 								
 					}
 				}
-			}						
-			
-			$stmt	= $pdo->prepare('CALL get_affirmations(?)');
-			$stmt -> bindParam(1,$state);
-			$affirms = array();
-			if ($stmt->execute()){
-				while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
-					$affirms[]=$row;
-				}
-			}else{
-				$errs = $stmt->errorInfo();	
-				if (!empty($errs[1])) {						
-					switch ($errs[1]){
-						default:							
-							error_log(print_r('Error '.$errs[1].': '.$errs[2], TRUE)); 								
-					}
-				}
-			}
+			}											
 			
 		}catch (PDOException $e){
 			echo($e->getMessage());
@@ -50,7 +33,7 @@
 			$stmt = null;
 			$pdo = null;			
 		}	
-		*/	
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -92,29 +75,54 @@
 	<div class="container">
 	    <section>
 			<div class="alert alert-info alert-dismissible" role="alert" id="headerdiv">
-	            <h3>Add a Location</h3>
+	            <h3>Manage Locations</h3>
 				<p>You need to have a registered location. Optionally you can add a separate mailing address for temporary usage.</p>
 	        </div>	
 			<div class="well well-lg">
-				<form method="POST" action="registrant2_form.php">					
-						<p class="help-block">States require registrants to meet certain qualifications to register to vote. By ticking the checkbox below, you swear or affirm that you meet these qualifications. Your selected registration state<?=' ('.$state.')'?> states that registrants must:</p>
-						<?php /*
-	print '<ul>';
-	foreach ($affirms as $row){
-		print '<li vid="'.$row['AFFIRM_ID'].'">'.$row['AFFIRMATION'].'</li>';
-	}
-	print '</ul>';
-	*/
-	?>	
-					<div class="form-group form-check has-danger">
-				    	<label for="affirmInput" class="form-check-label">
-							<input type="checkbox" class="form-check-input" id="affirmInput" name="affirmInput" value="1">		
-							By ticking this checkbox, you swear or affirm you meet the above qualifications.
-						
-						</label>
+				<h3>Current Locations</h3>
+				<div class="table-responsive">
+				<table class="table table-hover">
+					<thead><tr><th>#</th><th>Actions</th><th>Location</th><th>County</th><th>Type</th></tr></thead>
+					<tbody>						
+<?php	
+			foreach ($locations as $row){
+?>		
+				<tr>
+					<th scope="row"><?=$row['Location ID']?></th>
+					<td><a href="#" aria-label="Edit Location"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Edit</a> <a href="#" onclick="confirm('Remove <?=$row['Location ID']?>');" aria-label="Delete Location"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Remove</a></td>
+					<td><?=$row['Address Line 1']?>, <?=$row['Address Line 2']?>, <?=$row['CSZ']?></td>
+					<td><?=$row['County']?></td>
+					<td><?=$row['Residence Type']?></td>
+				</tr>
+
+<?php			}
+?>
+</tbody>
+</table>
+</div>
+			</div>
+			<div class="well well-lg">
+				<h3>Add a Location</h3>
+				<form method="POST" action="locations_form.php">					
+					<p class="help-block">You need to add, at a minimum, a residence location. You can also add a mailing location if you need a temporary mailing address.</p>
+					<div class="form-group">
+				    	<label for="street1Input">Address Line 1</label>
+						<p class="help-block">Enter the first line of your address, e.g. street number and name.</p>
+						<div class="input-group">
+							<span class="input-group-addon"><span class="glyphicon glyphicon-exclamation-sign"></span></span>
+							<input type="text" class="form-control" id="street1Input" name="street1Input" required>
+						</div>
 					</div>
+					<div class="form-group">
+				    	<label for="street2Input">Address Line 2</label>
+						<p class="help-block">Enter the second line of your address, e.g. apartment number.</p>
+						<div class="input-group">
+							<span class="input-group-addon"><span class="glyphicon glyphicon-exclamation-sign"></span></span>
+							<input type="text" class="form-control" id="street2Input" name="street2Input" required>
+						</div>
+					</div
 					<hr/>
-					<button type="submit" class="btn btn-default">Register!</button>
+					<button type="submit" class="btn btn-default">Add Location!</button>
 				</form>
 			</div>  
 	    </section>
@@ -125,10 +133,6 @@
 			<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
 			<span class="sr-only">Error:</span>
 			<span id="errormessage"></span>
-		</div>
-	    <div class="progress">
-			<div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 75%;">
-			</div>
 		</div>
     </div>
     <nav id="pagefooter" class="navbar navbar-default navbar-fixed-bottom navbar-inverse">
@@ -146,7 +150,8 @@
 $(document).ready(function($) {	
 	$('form').validate({
 	    rules: {	        
-	        partyInput: {required:false}
+	        street1Input: {required:true},
+	        street2Input: {required:false}
 	    },
 	    highlight: function(element) {
 	        $(element).closest('.form-group').addClass('has-error');

@@ -1,6 +1,6 @@
 <?php
 	session_start();
-require_once 'config.php';
+	require_once 'config.php';
 if ($_SERVER['REQUEST_METHOD'] == 'GET') 
 {
 # use this for testing.
@@ -92,6 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET')
 				$res = $pdo->query('SELECT @newid AS USER_ID')->fetch(PDO::FETCH_ASSOC);			
 				$ret['success'] = true;
 				$ret['message'] = 'User created ' . $res['USER_ID'];
+				
 			}else{
 				$ret['success'] = false;
 				#uh-oh, report that something happens.
