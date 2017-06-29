@@ -51,7 +51,7 @@ $(document).ready(function($) {
 	$('#locationform').validate({
 	    rules: {	        
 	        street1Input: {required:true,minlength:5,maxlength:256},
-      	    street2Input: {required:false,minlength:5,maxlength:256},
+      	    street2Input: {required:false,minlength:1,maxlength:256},
       	    cityInput: {required:true,minlength:2,maxlength:256,lettersonly: true},
    	        postCodeInput: {required:true},
    	        stateResidenceInput:{required:true},
