@@ -2,9 +2,6 @@
 	session_start();
 	$thispage='account';
 	include 'ac.php'; 
-	
-	/*
-		*/
 	try {
 			$pdo 	= new PDO(DSN,DBUSER,DBPASS,array(PDO::ATTR_PERSISTENT => true));
 
@@ -25,9 +22,23 @@
 				}
 			}
 
-			# See if there are any locations.					
-						
-
+			$stmt	= $pdo->prepare('CALL registrant_get_districts(?)');
+			$stmt -> bindParam(1,$_SESSION['rid']);
+			$districts = array();
+			if ($stmt->execute()){
+				while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
+					$districts[]=$row;
+				}
+			}else{
+				$errs = $stmt->errorInfo();	
+				if (!empty($errs[1])) {						
+					switch ($errs[1]){
+						default:							
+							error_log(print_r('Error '.$errs[1].': '.$errs[2], TRUE)); 								
+					}
+				}
+			}
+							
 			$stmt	= $pdo->prepare('CALL registrant_get_addresses(?)');
 			$stmt -> bindParam(1,$_SESSION['rid']);
 			$locations = array();
@@ -43,7 +54,27 @@
 							error_log(print_r('Error '.$errs[1].': '.$errs[2], TRUE)); 								
 					}
 				}
+			}		
+			
+			$stmt	= $pdo->prepare('CALL user_roles(?,?)');
+
+			$stmt -> bindParam(1,$_SESSION['uid']);
+			$stmt -> bindParam(2,$_SESSION['username']);
+			$roles = array();
+			if ($stmt->execute()){
+				while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
+					$roles[]=$row;
+				}
+			}else{
+				$errs = $stmt->errorInfo();	
+				if (!empty($errs[1])) {						
+					switch ($errs[1]){
+						default:							
+							error_log(print_r('Error '.$errs[1].': '.$errs[2], TRUE)); 								
+					}
+				}
 			}											
+												
 			
 		}catch (PDOException $e){
 			echo($e->getMessage());
@@ -94,101 +125,171 @@
     </header>
 	<div class="container">
 	    <section>
-	    <ul class="nav nav-tabs">
-		  <li class="active"><a data-toggle="tab" href="#registrant">Registrant</a></li>
-		  <li><a data-toggle="tab" href="#locations">Residence</a></li>
-  		  <li><a data-toggle="tab" href="#debug">Debug</a></li>
-		</ul>
-		
-		<div class="tab-content">
-		  <div id="registrant" class="tab-pane fade in active">
-			<div class="well well-lg">
-				<h3>Registrant Data</h3>
-				<div class="table-responsive">
-					<table class="table table-hover">
-						<thead><tr><th>Name</th><th>DOB</th><th>Phone</th><th>State ID</th><th>Fed. ID</th><th>Gender</th><th>Ethnicity</th><th>Approval State</th><th>Affirmations</th><th>Party</th><th>State</th></tr></thead>
-						<tbody>						
-				<?php	
-							foreach ($registrant as $row){
-				?>		
-								<tr>
-									<th scope="row"><?=$row['Name']?></th>
-									<td><?=$row['Date of Birth']?></td>
-									<td><?=$row['Phone']?></td>
-									<td><?=$row['State ID']?></td>
-									<td><?='xxx-xx-'.$row['Federal ID']?></td>
-									<td><?=$row['Gender']?></td>
-									<td><?=$row['Ethnicity']?></td>
-									<td><?=$row['Approval State']==1?'Approved':$row['Approval State']==2?'Rejected':'Pending Approval'?></td>
-									<td><?=$row['Affirmation State']==1?'Affirmed':'Not Affirmed'?></td>
-									<td><?=$row['Party Affiliation']?></td>
-									<td><?=$row['State']?></td>									
-								</tr>
-				
-				<?php			}
-				?>
-						</tbody>
-					</table>
+		    <ul class="nav nav-tabs">
+			  <li class="active"><a data-toggle="tab" href="#user">User</a></li>		    
+			  <li><a data-toggle="tab" href="#registrant">Registrant</a></li>
+			  <li><a data-toggle="tab" href="#locations">Residence</a></li>
+	  		  <li><a data-toggle="tab" href="#districts">Districts</a></li>
+			  <li><a data-toggle="tab" href="#voting">Voting</a></li>  		  
+	  		  <li><a data-toggle="tab" href="#debug">Debug</a></li>
+			</ul>
+			<div class="tab-content">
+				<div id="user" class="tab-pane fade in active">
+					<div class="well well-lg">
+						<ul>
+						<?php 
+							echo '<li>User Name: '.$_SESSION['username'].'</li>'
+							
+						?>
+						</ul>
+					</div>
+					<div class="well well-lg">
+						<h3>Roles</h3>
+							<?php 
+							if (count($roles)<1){
+								echo "<p>There doesn't seem to be anything here.</p>";
+							}else{
+								echo '<ul>';
+								foreach ($roles as $row){
+									echo '<li>'.$row['ROLE'].'</li>';
+								}
+								echo '</ul>';
+							}
+								?>
+					</div>
+					<div class="well well-lg">
+						<h3>Change Email/Password</h3>
+						<form name="passwordform" id="passwordform" method="post" action="">
+						<div class="form-group">
+							<label for="emailInput">Email address</label>
+							<p class="help-block">Enter your email address. This will be used to recover your password only.</p>
+							<div class="input-group">
+								<span class="input-group-addon"><span class="glyphicon glyphicon-envelope"></span></span>
+								<input type="email" class="form-control" name="emailInput" id="emailInput" required="true">				    
+							</div>
+						</div>
+						  <div class="form-group">
+						    <label for="passwordInput">Password</label>
+						    <p class="help-block">Choose a sufficiently strong password, e.g. 8+ characters, mixed case, with alphanumerics and special characters.</p>
+							<div class="input-group">
+								<span class="input-group-addon"><span class="glyphicon glyphicon-lock"></span></span>
+								<input type="password" class="form-control" name="passwordInput" id="passwordInput" required="true">
+							</div>
+							<span class="label label-default" id="passstrength" name="passstrength"></span>
+						  </div>						  
+						  <button type="submit" class="btn btn-default">Update</button>						  
+						</form>
+					</div>					
+				</div>				
+				<div id="voting" class="tab-pane fade in">
+					<div class="well well-lg">
+						<h3>Voting</h3>
+						TBD
+					</div>
 				</div>
-			</div>
-		  </div>
-  		  <div id="debug" class="tab-pane fade">
-			<div class="well well-lg">
-				<h3>Session Variables</h3>
-		    <?=print_r($_SESSION)?>
-			</div>
-  		  </div>
-
-		  <div id="locations" class="tab-pane fade">
-			<div class="well well-lg">
-				<h3>Current Locations</h3>
-				<p>You need to have at least one registered location. Optionally you can add a separate mailing address for temporary usage.</p>
-				<div class="table-responsive">
-					<table class="table table-hover">
-						<thead><tr><th>#</th><th>Actions</th><th>Location</th><th>County</th><th>Type</th></tr></thead>
-						<tbody>						
-				<?php	
-							foreach ($locations as $row){
-				?>		
-								<tr>
-									<th scope="row"><?=$row['Location ID']?></th>
-									<td><a href="#" aria-label="Edit Location"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Edit</a> <a href="#" onclick="confirm('Remove <?=$row['Location ID']?>');" aria-label="Delete Location"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Remove</a></td>
-									<td><?=$row['Address Line 1']?>, <?=$row['Address Line 2']?>, <?=$row['CSZ']?></td>
-									<td><?=$row['County']?></td>
-									<td><?=$row['Residence Type']?></td>
-								</tr>
 				
-				<?php			}
-				?>
-						</tbody>
-					</table>
+				<div id="districts" class="tab-pane fade in ">
+					<div class="well well-lg">
+						<h3>Districts</h3>
+						<ul>
+							<?php foreach ($districts as $row){
+								echo '<li>'.$row['DISTRICT'].'</li>';
+							}?>
+						</ul>
+					</div>
 				</div>
-			</div>
-			<div class="well well-lg">
-				<h3>Add a Location</h3>
-				<form method="POST" action="locations_form.php">					
-					<p class="help-block">You need to add, at a minimum, a residence location. You can also add a mailing location if you need a temporary mailing address.</p>
-					<div class="form-group">
-				    	<label for="street1Input">Address Line 1</label>
-						<p class="help-block">Enter the first line of your address, e.g. street number and name.</p>
-						<div class="input-group">
-							<span class="input-group-addon"><span class="glyphicon glyphicon-exclamation-sign"></span></span>
-							<input type="text" class="form-control" id="street1Input" name="street1Input" required>
+				
+				<div id="registrant" class="tab-pane fade in">
+					<div class="well well-lg">
+						<h3>Registrant Data</h3>
+						<div class="table-responsive">
+							<table class="table table-hover">
+								<thead><tr><th>Name</th><th>DOB</th><th>Phone</th><th>State ID</th><th>Fed. ID</th><th>Gender</th><th>Ethnicity</th><th>Approval State</th><th>Affirmations</th><th>Party</th><th>State</th></tr></thead>
+								<tbody>						
+						<?php	
+									foreach ($registrant as $row){
+						?>		
+										<tr>
+											<th scope="row"><?=$row['Name']?></th>
+											<td><?=$row['Date of Birth']?></td>
+											<td><?=$row['Phone']?></td>
+											<td><?=$row['State ID']?></td>
+											<td><?='xxx-xx-'.$row['Federal ID']?></td>
+											<td><?=$row['Gender']?></td>
+											<td><?=$row['Ethnicity']?></td>
+											<td><?=$row['Approval State']==1?'Approved':$row['Approval State']==2?'Rejected':'Pending Approval'?></td>
+											<td><?=$row['Affirmation State']==1?'Affirmed':'Not Affirmed'?></td>
+											<td><?=$row['Party Affiliation']?></td>
+											<td><?=$row['State']?></td>									
+										</tr>
+						
+						<?php			}
+						?>
+								</tbody>
+							</table>
 						</div>
 					</div>
-					<div class="form-group">
-				    	<label for="street2Input">Address Line 2</label>
-						<p class="help-block">Enter the second line of your address, e.g. apartment number.</p>
-						<div class="input-group">
-							<span class="input-group-addon"><span class="glyphicon glyphicon-exclamation-sign"></span></span>
-							<input type="text" class="form-control" id="street2Input" name="street2Input" required>
+				</div>
+				
+				<div id="debug" class="tab-pane fade">
+					<div class="well well-lg">
+						<h3>Session Variables</h3>
+						<?=print_r($_SESSION)?>
+					</div>
+				</div>
+				
+				<div id="locations" class="tab-pane fade">
+					<div class="well well-lg">
+						<h3>Current Locations</h3>
+						<p>You need to have at least one registered location. Optionally you can add a separate mailing address for temporary usage.</p>
+						<div class="table-responsive">
+							<table class="table table-hover">
+								<thead><tr><th>#</th><th>Actions</th><th>Location</th><th>County</th><th>Type</th></tr></thead>
+								<tbody>						
+						<?php	
+									foreach ($locations as $row){
+						?>		
+										<tr>
+											<th scope="row"><?=$row['Location ID']?></th>
+											<td><a href="#" aria-label="Edit Location"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Edit</a> <a href="#" onclick="confirm('Remove <?=$row['Location ID']?>');" aria-label="Delete Location"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Remove</a></td>
+											<td><?=$row['Address Line 1']?>, <?=$row['Address Line 2']?>, <?=$row['CSZ']?></td>
+											<td><?=$row['County']?></td>
+											<td><?=$row['Residence Type']?></td>
+										</tr>
+						
+						<?php			}
+						?>
+								</tbody>
+							</table>
 						</div>
-					</div
-					<hr/>
-					<button type="submit" class="btn btn-default">Add Location!</button>
-				</form>
-			</div>  
-	    </section>
+					</div>
+					<div class="well well-lg">
+						<h3>Add a Location</h3>
+						<form name='locationform' id='locationform' method="POST" action="locations_form.php">					
+							<p class="help-block">You need to add, at a minimum, a residence location. You can also add a mailing location if you need a temporary mailing address.</p>
+							<div class="form-group">
+						    	<label for="street1Input">Address Line 1</label>
+								<p class="help-block">Enter the first line of your address, e.g. street number and name.</p>
+								<div class="input-group">
+									<span class="input-group-addon"><span class="glyphicon glyphicon-exclamation-sign"></span></span>
+									<input type="text" class="form-control" id="street1Input" name="street1Input" required>
+								</div>
+							</div>
+							<div class="form-group">
+						    	<label for="street2Input">Address Line 2</label>
+								<p class="help-block">Enter the second line of your address, e.g. apartment number.</p>
+								<div class="input-group">
+									<span class="input-group-addon"><span class="glyphicon glyphicon-exclamation-sign"></span></span>
+									<input type="text" class="form-control" id="street2Input" name="street2Input" required>
+								</div>
+							</div
+							<hr/>
+							<button type="submit" class="btn btn-default">Add Location!</button>
+						</form>
+					</div>  
+				</div>
+			</div>
+		</section>
 	    <div class="alert alert-danger alert-dismissible" role="alert" id="errormessagediv" hidden>
 		    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
 				<span aria-hidden="true">&times;</span>
@@ -196,24 +297,79 @@
 			<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
 			<span class="sr-only">Error:</span>
 			<span id="errormessage"></span>
-		</div>
-    </div>
-		  </div>
-		</div>    
+	    </div>
+	    <div class="alert alert-success alert-dismissible" role="alert" id="successmessagediv" hidden>
+		    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			</button>
+			<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+			<span class="sr-only">Success:</span>
+			<span id="successmessage"></span>
+	    </div>
 		<nav id="pagefooter" class="navbar navbar-default navbar-fixed-bottom navbar-inverse">
-        <div class="container">
-            <div class="col-xs-12 text-center navbar-text">
-				<p class="text-muted">Copyright &copy; 2017 <a href="mailto:little_charles1@columbusstate.edu">Charles Little</a>, All rights reserved.</p>
-            </div>
-        </div>
-    </nav>
+	        <div class="container">
+	            <div class="col-xs-12 text-center navbar-text">
+					<p class="text-muted">Copyright &copy; 2017 <a href="mailto:little_charles1@columbusstate.edu">Charles Little</a>, All rights reserved.</p>
+	            </div>
+	        </div>
+		</nav>
+    </div>
     <script src="js/jquery.min.js"></script>
     <script src="js/jquery.validate.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
 	
 <script>
 $(document).ready(function($) {	
-	$('form').validate({
+	$('#passwordInput').keyup(function(e) {
+	     var strongRegex = new RegExp("^(?=.{8,})(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*\\W).*$", "g");
+	     var mediumRegex = new RegExp("^(?=.{7,})(((?=.*[A-Z])(?=.*[a-z]))|((?=.*[A-Z])(?=.*[0-9]))|((?=.*[a-z])(?=.*[0-9]))).*$", "g");
+	     var enoughRegex = new RegExp("(?=.{6,}).*", "g");
+	     if (false == enoughRegex.test($(this).val())) {
+	             $('#passstrength').html('Weak password. Please enter more characters.');
+	     } else if (strongRegex.test($(this).val())) {
+	             $('#passstrength').removeClass().addClass('label label-success');
+	             $('#passstrength').html('Good password.');
+	     } else if (mediumRegex.test($(this).val())) {
+	             $('#passstrength').removeClass().addClass('label label-warning');
+	             $('#passstrength').html('Ok password. Try mixed case and special characters.');
+	     } else {
+	             $('#passstrength').removeClass().addClass('label label-danger');
+	             $('#passstrength').html('Weak password. Add special characters, mixed case, and numbers.');
+	     }
+	     return true;
+	});
+	
+	$('#passwordform').validate({
+	    rules: {
+	        emailInput: {
+	            minlength: 5,
+	            maxlength: 256,
+	            required: false
+	        },
+	        passwordInput: {
+	            minlength: 8,
+	            maxlength: 64,
+	            required: false
+	        }
+	    },
+	    highlight: function(element) {
+	        $(element).closest('.form-group').addClass('has-error');
+	    },
+	    unhighlight: function(element) {
+	        $(element).closest('.form-group').removeClass('has-error');
+	    },
+	    errorElement: 'span',
+	    errorClass: 'help-block',
+	    errorPlacement: function(error, element) {
+	        if(element.parent('.input-group').length) {
+	            error.insertAfter(element.parent());
+	        } else {
+	            error.insertAfter(element);
+	        }
+	    }
+	}); 
+
+	$('#locationform').validate({
 	    rules: {	        
 	        street1Input: {required:true},
 	        street2Input: {required:false}
@@ -235,7 +391,50 @@ $(document).ready(function($) {
 	    }
 	});
 	var request;
-	$('form').submit(function(event){
+	$('#passwordform').submit(function(event){
+		if ($('#passwordform').valid()!=true){return false;}	
+		event.preventDefault();
+		if (request){request.abort();}
+		var $form = $(this);
+		var $inputs = $form.find("input, button");
+		var serialdata = $form.serialize();
+		$inputs.prop("disabled",true);
+		request = $.ajax({
+			url: "ajx_user.php",
+			type: "post",
+			data: serialdata,
+			success: function(data){
+				var o;
+				var sucksess=false;
+				var msg='';
+				try{
+					o = JSON.parse(data);
+					sucksess = o['success'];
+					msg = o['msg'];
+				}catch(err){
+					msg = err;
+				}
+				if (sucksess==true){					
+					console.log('User updated: ' + data);
+					$('#successmessagediv').fadeIn(250);
+					$('#successmessagediv').fadeOut(5000);
+					$('#successmessage').html("User successfully updated.");
+					$inputs.prop("disabled",false)
+				}
+				else{
+					console.log('User update failure. Err=' + msg + '\n Data returned was:' + data);
+					this.error(this.xhr,'Unable to update user: ',msg);
+				}
+			},
+			error: function(jqXHR, textStatus, errorThrown){
+				$('#errormessage').html("There was a problem processing your request and System administrators have been notified. (" + textStatus + errorThrown + ")");
+				$('#errormessagediv').show();		
+				$inputs.prop("disabled",false)
+			}
+		});
+	});
+	$('#locationform').submit(function(event){
+		if ($('#locationform').valid()!=true){return false;}	
 		event.preventDefault();
 		if (request){request.abort();}
 		var $form = $(this);

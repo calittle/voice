@@ -231,10 +231,7 @@ $(document).ready(function($) {
 					
 					populate_parties(this);
 					populate_affirmations(this);
-					
-					$(".progress-bar").css("width", "50%");
-					$(".progress-bar").css("aria-valuenow","50");
-					$("#progressbarvalue").html("50%");					
+					setProgress('50');
 					$('#header_step_2').fadeOut(1500);
 					$('#registrant_div').fadeOut(1500);
 					$('#registrant_success').fadeIn(1500);
@@ -273,9 +270,7 @@ $(document).ready(function($) {
 				var didItWork = o['success'];
 				if (didItWork == true){
 					console.log('User logged in: ' + data);
-					$(".progress-bar").css("width", "25%");
-					$(".progress-bar").css("aria-valuenow","25");
-					$("#progressbarvalue").html("25%");					
+					setProgress('25');
 					$('#header_login').fadeOut(1500);
 					$('#logindiv').fadeOut(1500);
 					$('#loginsuccess').fadeIn(1500);
@@ -345,9 +340,7 @@ $(document).ready(function($) {
 				var didItWork = o['success'];
 				if (didItWork==true){
 					console.log('Saved affirmations : ' + data);
-					$(".progress-bar").css("width", "75%");
-					$(".progress-bar").css("aria-valuenow","75");
-					$("#progressbarvalue").html("75%");					
+					setProgress('75');
 					$('#header_step_3').fadeOut(1500);
 					$('#registrant2_div').fadeOut(1500);
 					$('#registrant_success').fadeIn(1500);
@@ -390,10 +383,8 @@ $(document).ready(function($) {
 					o = JSON.parse(data);
 					didItWork = o['success'];
 					if (didItWork==true){
-						console.log('Saved affirmations : ' + data);
-						$(".progress-bar").css("width", "100%");
-						$(".progress-bar").css("aria-valuenow","100");
-						$("#progressbarvalue").html("100%");					
+						console.log('Saved location : ' + data);
+						setProgress('100');				
 						$('#header_step_3').fadeOut(1500);
 						$('#registrant2_div').fadeOut(1500);
 						$('#residence_success').fadeIn(1500);
@@ -431,9 +422,7 @@ function login_user(serialdata){
 				var didItWork = o['success'];
 				if (didItWork == true){
 					console.log('User logged in: ' + data);
-					$(".progress-bar").css("width", "25%");
-					$(".progress-bar").css("aria-valuenow","25");
-					$("#progressbarvalue").html("25%");					
+					setProgress('25');			
 					$('#header_step_1').fadeOut(1500);
 					$('#create_user_div').fadeOut(1500);
 					$('#create_user_success').fadeIn(1500);
@@ -493,11 +482,48 @@ function populate_counties(o){
 		}
 	});
 }	
+function setProgress(val){
+	$(".progress-bar").css("width", val+"%");
+	$(".progress-bar").css("aria-valuenow",val);
+	$("#progressbarvalue").html(val+"%");			
+}
 function showlogin(){
 	$('#header_step_1').fadeOut(450);
 	$('#header_login').fadeIn(450);
 	$('#create_user_div').fadeOut(500);
 	$('#logindiv').fadeIn(50);
+}
+function setHeader(e){
+//1 user ,2 registrant ,4 location
+//possible 
+	//alert('setHeader:'+e);
+	switch (e){
+		case 0://none
+			$('#header_step_1').hide();
+			$('#alreadyregistered').show();
+			setProgress('100');
+			break;
+		case 1:
+		case 3:
+		case 5:
+		case 7:
+			$('#header_step_1').show();
+			setProgress('5');
+			break;
+		case 2:
+		case 6:
+			$('#header_step_1').hide();
+			$('#header_step_2').show();
+			setProgress('25');
+			break;
+		case 4://location	
+			populate_counties();		
+			$('#header_step_1').hide();
+			$('#header_step_4').show();
+			$('#residence_div').show();
+			setProgress('50');
+			break;
+	}
 }
 function populate_affirmations(o){
 	//alert('populate_affirmations()');

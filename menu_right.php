@@ -5,6 +5,6 @@
             echo('<li><a href="logout.php"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>');
          }
         ?>
-  <li><a href="#"><span class="glyphicon glyphicon-lock"></span> Admin</a></li>
+  <li><a href="admin.php"><span class="glyphicon glyphicon-lock"></span> Admin</a></li>
 </ul>
 						

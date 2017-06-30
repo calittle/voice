@@ -4,7 +4,7 @@ include 'ac.php';
 	
 if ($_SERVER['REQUEST_METHOD'] == 'POST') 
 {
-	$_SESSION['regdata'] = array_merge($_SESSION['regdata'],$_POST);
+	$_SESSION['regdata'] = isset($_SESSION['regdata']) ? array_merge($_SESSION['regdata'],$_POST) : $_POST;
 	$regdata = $_SESSION['regdata'];
 	# add location.
 	try {

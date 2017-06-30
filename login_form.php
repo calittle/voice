@@ -57,6 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET')
 							$stmt->closeCursor();
 							$_SESSION['lid'] = empty($row[0]['LOCATION_ID'])?null:$row[0]['LOCATION_ID'];
 							$_SESSION['rid'] = empty($row[0]['REGISTRANT_ID'])?null:$row[0]['REGISTRANT_ID'];						
+							$_SESSION['statecd'] = empty($row[0]['STATECD'])?null:$row[0]['STATECD'];						 
 						}else{
 							$ret['success'] = false;
 							$ret['message'] = 'User NOT logged in (1).';

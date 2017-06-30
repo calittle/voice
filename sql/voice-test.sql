@@ -5,7 +5,7 @@
 	PURPOSE:		Testing scripts for DML
 */
 SET autocommit=0;
-USE vorem;
+USE VOICE;
 SET @newUserid = 0;
 SET @regid = 0;
 SET @districtid = 0;
@@ -51,8 +51,13 @@ CALL locations_add('123 Main Streeet','Apt # 2B','Marietta','30062','Cobb','GA',
 -- Approve the registrant. 
 CALL registrant_set_approved(@regid);
 
--- Remove a location from a registrant (should unset approval)
-CALL locations_delete(2,2);
+-- Check user roles (should have 'Voter')
+CALL user_has_voter(@newUserid,null);
+CALL user_roles(@newUserid,null);
+
+-- Remove a location from a registrant (should unset approval, and unset voter role.)
+CALL locations_delete(@regid,@locid);
+CALL user_has_voter(@newUserid,null);
 
 -- add sample election
 CALL elections_add('TestElection','A very long description of the election.','2017-06-22 07:00:00', '2017-06-22 19:00:00',@electionid);

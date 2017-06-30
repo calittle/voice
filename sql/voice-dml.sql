@@ -266,27 +266,31 @@ BEGIN
 	IF regid >= 0 THEN
 		SELECT 
 			R.REGISTRANT_ID,
-			R.USER_ID
+			R.USER_ID,
+            R.STATECD
 			FROM REGISTRANTS R
 			INNER JOIN USERS U ON U.USER_ID = R.USER_ID
 			WHERE R.REGISTRANT_ID = regid
 		UNION ALL
 		SELECT 
 			RL.LOCATION_ID,
-			RL.REGISTRANT_ID
+			RL.REGISTRANT_ID,
+            'EMPTY' as 'EMPTY'
 			FROM REG_LOC RL        
 			WHERE RL.IS_RESIDENCE = 1 AND RL.REGISTRANT_ID = regid;
 	ELSEIF uid >= 0 THEN
 		SELECT 
 			R.REGISTRANT_ID,
-			R.USER_ID
+			R.USER_ID,
+            R.STATECD
 			FROM REGISTRANTS R
 			INNER JOIN USERS U ON U.USER_ID = R.USER_ID
 			WHERE R.USER_ID = uid
 		UNION ALL
 		SELECT 
 			RL.LOCATION_ID,
-			RL.REGISTRANT_ID as 'IGNORE'
+			RL.REGISTRANT_ID as 'IGNORE',
+            'EMPTY' as 'EMPTY'
 			FROM REG_LOC RL        
 			WHERE RL.IS_RESIDENCE = 1 AND RL.REGISTRANT_ID = regid;    
     END IF;
@@ -429,9 +433,11 @@ CREATE PROCEDURE `VOICE`.`locations_get` (
 )
 COMMENT 'Use wrapper functions instead of calling this directly.'
 BEGIN
-	IF regid = NULL THEN
+
+
+	IF regid IS NULL THEN
 		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Must provide Registrant ID value.';
-	ELSEIF bmail != null THEN
+	ELSEIF !(bmail IS null) THEN
 		SELECT
 			L.`LOCATION_ID` as 'Location ID',
 			L.`STREET_NAME1` as 'Address Line 1',
@@ -442,7 +448,7 @@ BEGIN
 		FROM LOCATIONS L 
         INNER JOIN REG_LOC RL ON RL.LOCATION_ID = L.LOCATION_ID
         WHERE RL.REGISTRANT_ID = regid and RL.IS_MAILING=1;
-    ELSEIF bres != null THEN
+    ELSEIF !(bres is null) THEN
 		SELECT 
 			L.`LOCATION_ID` as 'Location ID',
 			L.`STREET_NAME1` as 'Address Line 1',
@@ -453,7 +459,7 @@ BEGIN
 		FROM LOCATIONS L 
         INNER JOIN REG_LOC RL ON RL.LOCATION_ID = L.LOCATION_ID
         WHERE RL.REGISTRANT_ID = regid and RL.IS_RESIDENCE = 1;
-    ELSEIF locid != null  THEN
+    ELSEIF !(locid is null) THEN
 		SELECT 		
 			L.`STREET_NAME1` as 'Address Line 1',
             L.`STREET_NAME2` as 'Address Line 2',
@@ -651,35 +657,100 @@ BEGIN
 	UPDATE `USERS` SET `EMAIL`=email WHERE `USERS`.`USER_ID`=userid;
     COMMIT;
 END $$
-DROP PROCEDURE IF EXISTS `VOICE`.`users_add_role` $$
-CREATE PROCEDURE `VOICE`.`users_add_role` (IN userid bigint(20), IN roleid bigint (20), IN username varchar(256), IN role varchar(64))
+DELIMITER ; $$
+
+DELIMITER $$
+DROP PROCEDURE IF EXISTS `VOICE`.`users_add_role2` $$
+CREATE PROCEDURE `VOICE`.`users_add_role2` (IN userid bigint(20), IN roleid bigint (20), IN username varchar(256), IN role varchar(64))
 COMMENT 'Can use combination of ID or name in either user or role, IDs being preferred'
 BEGIN
-	IF (userid != NULL and roleid != NULL) THEN
-        INSERT INTO `USERS_ROLES` (`USER_ID`,`ROLE_ID`) VALUES (userid,roleid);
-	ELSEIF (username != NULL and role != NULL) THEN
-    	INSERT INTO `USERS_ROLES` (`USER_ID`,`ROLE_ID`) VALUES ((SELECT `USER_ID` FROM USERS WHERE `USERS`.`USER_NAME` = username),(SELECT `ROLE_ID` FROM `ROLES` WHERE `ROLES`.`ROLE_DESCRIPTION` = role));
-	ELSEIF (userid != NULL and role != NULL) THEN
-    	INSERT INTO `USERS_ROLES` (`USER_ID`,`ROLE_ID`) VALUES (userid,(SELECT `ROLE_ID` FROM `ROLES` WHERE `ROLES`.`ROLE_DESCRIPTION` = role));
-	ELSEIF (username != NULL and roleid !=NULL) THEN
-    	INSERT INTO `USERS_ROLES` (`USER_ID`,`ROLE_ID`) VALUES ((SELECT `USER_ID` FROM USERS WHERE `USERS`.`USER_NAME` = username),roleid);
+	IF (!(NULLIF(userid, '') IS NULL) and !(NULLIF(roleid, '') IS NULL)) THEN
+        INSERT INTO `USER_ROLES` (`USER_ID`,`ROLE_ID`) VALUES (userid,roleid);
+	ELSEIF (!(NULLIF(username, '') IS NULL) and !(NULLIF(role, '') IS NULL)) THEN
+    	INSERT INTO `USER_ROLES` (`USER_ID`,`ROLE_ID`) VALUES ((SELECT `USER_ID` FROM USERS WHERE `USERS`.`USER_NAME` = username),(SELECT `ROLE_ID` FROM `ROLES` WHERE `ROLES`.`ROLE_DESCRIPTION` = role));
+	ELSEIF (!(NULLIF(userid, '') IS NULL) and !(NULLIF(role, '') IS NULL)) THEN
+    	INSERT INTO `USER_ROLES` (`USER_ID`,`ROLE_ID`) VALUES (userid,(SELECT `ROLE_ID` FROM `ROLES` WHERE `ROLES`.`ROLE_DESCRIPTION` = role));
+	ELSEIF (!(NULLIF(username, '') IS NULL) and !(NULLIF(roleid, '') IS NULL)) THEN
+    	INSERT INTO `USER_ROLES` (`USER_ID`,`ROLE_ID`) VALUES ((SELECT `USER_ID` FROM USERS WHERE `USERS`.`USER_NAME` = username),roleid);
     END IF;
     COMMIT;
 END $$
+DELIMITER ; $$
 
+DELIMITER $$
+DROP PROCEDURE IF EXISTS `VOICE`.`user_roles` $$
+CREATE PROCEDURE `VOICE`.`user_roles` (IN userid bigint(20), IN username varchar(256))
+COMMENT 'Get a list of roles for a user'
+BEGIN
+	IF (!(NULLIF(userid, '') IS NULL)) THEN
+		SELECT R.ROLE_DESCRIPTION as 'ROLE' FROM ROLES R INNER JOIN USER_ROLES UR ON UR.ROLE_ID = R.ROLE_ID WHERE UR.USER_ID = userid;
+	ELSEIF (!(NULLIF(username, '') IS NULL)) THEN
+        SELECT R.ROLE_DESCRIPTION as 'ROLE' FROM ROLES R INNER JOIN USER_ROLES UR ON UR.ROLE_ID = R.ROLE_ID WHERE UR.USER_ID = (SELECT `USER_ID` FROM USERS WHERE `USERS`.`USER_NAME` = username);
+	END IF;        	
+END $$
+DELIMITER ; $$
+
+
+DELIMITER $$
+DROP PROCEDURE IF EXISTS `VOICE`.`user_has_role` $$
+CREATE PROCEDURE `VOICE`.`user_has_role` (IN userid bigint(20), IN roleid bigint (20),IN username varchar(256), IN role varchar(64))
+COMMENT 'Use combination of UserID/RoleID UserName/RoleName to determine if user has a given role. Returns 0|1'
+BEGIN
+	IF (!(NULLIF(userid, '') IS NULL) and !(NULLIF(roleid, '') IS NULL)) THEN
+		SELECT COUNT(*) as 'USER_HAS_ROLE' FROM `USER_ROLES` WHERE USER_ID = userid and ROLE_ID = roleid;
+	ELSEIF (!(NULLIF(userid, '') IS NULL) and !(NULLIF(role, '') IS NULL)) THEN
+		SELECT COUNT(*) as 'USER_HAS_ROLE'  FROM `USER_ROLES` WHERE USER_ID = userid and ROLE_ID = (SELECT `ROLE_ID` FROM `ROLES` WHERE `ROLES`.`ROLE_DESCRIPTION` = role);
+	ELSEIF (!(NULLIF(username, '') IS NULL) and !(NULLIF(roleid, '') IS NULL)) THEN
+        SELECT COUNT(*) as 'USER_HAS_ROLE'  FROM `USER_ROLES` WHERE USER_ID = (SELECT `USER_ID` FROM USERS WHERE `USERS`.`USER_NAME` = username) AND ROLE_ID = roleid;
+	ELSEIF (!(NULLIF(username, '') IS NULL) and !(NULLIF(role, '') IS NULL)) THEN
+		SELECT COUNT(*) as 'USER_HAS_ROLE'  FROM `USER_ROLES` WHERE USER_ID = (SELECT `USER_ID` FROM USERS WHERE `USERS`.`USER_NAME` = username) AND ROLE_ID = (SELECT `ROLE_ID` FROM `ROLES` WHERE `ROLES`.`ROLE_DESCRIPTION` = role);
+	ELSE
+		SELECT userid as 'USER_ID',roleid as 'ROLE_ID',username as 'USERNAME',role as 'ROLENAME','-1' as 'USER_HAS_ROLE';
+    END IF;        	
+END $$
+DELIMITER ; $$
+
+DELIMITER $$
+DROP PROCEDURE IF EXISTS `VOICE`.`user_has_voter` $$
+CREATE PROCEDURE `VOICE`.`user_has_voter` (IN userid bigint(20), IN username varchar(256))
+COMMENT 'Returns 1 if user is voter, otherwise returns 0.'
+BEGIN
+IF (!(NULLIF(userid, '') IS NULL)) THEN
+	SELECT COUNT(*) as 'USER_HAS_VOTER' FROM `ROLES` R INNER JOIN `USER_ROLES` UR on R.ROLE_ID = UR.ROLE_ID WHERE UR.USER_ID = userid and R.ROLE_DESCRIPTION = 'Voters';
+ELSEIF (!(NULLIF(username, '') IS NULL)) THEN
+	SELECT COUNT(*) as 'USER_HAS_VOTER' FROM `ROLES` R INNER JOIN `USER_ROLES` UR on R.ROLE_ID = UR.ROLE_ID WHERE UR.USER_ID = (SELECT `USER_ID` FROM USERS WHERE `USERS`.`USER_NAME` = username) and R.ROLE_DESCRIPTION = 'Voters';
+END IF;
+END $$
+DELIMITER ; $$
+
+DELIMITER $$
+DROP PROCEDURE IF EXISTS `VOICE`.`user_has_admin` $$
+CREATE PROCEDURE `VOICE`.`user_has_admin` (IN userid bigint(20), IN username varchar(256))
+COMMENT 'Returns 1 if user is admin, otherwise returns 0.'
+BEGIN
+IF (!(NULLIF(userid, '') IS NULL)) THEN
+	SELECT COUNT(*) as 'USER_HAS_ADMIN' FROM `ROLES` R INNER JOIN `USER_ROLES` UR on R.ROLE_ID = UR.ROLE_ID WHERE UR.USER_ID = userid and R.ROLE_DESCRIPTION = 'Administrators';
+ELSEIF (!(NULLIF(username, '') IS NULL)) THEN
+	SELECT COUNT(*) as 'USER_HAS_ADMIN' FROM `ROLES` R INNER JOIN `USER_ROLES` UR on R.ROLE_ID = UR.ROLE_ID WHERE UR.USER_ID = (SELECT `USER_ID` FROM USERS WHERE `USERS`.`USER_NAME` = username) and R.ROLE_DESCRIPTION = 'Administrators';
+END IF;
+END $$
+DELIMITER ; $$
+
+DELIMITER $$
 DROP PROCEDURE IF EXISTS `VOICE`.`users_add_role` $$
 CREATE PROCEDURE `VOICE`.`users_add_role` (IN userid bigint(20), IN roleid bigint (20))
 BEGIN
-	INSERT INTO `USERS_ROLES` (`USER_ID`,`ROLE_ID`) VALUES (userid,roleid);
+	INSERT INTO `USER_ROLES` (`USER_ID`,`ROLE_ID`) VALUES (userid,roleid);
     COMMIT;
 END $$
-
+DELIMITER ; $$
+DELIMITER $$
 DROP PROCEDURE IF EXISTS `VOICE`.`users_delete` $$
 CREATE PROCEDURE `VOICE`.`users_delete` (IN username varchar(256),IN userid bigint(20))
 BEGIN
-	IF username != NULL THEN
+	IF !(NULLIF(username, '') IS NULL) THEN
 		DELETE FROM `USERS` WHERE `USERS`.`USER_NAME` = username;
-	ELSEIF userid != NULL THEN
+	ELSEIF !(NULLIF(userid, '') IS NULL) THEN
 		DELETE FROM `USERS` WHERE `USERS`.`USER_ID` = userid;
 	END IF;
     COMMIT;
@@ -1018,4 +1089,19 @@ BEGIN
 END $$
 
 delimiter ; $$
+
+DELIMITER $$
+CREATE 	TRIGGER `registrants_after_update` AFTER UPDATE ON `REGISTRANTS`
+FOR EACH ROW BEGIN		
+	IF NEW.APPROVAL_STATE = 1 THEN			
+		-- approved
+		INSERT INTO `USER_ROLES` (`USER_ID`,`ROLE_ID`) VALUES (NEW.USER_ID,(SELECT ROLE_ID FROM ROLES WHERE ROLE_DESCRIPTION = 'Voters'));            
+	ELSE 
+		-- not approved
+		DELETE FROM `USER_ROLES` WHERE USER_ID = NEW.USER_ID and ROLE_ID = (SELECT ROLE_ID FROM ROLES WHERE ROLE_DESCRIPTION = 'Voters');            
+	END IF;
+END $$
+DELIMITER ; $$
+
+
 COMMIT;

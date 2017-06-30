@@ -32,6 +32,7 @@
 					</div>
 					<div class="form-group">
 				    	<label for="postCodeInput">ZIP Code</label>
+				    	<p class="help-block">Postal code, +4 optional</p>
 						<div class="input-group">
 							<span class="input-group-addon"><span class="glyphicon glyphicon-exclamation-sign"></span></span>
 							<input type="text" class="form-control" id="postCodeInput" name="postCodeInput" required>
@@ -50,7 +51,7 @@
 				    	<label for="stateResidenceInput">State/Country</label>
 						<div class="input-group">
 							<span class="input-group-addon"><span class="glyphicon glyphicon-exclamation-sign"></span></span>
-							<input type="text" class="form-control" id="stateResidenceInput" name="stateResidenceInput" readonly>
+							<input type="text" class="form-control" id="stateResidenceInput" name="stateResidenceInput" value="<?=$_SESSION['statecd']?>" readonly>
 							<input type="text" class="form-control" id="countryInput" name="countryInput" value="USA" readonly>
 							<input type="hidden" class="form-control" id="isResidenceInput" name="isResidenceInput" value="1" readonly>
 							<input type="hidden" class="form-control" id="isMailingInput" name="isMailingInput" value="1" readonly>

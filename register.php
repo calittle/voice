@@ -47,11 +47,33 @@
     </header>
 	<div class="container">
 	    <section>
-		    <?php include '_headers.php' ?>
-			<?php include '_createuser.php' ?>		    
-			<?php include '_login.php' ?>
-			<?php include '_registrant.php' ?>
-			<?php include '_residence.php' ?>
+			<?php 
+				$flagger=0;
+				include '_headers.php';
+
+				if (!isset($_SESSION['uid'])){ 
+					include '_createuser.php';
+					include '_login.php';
+					$flagger = $flagger + 1;
+				}
+				if (!isset($_SESSION['rid'])){
+					include '_registrant.php';
+					$flagger = $flagger + 2;
+				}
+				if (!isset($_SESSION['lid'])){
+					include '_residence.php';
+					$flagger = $flagger + 4;
+				}
+				if ($flagger==0){
+					?>
+			<div id="alreadyregistered" name="alreadyregistered" class="jumbotron" hidden>
+	            <h3>You're already registered.</h3>
+				<p>Maybe you want to check your <a href="account.php">account?</p>
+	        </div>
+
+<?php
+				}				
+			?>
 
 			<div id="final" name="final" class="jumbotron" hidden>
 	            <h3>Thank you. Now what?</h3>
@@ -79,5 +101,10 @@
 	<script src="js/bootstrap-datepicker.min.js"></script>
 	<script src="js/jquery.maskedinput.min.js"></script>
 	<script src="js/registrant.min.js"></script>
+	<script>
+	$( document ).ready(function() {
+    	setHeader(<?=$flagger?>);
+	});			
+	</script>
     </body>
 </html>

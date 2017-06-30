@@ -3,11 +3,7 @@
 
 	require_once 'config.php';	
 
-	if (isset($_POST['stateResidenceInput'])){
-		$state = $_POST['stateResidenceInput'];		
-	}else{
-		$state = $_SESSION['regdata']['stateInput'];		
-	}
+	$state = isset($_POST['stateResidenceInput']) ? $_POST['stateResidenceInput'] : isset($_SESSION['regdata']['stateInput']) ? $_SESSION['regdata']['stateInput'] : isset($_SESSION['statecd']) ? $_SESSION['statecd'] : null;	
 	$counties = array();
 	
 	try {			

@@ -1,6 +1,8 @@
 <?php
 	session_start();
-	$thispage = 'index';
+	$thispage = 'admin';
+	include_once 'ac.php';
+	include_once 'roles.php';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -50,34 +52,72 @@
         <h1 class="sr-only">Home</h1>
     </header>
 	<div class="container">
-	    <section>
-			<div class="jumbotron">
-	            <h1>Welcome to VOICE.</h1>
-				<p>Hi! New here? VOICE is where you can register to vote and participate in online voting. VOICE: making it easy to exercise your enfranchisement, and your civic duty.</p>
-		</div>
-		<div class="alert alert-info alert-dismissible" role="alert" id="logoutdiv" hidden>
+		<div class="well well-lg media">
+            <h1>VOICE Admin Site</h1>
+            <ul class="nav nav-tabs">
+			  <li class="active"><a data-toggle="tab" href="#users">Users</a></li>		    
+			  <li><a data-toggle="tab" href="#registrants">Registrants</a></li>
+	  		  <li><a data-toggle="tab" href="#districts">Districts</a></li>
+			  <li><a data-toggle="tab" href="#elections">Elections</a></li>  		  
+	  		  <li><a data-toggle="tab" href="#debug">Debug</a></li>
+			</ul>
+
+			<div class="tab-content">
+				<div id="users" class="tab-pane fade in active">
+					<div class="well well-lg">
+						<h4>Users</h4>
+					</div>
+				</div>
+				
+				<div id="registrants" class="tab-pane fade in out">
+					<div class="well well-lg">
+						<h4>Registrants</h4>
+					</div>
+				</div>
+				
+								
+				<div id="districts" class="tab-pane fade in">
+					<div class="well well-lg">
+						<h4>Districts</h4>
+					</div>
+				</div>
+				
+								
+				<div id="elections" class="tab-pane fade in">
+					<div class="well well-lg">
+						<h4>Elections</h4>
+					</div>
+				</div>
+												
+				<div id="debug" class="tab-pane fade in">
+					<div class="well well-lg">
+						<p><?=print_r($_SESSION)?>
+					</div>
+				</div>
+		</div>      
+	    <div class="alert alert-danger alert-dismissible" role="alert" id="errormessagediv" hidden>
 		    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
 				<span aria-hidden="true">&times;</span>
 			</button>
 			<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-			<span class="sr-only">Message:</span>You have been logged out.
-		</div>	
-		<div class="alert alert-info alert-dismissible" role="alert" id="noaccess" hidden>
+			<span class="sr-only">Error:</span>
+			<span id="errormessage"></span>
+	    </div>
+	    <div class="alert alert-success alert-dismissible" role="alert" id="successmessagediv" hidden>
 		    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
 				<span aria-hidden="true">&times;</span>
 			</button>
 			<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-			<span>You do not have access to that area.</span>
-		</div>	
-		<div class="row">
-		  <div class="col-md-4"><div class="well"><a href="#"><h1 class="text-center"><span class="glyphicon glyphicon-ok"></span> Vote</h1></a></div></div>
-		  <div class="col-md-4"><div class="well"><a href="register.php"><h1 class="text-center"><span class="glyphicon glyphicon-user"></span> Register</h1></a></div></div>
-		  <div class="col-md-4"><div class="well"><a href="account.php"><h1 class="text-center"><span class="glyphicon glyphicon-wrench"></span> My Account</h1></a></div></div>
-		</div>       
-<div class="well well-sm">
-	<p class="text-center text-muted">What is VOICE? It is <strong>V</strong>ote-<strong>O</strong>nline <strong>I</strong>nteractive <strong>C</strong>ivic <strong>E</strong>nablement. It's <em>your</em> voice being heard!</p>
-</div>
-	    </section>
+			<span class="sr-only">Success:</span>
+			<span id="successmessage"></span>
+	    </div>
+		<nav id="pagefooter" class="navbar navbar-default navbar-fixed-bottom navbar-inverse">
+	        <div class="container">
+	            <div class="col-xs-12 text-center navbar-text">
+					<p class="text-muted">Copyright &copy; 2017 <a href="mailto:little_charles1@columbusstate.edu">Charles Little</a>, All rights reserved.</p>
+	            </div>
+	        </div>
+		</nav>
     </div>
     <nav id="pagefooter" class="navbar navbar-default navbar-fixed-bottom navbar-inverse">
         <div class="container">
@@ -89,16 +129,5 @@
     <script src="js/jquery.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
     <script src="js/purl.min.js"></script>
-    <script>
-	$(document).ready(function($) {
-		if ($.url().param('x')=='logout'){
-			$('#logoutdiv').show();
-		}
-		if ($.url().param('x')=='403'){
-			$('#noaccess').show();
-		}
-	});
-	</script>
-
     </body>
 </html>
