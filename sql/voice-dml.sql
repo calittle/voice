@@ -260,40 +260,18 @@ END $$
 
 DELIMITER $$
 DROP PROCEDURE IF EXISTS `VOICE`.`get_ids` $$
-CREATE PROCEDURE `VOICE`.`get_ids` (IN regid bigint(20), IN uid bigint(20))
-COMMENT 'Get a registrant, location, and user id'
+CREATE PROCEDURE `VOICE`.`get_ids` (IN uid bigint(20))
+COMMENT 'Get a registrant, location, state by user id'
 BEGIN
-	IF regid >= 0 THEN
-		SELECT 
+SELECT
 			R.REGISTRANT_ID,
 			R.USER_ID,
-            R.STATECD
+            R.STATECD,
+            RL.LOCATION_ID
 			FROM REGISTRANTS R
 			INNER JOIN USERS U ON U.USER_ID = R.USER_ID
-			WHERE R.REGISTRANT_ID = regid
-		UNION ALL
-		SELECT 
-			RL.LOCATION_ID,
-			RL.REGISTRANT_ID,
-            'EMPTY' as 'EMPTY'
-			FROM REG_LOC RL        
-			WHERE RL.IS_RESIDENCE = 1 AND RL.REGISTRANT_ID = regid;
-	ELSEIF uid >= 0 THEN
-		SELECT 
-			R.REGISTRANT_ID,
-			R.USER_ID,
-            R.STATECD
-			FROM REGISTRANTS R
-			INNER JOIN USERS U ON U.USER_ID = R.USER_ID
-			WHERE R.USER_ID = uid
-		UNION ALL
-		SELECT 
-			RL.LOCATION_ID,
-			RL.REGISTRANT_ID as 'IGNORE',
-            'EMPTY' as 'EMPTY'
-			FROM REG_LOC RL        
-			WHERE RL.IS_RESIDENCE = 1 AND RL.REGISTRANT_ID = regid;    
-    END IF;
+            INNER JOIN REG_LOC RL ON RL.REGISTRANT_ID = R.REGISTRANT_ID
+			WHERE R.USER_ID = uid ;
 END $$
 DELIMITER ; $$
 

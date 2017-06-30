@@ -47,11 +47,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET')
 						$_SESSION['username'] = $username;
 						
 						# do some additional query to get location id (residence) and registrant
-						$sql = 'CALL get_ids(?,?)';
+						$sql = 'CALL get_ids(?)';
 						$stmt = $pdo->prepare($sql);
-						$a = null;
-						$stmt -> bindParam(1,$a);
-						$stmt -> bindParam(2,$user_id);
+						$stmt -> bindParam(1,$user_id);
 						if ($stmt->execute()){
 							$row = $stmt->fetchAll(PDO::FETCH_ASSOC);
 							$stmt->closeCursor();
