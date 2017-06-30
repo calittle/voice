@@ -119,7 +119,8 @@ $(document).ready(function($) {
 					console.log('LOGIN OK: ' + data);
 					$('#formdiv').fadeOut(500);
 					$('#errormessagediv').hide();
-					$('#successmessage').html("Click <a href='" + $.url().param('y') + "'>here</a> to continue.");
+					window.location.replace($.url().param('y'));
+					//$('#successmessage').html("Click <a href='" + $.url().param('y') + "'>here</a> to continue.");
 					$('#successdiv').show();
 				}
 				else{
