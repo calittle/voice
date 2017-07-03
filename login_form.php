@@ -9,7 +9,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET')
 	
 	$errors = array();
 	$ret = array();
-
+	$_SESSION['register_state'] = 0;
+	
 	# if variable is set, get it's value, otherwise set to null.
 	$uname = isset($_POST['usernameInput']) ? $_POST['usernameInput'] : null;
 	if (empty($uname)){
@@ -55,16 +56,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET')
 							$stmt->closeCursor();
 							$_SESSION['lid'] = empty($row[0]['LOCATION_ID'])?null:$row[0]['LOCATION_ID'];
 							$_SESSION['rid'] = empty($row[0]['REGISTRANT_ID'])?null:$row[0]['REGISTRANT_ID'];						
-							$_SESSION['statecd'] = empty($row[0]['STATECD'])?null:$row[0]['STATECD'];						 
+							$_SESSION['statecd'] = empty($row[0]['STATECD'])?null:$row[0]['STATECD'];
+							if (!empty($_SESSION['lid']) and !empty($_SESSION['rid']) and !empty($_SESSION['statecd'])){
+								$ret['register_state'] = '1';
+							}
 						}else{
 							$ret['success'] = false;
-							$ret['message'] = 'User NOT logged in (1).';
+							$ret['message'] = 'User NOT logged in; there might be a system issue.';
 							$_SESSION = array();
 							session_destroy();							
 						}
 					}else{
 						$ret['success'] = false;
-						$ret['message'] = 'User NOT logged in (2).';
+						$ret['message'] = 'User NOT logged in; is your password or username correct?';
 						$_SESSION = array();
 						session_destroy();
 					}				

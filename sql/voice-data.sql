@@ -15,7 +15,9 @@ INSERT INTO `ABILITY_SETS` VALUES (DEFAULT,'DEFAULT');
 INSERT INTO `ABILITY_SET_ABILITIES` VALUES ((SELECT ABILITY_SET_ID FROM ABILITY_SETS),(SELECT ABILITY_ID FROM ABILITIES),1,1,1);
 
 -- NOTE:
--- DISTRICTS are not created by default as they be assigned manually since they change over time. No data will be provided.
+-- Only a sample DISTRICT is created by default. Normally they are assigned manually since they change over time. 
+INSERT INTO `DISTRICTS` (`DISTRICT_ID`, `DISTRICT`) VALUES (NULL, 'Sample District');
+commit;
 
 --
 -- PARTIES
@@ -50,7 +52,7 @@ INSERT INTO `USERS` (`USER_ID`, `USER_NAME`, `PWD_HASH`, `HASH_ALGORITHM`, `SALT
 -- NOTE: Assigns the Administrator role to the user 'administrator'
 --
 INSERT INTO `USER_ROLES` (`USER_ID`, `ROLE_ID`) VALUES ('1', '2');
-
+COMMIT;
 --
 -- COUNTRIES
 --

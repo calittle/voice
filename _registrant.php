@@ -113,7 +113,7 @@
 							</select>
 						</div>
 					</div>					
-				  <button type="submit" class="btn btn-default">Save Registrant</button>
+				  <button type="submit" class="btn btn-default">Next</button>
 				</form>
 				
 				<div class="alert alert-danger alert-dismissible " role="alert" id="registrant_error" hidden>

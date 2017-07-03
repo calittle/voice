@@ -270,13 +270,24 @@ $(document).ready(function($) {
 				var didItWork = o['success'];
 				if (didItWork == true){
 					console.log('User logged in: ' + data);
-					setProgress('25');
-					$('#header_login').fadeOut(1500);
-					$('#logindiv').fadeOut(1500);
-					$('#loginsuccess').fadeIn(1500);
-					$('#loginsuccess').fadeOut(5000);
-					$('#header_step_2').fadeIn(1500);
-					$('#registrant_div').fadeIn(1500);
+//					alert(o['register_state']);
+					if (o['register_state']){
+						$('#header_step_1').fadeOut(500);
+						$('#header_login').fadeOut(1500);
+						$('#logindiv').fadeOut(1500);
+						$('#loginsuccess').fadeIn(1500);
+						$('#loginsuccess').fadeOut(5000);
+						$('#alreadyregistered').fadeIn(1500);
+						setProgress('100');					
+					}else{
+						setProgress('25');
+						$('#header_login').fadeOut(1500);
+						$('#logindiv').fadeOut(1500);
+						$('#loginsuccess').fadeIn(1500);
+						$('#loginsuccess').fadeOut(5000);
+						$('#header_step_2').fadeIn(1500);
+						$('#registrant_div').fadeIn(1500);
+					}
 				}else{
 					console.log(data);
 					this.error(this.xhr,'Unable to login user',o['message']);

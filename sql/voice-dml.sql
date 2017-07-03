@@ -526,21 +526,37 @@ BEGIN
 	COMMIT;
 END $$
 
+DELIMITER $$
 DROP PROCEDURE IF EXISTS `VOICE`.`registrant_set_district` $$
-CREATE PROCEDURE `VOICE`.`registrant_set_district` (IN regid bigint(20), IN districtid bigint(20))
-COMMENT 'Add a registrant to a district'
+CREATE PROCEDURE `VOICE`.`registrant_set_district` (IN regid bigint(20), IN districtid bigint(20), IN districtname varchar(128))
+COMMENT 'Add a registrant to a district (by name or ID)'
 BEGIN
-	INSERT INTO REGISTRANT_DISTRICTS (`REGISTRANT_ID`,`DISTRICT_ID`) VALUES (regid,districtid);
+	IF (!(NULLIF(districtid, '') IS NULL)) THEN
+		INSERT INTO REGISTRANT_DISTRICTS (`REGISTRANT_ID`,`DISTRICT_ID`) VALUES (regid,districtid);
+    ELSEIF (!(NULLIF(districtname,'') IS NULL)) THEN
+		INSERT INTO REGISTRANT_DISTRICTS (`REGISTRANT_ID`,`DISTRICT_ID`) VALUES (regid,(SELECT DISTRICT_ID FROM DISTRICTS WHERE DISTRICT = districtname));
+    ELSE
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Must provide either district ID or district name to add.';
+	END IF;
     COMMIT;
 END $$
+DELIMITER ; $$
 
+DELIMITER $$
 DROP PROCEDURE IF EXISTS `VOICE`.`registrant_unset_district` $$
-CREATE PROCEDURE `VOICE`.`registrant_unset_district` (IN regid bigint(20), IN districtid bigint(20))
-COMMENT 'Remove a registrant to a district'
+CREATE PROCEDURE `VOICE`.`registrant_unset_district` (IN regid bigint(20), IN districtid bigint(20),IN districtname varchar(128))
+COMMENT 'Remove a registrant to a district by district ID or name'
 BEGIN
-	UPDATE `REGISTRANT_DISTRICTS` RD SET `ACTIVE` = 0 WHERE RD.REGISTRANT_ID = regid and RD.DISTRICT_ID = districtid;
+	IF (!(NULLIF(districtid,'') IS NULL)) THEN
+		UPDATE `REGISTRANT_DISTRICTS` RD SET `ACTIVE` = 0 WHERE RD.REGISTRANT_ID = regid and RD.DISTRICT_ID = districtid;
+    ELSEIF (!(NULLIF(districtname,'') IS NULL)) THEN
+		UPDATE `REGISTRANT_DISTRICTS` RD SET `ACTIVE` = 0 WHERE RD.REGISTRANT_ID = regid and RD.DISTRICT_ID = (SELECT DISTRICT_ID FROM DISTRICTS WHERE DISTRICT = districtname);
+    ELSE
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Must provide either district ID or district name to remove from registrant.';
+    END IF;
     COMMIT;
 END $$
+DELIMITER ; $$
 
 DROP PROCEDURE IF EXISTS `VOICE`.`registrant_unset_approved` $$
 CREATE PROCEDURE `VOICE`.`registrant_unset_approved` (IN regid bigint(20))
@@ -1069,6 +1085,7 @@ END $$
 delimiter ; $$
 
 DELIMITER $$
+DROP TRIGGER IF EXISTS `registrants_afer_update` $$
 CREATE 	TRIGGER `registrants_after_update` AFTER UPDATE ON `REGISTRANTS`
 FOR EACH ROW BEGIN		
 	IF NEW.APPROVAL_STATE = 1 THEN			
@@ -1081,5 +1098,12 @@ FOR EACH ROW BEGIN
 END $$
 DELIMITER ; $$
 
+DELIMITER $$
+DROP TRIGGER IF EXISTS `autoset_sampledistrict` $$
+CREATE 	TRIGGER `autoset_sampledistrict` AFTER INSERT ON `REGISTRANTS`
+FOR EACH ROW BEGIN		
+    INSERT INTO REGISTRANT_DISTRICTS (`REGISTRANT_ID`,`DISTRICT_ID`) VALUES (NEW.REGISTRANT_ID,(SELECT DISTRICT_ID FROM DISTRICTS WHERE DISTRICT = 'Sample District'));
+END $$
+DELIMITER ; $$
 
 COMMIT;

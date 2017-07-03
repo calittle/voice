@@ -1,10 +1,8 @@
 <?php
 	session_start();
-	$thispage = 'register';
-
+	$thispage = 'register';	
 	include_once 'config.php';
-	include '_register_func.php';
-	
+	include '_register_func.php';	
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -50,7 +48,6 @@
 			<?php 
 				$flagger=0;
 				include '_headers.php';
-
 				if (!isset($_SESSION['uid'])){ 
 					include '_createuser.php';
 					include '_login.php';
@@ -64,20 +61,16 @@
 					include '_residence.php';
 					$flagger = $flagger + 4;
 				}
-				if ($flagger==0){
-					?>
+			?>
 			<div id="alreadyregistered" name="alreadyregistered" class="jumbotron" hidden>
 	            <h3>You're already registered.</h3>
 				<p>Maybe you want to check your <a href="account.php">account?</p>
 	        </div>
-
-<?php
-				}				
-			?>
-
 			<div id="final" name="final" class="jumbotron" hidden>
 	            <h3>Thank you. Now what?</h3>
 				<p>Your registration and residence information has been submitted for approval. Once approved, you'll receive a voter registration card and an email notification.</p>
+				<h3>But Wait, There's More!</h3>
+				<p>For testing purposes, your account been automatically approved and you have been added to a "testing" district. This means that you can complete a sample ballot by proceeding to the <a href="#">vote</a> page, or looking for applicable elections in your <a href="account.php">account</a>. Once your account has been added to an actual district, you'll be able to complete a real ballot.</p>
 	        </div>
 	    </section>
 
@@ -100,10 +93,10 @@
     <script src="js/bootstrap.min.js"></script>
 	<script src="js/bootstrap-datepicker.min.js"></script>
 	<script src="js/jquery.maskedinput.min.js"></script>
-	<script src="js/registrant.min.js"></script>
+	<script src="js/registrant.js"></script>
 	<script>
 	$( document ).ready(function() {
-    	setHeader(<?=$flagger?>);
+		setHeader(<?=$flagger?>);
 	});			
 	</script>
     </body>
