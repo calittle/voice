@@ -70,7 +70,7 @@
 			<span>You do not have access to that area.</span>
 		</div>	
 		<div class="row">
-		  <div class="col-md-4"><div class="well"><a href="#"><h1 class="text-center"><span class="glyphicon glyphicon-ok"></span> Vote</h1></a></div></div>
+		  <div class="col-md-4"><div class="well"><a href="vote.php"><h1 class="text-center"><span class="glyphicon glyphicon-ok"></span> Vote</h1></a></div></div>
 		  <div class="col-md-4"><div class="well"><a href="register.php"><h1 class="text-center"><span class="glyphicon glyphicon-user"></span> Register</h1></a></div></div>
 		  <div class="col-md-4"><div class="well"><a href="account.php"><h1 class="text-center"><span class="glyphicon glyphicon-wrench"></span> My Account</h1></a></div></div>
 		</div>       

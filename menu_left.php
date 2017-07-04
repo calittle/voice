@@ -8,18 +8,19 @@
 	# ABOUT
     echo ('<li><a href="doc/">About</a></li>');
 
+	# VOTE
 	echo ('<li ');
-	#if (!empty($_SESSION['uid'])){		
-		# MY ACCOUNT
-		# need to have a User ID to have an account.
+		if ($thispage == 'vote'){echo('class="active"');}
+		echo ('><a href="vote.php">Vote!</a></li>');        
+
+
+	# ACCOUNT
+	echo ('<li ');
 		if ($thispage == 'account'){echo('class="active"');}
 		echo ('><a href="account.php">My Account</a></li>');        
-    #}else
-    #{
+	# REGISTER
 	echo ('<li ');
-		# REGISTER
-		if ($thispage == 'register'){echo('class="active"');}
+	if ($thispage == 'register'){echo('class="active"');}
 		echo ('><a href="register.php">Register</a></li>');        
-    #}
     ?>
 </ul>

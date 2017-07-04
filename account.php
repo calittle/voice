@@ -74,6 +74,25 @@
 					}
 				}
 			}											
+		
+			
+			$stmt	= $pdo->prepare('CALL registrant_get_elections(?)');
+
+			$stmt -> bindParam(1,$_SESSION['rid']);
+			$elections = array();
+			if ($stmt->execute()){
+				while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
+					$elections[]=$row;
+				}
+			}else{
+				$errs = $stmt->errorInfo();	
+				if (!empty($errs[1])) {						
+					switch ($errs[1]){
+						default:							
+							error_log(print_r('Error '.$errs[1].': '.$errs[2], TRUE)); 								
+					}
+				}
+			}
 												
 			
 		}catch (PDOException $e){
@@ -97,6 +116,12 @@
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link rel=stylesheet href="css/mystyles.css"/>    
     <link href="https://fonts.googleapis.com/css?family=Lora|Raleway|Source+Code+Pro" rel="stylesheet">
+    <style>
+
+#elections td:hover {
+    cursor: pointer;
+}
+	    </style>
     <!--[if lt IE 9]>
       <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -121,7 +146,7 @@
                 </div>
 	        </div>
         </nav>
-        <h1 class="sr-only">Home</h1>
+        <h1 class="sr-only">Account</h1>
     </header>
 	<div class="container">
 	    <section>
@@ -130,7 +155,7 @@
 			  <li><a data-toggle="tab" href="#registrant">Registrant</a></li>
 			  <li><a data-toggle="tab" href="#locations">Residence</a></li>
 	  		  <li><a data-toggle="tab" href="#districts">Districts</a></li>
-			  <li><a data-toggle="tab" href="#voting">Voting</a></li>  		  
+			  <li><a data-toggle="tab" href="#voting">Elections</a></li>  		  
 	  		  <li><a data-toggle="tab" href="#debug">Debug</a></li>
 			</ul>
 			<div class="tab-content">
@@ -183,9 +208,59 @@
 				</div>				
 				<div id="voting" class="tab-pane fade in">
 					<div class="well well-lg">
-						<h3>Voting</h3>
-						TBD
+						<h3>Elections</h3>
+						<p>The table below lists election(s) you may access. Select a row to view its details. Some details you can see:
+							<ul>
+
+								<li>Elections in which you have cast a ballot will display a <span class="label label-success">Voted</span> label</li>
+								<li>Elections that are still open for voting will show a <span class="label label-info">Open</span> label</li>
+								<li>Elections that are closed for voting will show a <span class="label label-warning">Closed</span> label</li>
+							</ul>
+</p>
+						<div class="table-responsive">
+							<table id="elections" name="elections" class="table table-hover table-striped ">
+								<thead><tr><th>ID</th><th>Election Name</th><th>Details</th><th>Start Date</th><th>End Date</th></tr></thead>
+								<tbody>						
+						<?php	
+									foreach ($elections as $row){
+						?>		
+										<tr>
+											<th id="<?=$row['Election ID']?>" scope="row"><?=$row['Election ID']?></th>
+											<td><?php
+												echo $row['Election Name'];
+												if (empty($row['Registrant Ballots'])){
+													echo ' <span class="label label-danger">Not Voted</span>';
+												}else{
+													echo ' <span class="label label-success">Voted</span>';
+												}
+											?></td>
+											<td><?=$row['Election Detail']?>
+											<?php
+												$electionBegin = strtotime(date($row['Start Date']));
+												$electionEnd = strtotime(date($row['End Date']));
+												$currentDateTime = date('Y-m-d H:i:s');
+												if ($currentDateTime > $electionBegin && $currentDateTime < $electionEnd){
+													echo '<span class="label label-info">Open</span>';
+												}else{
+													echo '<span class="label label-warning">Closed</span>';
+												}	
+												?></td>
+											<td><?=$row['Start Date']?></td>
+											<td><?=$row['End Date']?></td>
+										</tr>
+						
+						<?php			}
+						?>
+								</tbody>
+							</table>
+						</div>												
 					</div>
+					<div id="electiondetaildiv" name="electiondetaildiv" class="well well-lg" hidden>
+						<h3>Election Detail</h3>
+						<p id="electiondetail" name="electiondetail"></p>
+					</div>
+					
+					
 				</div>
 				
 				<div id="districts" class="tab-pane fade in ">
@@ -251,7 +326,11 @@
 						?>		
 										<tr>
 											<th scope="row"><?=$row['Location ID']?></th>
-											<td><a href="#" aria-label="Edit Location"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Edit</a> <a href="#" onclick="confirm('Remove <?=$row['Location ID']?>');" aria-label="Delete Location"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Remove</a></td>
+											<td><a href="#" aria-label="Edit Location">
+												<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Edit</a>&nbsp;
+												<a href="#" onclick="confirm('Remove <?=$row['Location ID']?>');" aria-label="Delete Location">
+													<span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Remove</a>
+											</td>
 											<td><?=$row['Address Line 1']?>, <?=$row['Address Line 2']?>, <?=$row['CSZ']?></td>
 											<td><?=$row['County']?></td>
 											<td><?=$row['Residence Type']?></td>
@@ -320,6 +399,41 @@
 	
 <script>
 $(document).ready(function($) {	
+	var request;
+	$('#elections tr').click(function(e){
+		if (request){request.abort();}
+        var edata = "election=" + $(this).find("th").attr("id");
+		$(this).prop("disabled",true);
+		request = $.ajax({
+			url: "ajx_election.php",
+			type: "post",
+			data: edata,
+			success: function(data){
+				var o;
+				var sucksess=false;
+				var msg='';
+				try{
+					o = JSON.parse(data);
+					sucksess = o['success'];
+				}catch(err){
+					msg = err;
+				}
+				if (sucksess==true){					
+					console.log('Election retrieved: ' + data);
+					$('#electiondetail').html(populate_election(o['elections'][0]));
+					$('#electiondetaildiv').show();					
+				}
+				else{
+					console.log('Unable to retrieve election data. Err=' + msg + '\n Data returned was:' + data);
+					this.error(this.xhr,'Unable to retrieve election data: ',msg);
+				}
+			},
+			error: function(jqXHR, textStatus, errorThrown){
+				$('#errormessage').html("There was a problem processing your request and System administrators have been notified. (" + textStatus + errorThrown + ")");
+				$('#errormessagediv').show();		
+			}
+		});
+     });
 	$('#passwordInput').keyup(function(e) {
 	     var strongRegex = new RegExp("^(?=.{8,})(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*\\W).*$", "g");
 	     var mediumRegex = new RegExp("^(?=.{7,})(((?=.*[A-Z])(?=.*[a-z]))|((?=.*[A-Z])(?=.*[0-9]))|((?=.*[a-z])(?=.*[0-9]))).*$", "g");
@@ -390,7 +504,7 @@ $(document).ready(function($) {
 	        }
 	    }
 	});
-	var request;
+
 	$('#passwordform').submit(function(event){
 		if ($('#passwordform').valid()!=true){return false;}	
 		event.preventDefault();
@@ -485,6 +599,23 @@ $(document).ready(function($) {
 		//request.always(function(){$inputs.prop("disabled",false)});
 	});
 });
+
+function populate_election(o){
+// parse election details and populate to div.	
+	// get appropriate election (id = eid);
+	//	o['elections'],eid
+	
+	var s = '<ol>';
+	o.measures.forEach(function (arrayItem){
+		s += '<li>' + arrayItem.detail + '<ul>';
+		arrayItem.options.forEach( function (arrayItem){
+			s += '<li>' + arrayItem.detail + '</li>';
+		});
+		s += '</ul></li>';
+	});
+	s+='</ol><hr/><strong>To vote in this election, go to the <a href="vote.php">vote</a> page!</strong>';
+	return s;
+}
 </script>
     </body>
 </html>

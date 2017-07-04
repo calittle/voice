@@ -14,9 +14,32 @@ INSERT INTO `ABILITIES` VALUES (DEFAULT,'DEFAULT','The default ability');
 INSERT INTO `ABILITY_SETS` VALUES (DEFAULT,'DEFAULT');
 INSERT INTO `ABILITY_SET_ABILITIES` VALUES ((SELECT ABILITY_SET_ID FROM ABILITY_SETS),(SELECT ABILITY_ID FROM ABILITIES),1,1,1);
 
--- NOTE:
--- Only a sample DISTRICT is created by default. Normally they are assigned manually since they change over time. 
+-- ELECTIONS/DISTRICTS
+-- Only a sample ELECTION/MEASURE/OPTION/DISTRICT is created by default. Normally they are assigned manually since they change over time. 
+SET @electionid = 1;
+SET @districtid = 0;
+SET @measureid = 0;
+
 INSERT INTO `DISTRICTS` (`DISTRICT_ID`, `DISTRICT`) VALUES (NULL, 'Sample District');
+SELECT LAST_INSERT_ID() INTO @districtid;
+INSERT INTO `ELECTIONS` (`ELECTION_ID`, `ELECTION_NAME`, `ELECTION_DETAIL`,`DATE_START`, `DATE_END`) VALUES (NULL, 'Sample Election','A sample election so you can test the election system.', '1900-01-01', '2200-01-01');
+SELECT LAST_INSERT_ID() INTO @electionid;
+INSERT INTO `ELECTION_DISTRICTS` (`ELECTION_ID`,`DISTRICT_ID`) VALUES (@electionid,@districtid);
+INSERT INTO `MEASURES` (`ELECTION_ID`,`MEASURE_DETAIL`) VALUES (@electionid,'Please choose from one of the options to describe your feelings with VOICE thus far.');
+SELECT LAST_INSERT_ID() INTO @measureid;
+INSERT INTO `OPTIONS` (`MEASURE_ID`,`ELECTION_ID`,`OPTION_DETAIL`) VALUES (@measureid,@electionid,'It\'s amazing and I can\'t believe no one ever did this!');
+INSERT INTO `OPTIONS` (`MEASURE_ID`,`ELECTION_ID`,`OPTION_DETAIL`) VALUES (@measureid,@electionid,'So far it seems pretty cool.');
+INSERT INTO `OPTIONS` (`MEASURE_ID`,`ELECTION_ID`,`OPTION_DETAIL`) VALUES (@measureid,@electionid,'Abstain.');
+INSERT INTO `OPTIONS` (`MEASURE_ID`,`ELECTION_ID`,`OPTION_DETAIL`) VALUES (@measureid,@electionid,'I am not a fan.');
+INSERT INTO `OPTIONS` (`MEASURE_ID`,`ELECTION_ID`,`OPTION_DETAIL`) VALUES (@measureid,@electionid,'I hate it.');
+
+INSERT INTO `MEASURES` (`ELECTION_ID`,`MEASURE_DETAIL`) VALUES (@electionid,'Will you recommend VOICE to your friends/familiy/colleagues?');
+SELECT LAST_INSERT_ID() INTO @measureid;
+INSERT INTO `OPTIONS` (`MEASURE_ID`,`ELECTION_ID`,`OPTION_DETAIL`) VALUES (@measureid,@electionid,'Absolutely');
+INSERT INTO `OPTIONS` (`MEASURE_ID`,`ELECTION_ID`,`OPTION_DETAIL`) VALUES (@measureid,@electionid,'Maybe');
+INSERT INTO `OPTIONS` (`MEASURE_ID`,`ELECTION_ID`,`OPTION_DETAIL`) VALUES (@measureid,@electionid,'Unsure');
+INSERT INTO `OPTIONS` (`MEASURE_ID`,`ELECTION_ID`,`OPTION_DETAIL`) VALUES (@measureid,@electionid,'Probably not');
+INSERT INTO `OPTIONS` (`MEASURE_ID`,`ELECTION_ID`,`OPTION_DETAIL`) VALUES (@measureid,@electionid,'Absolutely not');
 commit;
 
 --

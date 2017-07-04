@@ -66,6 +66,16 @@ DROP PROCEDURE IF EXISTS `VOICE`.`registrant_get_elections` $$
 CREATE PROCEDURE `VOICE`.`registrant_get_elections` (IN regid bigint(20))
 COMMENT 'List registrant''s eligible elections.'
 BEGIN
+SELECT 
+		E.`ELECTION_ID` as 'Election ID',
+        E.`ELECTION_NAME` as 'Election Name',
+        E.`ELECTION_DETAIL` as 'Election Detail',        
+        E.`DATE_START` AS 'Start Date',
+        E.`DATE_END` as 'End Date',
+		(SELECT 1 FROM BALLOTS B WHERE B.ELECTION_ID IN (SELECT ELECTION_ID FROM ELECTION_DISTRICTS WHERE DISTRICT_ID IN (SELECT DISTRICT_ID FROM REGISTRANT_DISTRICTS WHERE REGISTRANT_ID = regid)) LIMIT 1) as 'Registrant Ballots'
+	FROM `ELECTIONS` E    
+    WHERE E.`ELECTION_ID` IN (SELECT ELECTION_ID FROM ELECTION_DISTRICTS WHERE DISTRICT_ID IN (SELECT DISTRICT_ID FROM REGISTRANT_DISTRICTS WHERE REGISTRANT_ID = regid));
+/*
     SELECT 
 		`ELECTION_ID` as 'Election ID',
         `ELECTIONS`.`ELECTION_NAME` as 'Election Name',
@@ -74,6 +84,18 @@ BEGIN
         `ELECTIONS`.`DATE_END` as 'End Date'
 	FROM `ELECTIONS`
     WHERE `ELECTION_ID` IN (SELECT ELECTION_ID FROM ELECTION_DISTRICTS WHERE DISTRICT_ID IN (SELECT DISTRICT_ID FROM REGISTRANT_DISTRICTS WHERE REGISTRANT_ID = regid));
+    
+    
+     SELECT
+		M.MEASURE_DETAIL as 'Measure',
+        O.OPTION_DETAIL  as 'Chosen Option',
+        B.CREATED as 'Cast Time',
+        B.SIGNATURE as 'Electronic Signature'
+	FROM BALLOTS B
+	INNER JOIN `MEASURES` M on M.MEASURE_ID = B.MEASURE_ID
+	INNER JOIN `OPTIONS` O on O.OPTION_ID = B.OPTION_ID
+    WHERE B.REGISTRANT_ID = regid and B.ELECTION_ID = electionid;
+    */
     
 END $$
 DELIMITER ; $$
@@ -85,7 +107,7 @@ COMMENT 'List measures in an election.'
 BEGIN
     SELECT 
 		`MEASURE_ID` as 'Measure ID',
-        `MEASURE_DETAIL` as 'Election Detail'
+        `MEASURE_DETAIL` as 'Measure Detail'
 	FROM MEASURES
     WHERE `ELECTION_ID` = electionid; 
     
