@@ -209,42 +209,44 @@
 				<div id="voting" class="tab-pane fade in">
 					<div class="well well-lg">
 						<h3>Elections</h3>
-						<p>The table below lists election(s) you may access. Select a row to view its details. Some details you can see:
+			<p>The table below lists election(s) for your district(s). Each row indicates a separate election, and shows the valid dates/times that the election is open. You can click on election to view details about the measures and options included for each election. In the status column below, labels indicate the status of the election and your ballot for that election:
 							<ul>
+					<li>Elections in which you have <em>not cast</em> a ballot will display a <span class="label label-danger">Not Voted</span> label</li>
+					<li>Elections in which you have cast a ballot will display a <span class="label label-success">Voted</span> label</li>
+					<li>Elections that are still open for voting will show a <span class="label label-info">Open</span> label</li>
+					<li>Elections that are closed for voting will show a <span class="label label-warning">Closed</span> label</li>
+				</ul>
 
-								<li>Elections in which you have cast a ballot will display a <span class="label label-success">Voted</span> label</li>
-								<li>Elections that are still open for voting will show a <span class="label label-info">Open</span> label</li>
-								<li>Elections that are closed for voting will show a <span class="label label-warning">Closed</span> label</li>
-							</ul>
 </p>
 						<div class="table-responsive">
 							<table id="elections" name="elections" class="table table-hover table-striped ">
-								<thead><tr><th>ID</th><th>Election Name</th><th>Details</th><th>Start Date</th><th>End Date</th></tr></thead>
+								<thead><tr><th>Status</th><th>Election Name</th><th>Details</th><th>Start Date</th><th>End Date</th></tr></thead>
 								<tbody>						
 						<?php	
 									foreach ($elections as $row){
 						?>		
 										<tr>
-											<th id="<?=$row['Election ID']?>" scope="row"><?=$row['Election ID']?></th>
-											<td><?php
-												echo $row['Election Name'];
-												if (empty($row['Registrant Ballots'])){
-													echo ' <span class="label label-danger">Not Voted</span>';
-												}else{
-													echo ' <span class="label label-success">Voted</span>';
-												}
-											?></td>
-											<td><?=$row['Election Detail']?>
+											<th id="<?=$row['Election ID']?>" scope="row">
 											<?php
 												$electionBegin = strtotime(date($row['Start Date']));
 												$electionEnd = strtotime(date($row['End Date']));
 												$currentDateTime = date('Y-m-d H:i:s');
 												if ($currentDateTime > $electionBegin && $currentDateTime < $electionEnd){
-													echo '<span class="label label-info">Open</span>';
+													echo ' <span class="label label-info">Open</span> ';
 												}else{
-													echo '<span class="label label-warning">Closed</span>';
-												}	
-												?></td>
+													echo ' <span class="label label-warning">Closed</span> ';
+												}
+												if (empty($row['Registrant Ballots'])){
+													echo ' <span class="label label-danger">Not Voted</span> ';
+												}else{
+													echo ' <span class="label label-success">Voted</span> ';
+												}
+													
+												?>											
+											</th>
+											<td><?=$row['Election Name']?></td>
+											<td><?=$row['Election Detail']?>
+											</td>
 											<td><?=$row['Start Date']?></td>
 											<td><?=$row['End Date']?></td>
 										</tr>
@@ -326,9 +328,9 @@
 						?>		
 										<tr>
 											<th scope="row"><?=$row['Location ID']?></th>
-											<td><a href="#" aria-label="Edit Location">
+											<td><a href="#" aria-label="Edit Location" onclick="confirm('If you edit your address, your registration will be changed to unapproved state. You will have to wait until your registration is re-approved before you can vote again. Do you wish to continue?');">
 												<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Edit</a>&nbsp;
-												<a href="#" onclick="confirm('Remove <?=$row['Location ID']?>');" aria-label="Delete Location">
+												<a href="#" onclick="confirm('If you remove your address, your registration will change to unapproved state.  You will be unable to vote until you add another address and your registration is confirmed. Do you wish to continue? (Ref:<?=$row['Location ID']?>)');" aria-label="Delete Location">
 													<span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Remove</a>
 											</td>
 											<td><?=$row['Address Line 1']?>, <?=$row['Address Line 2']?>, <?=$row['CSZ']?></td>
@@ -342,7 +344,7 @@
 							</table>
 						</div>
 					</div>
-					<div class="well well-lg">
+					<!--div class="well well-lg">
 						<h3>Add a Location</h3>
 						<form name='locationform' id='locationform' method="POST" action="locations_form.php">					
 							<p class="help-block">You need to add, at a minimum, a residence location. You can also add a mailing location if you need a temporary mailing address.</p>
@@ -365,7 +367,7 @@
 							<hr/>
 							<button type="submit" class="btn btn-default">Add Location!</button>
 						</form>
-					</div>  
+					</div-->  
 				</div>
 			</div>
 		</section>

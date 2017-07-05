@@ -33,7 +33,7 @@ INSERT INTO `OPTIONS` (`MEASURE_ID`,`ELECTION_ID`,`OPTION_DETAIL`) VALUES (@meas
 INSERT INTO `OPTIONS` (`MEASURE_ID`,`ELECTION_ID`,`OPTION_DETAIL`) VALUES (@measureid,@electionid,'I am not a fan.');
 INSERT INTO `OPTIONS` (`MEASURE_ID`,`ELECTION_ID`,`OPTION_DETAIL`) VALUES (@measureid,@electionid,'I hate it.');
 
-INSERT INTO `MEASURES` (`ELECTION_ID`,`MEASURE_DETAIL`) VALUES (@electionid,'Will you recommend VOICE to your friends/familiy/colleagues?');
+INSERT INTO `MEASURES` (`ELECTION_ID`,`MEASURE_DETAIL`) VALUES (@electionid,'Will you recommend VOICE to your friends/family/colleagues?');
 SELECT LAST_INSERT_ID() INTO @measureid;
 INSERT INTO `OPTIONS` (`MEASURE_ID`,`ELECTION_ID`,`OPTION_DETAIL`) VALUES (@measureid,@electionid,'Absolutely');
 INSERT INTO `OPTIONS` (`MEASURE_ID`,`ELECTION_ID`,`OPTION_DETAIL`) VALUES (@measureid,@electionid,'Maybe');

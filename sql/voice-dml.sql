@@ -49,14 +49,16 @@ CREATE PROCEDURE `VOICE`.`elections_cast_ballot` (
     IN electionid bigint(20),
     IN measureid bigint(20),
     IN optionid bigint(20),
-    IN sig longblob,
-    OUT ballotid bigint(20)
+    IN optionvalue longblob,
+    IN provisional tinyint(1),
+    IN sig longblob
+    -- ,OUT ballotid bigint(20)
 )
 COMMENT 'Record registrant''s chosen option on an election''s measure'
 BEGIN
 	-- SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'X';
-    INSERT INTO BALLOTS (`REGISTRANT_ID`,`ELECTION_ID`,`MEASURE_ID`,`OPTION_ID`,`SIGNATURE`) VALUES (regid,electionid,measureid,optionid,sig);
-    SELECT LAST_INSERT_ID() INTO ballotid;
+    IF (NULLIF(provisional, '') IS NULL) THEN SET provisional = 0; END IF;		
+    INSERT INTO BALLOTS (`REGISTRANT_ID`,`ELECTION_ID`,`MEASURE_ID`,`OPTION_ID`,`OPTION_VALUE`,`SIGNATURE`,`PROVISIONAL`) VALUES (regid,electionid,measureid,optionid,optionvalue,sig,provisional);
     COMMIT;
 END $$
 DELIMITER ; $$
@@ -160,6 +162,7 @@ BEGIN
 	-- SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'X';
     INSERT INTO `ELECTIONS` (`ELECTION_NAME`, `ELECTION_DETAIL`,`DATE_START`, `DATE_END`) VALUES (electionname,electiondetail,startdate,enddate);
     SELECT LAST_INSERT_ID() INTO electionid;
+    
     COMMIT;
 END $$
 DELIMITER ; $$

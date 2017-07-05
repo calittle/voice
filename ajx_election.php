@@ -26,6 +26,7 @@
 					$election = array();
 					$election['id'] = $row['Election ID'];
 					$election['detail'] = htmlentities($row['Election Detail']);
+					$election['name'] = htmlentities($row['Election Name']);
 
 					// get the measures for the selected election.		
 					$stmt = null;				

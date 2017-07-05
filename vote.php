@@ -78,60 +78,89 @@
         <h1 class="sr-only">Vote</h1>
     </header>
 	<div class="container">
-	    <section>
-			<div class="well well-lg">
-				<h3>Elections</h3>
-				<p>The table below lists election(s) you may access. Select a row to view its details. Some details you can see:
-					<ul>
-						<li>Elections in which you have <em>not cast</em> a ballot will display a <span class="label label-danger">Not Voted</span> label</li>
-						<li>Elections in which you have cast a ballot will display a <span class="label label-success">Voted</span> label</li>
-						<li>Elections that are still open for voting will show a <span class="label label-info">Open</span> label</li>
-						<li>Elections that are closed for voting will show a <span class="label label-warning">Closed</span> label</li>
-					</ul>
+		<div id="electionsdiv" name="electionsdiv" class="well well-lg">
+			<h3>Elections</h3>
+			<p>The table below lists election(s) for your district(s). Each row indicates a separate election, and shows the valid dates/times that the election is open. You can click on election to view details about the measures and options included for each election, and to open a ballot for the election. In the status column below, labels indicate the status of the election and your ballot for that election:
+				<ul>
+					<li>Elections in which you have <em>not cast</em> a ballot will display a <span class="label label-danger">Not Voted</span> label</li>
+					<li>Elections in which you have cast a ballot will display a <span class="label label-success">Voted</span> label</li>
+					<li>Elections that are still open for voting will show a <span class="label label-info">Open</span> label</li>
+					<li>Elections that are closed for voting will show a <span class="label label-warning">Closed</span> label</li>
+				</ul>
 </p>
-				<div class="table-responsive">
-					<table id="elections" name="elections" class="table table-hover table-striped ">
-						<thead><tr><th>ID</th><th>Election Name</th><th>Details</th><th>Start Date</th><th>End Date</th></tr></thead>
-						<tbody>						
-				<?php	
-							foreach ($elections as $row){
-				?>		
-								<tr>
-									<th id="<?=$row['Election ID']?>" scope="row"><?=$row['Election ID']?></th>
-									<td><?php
-										echo $row['Election Name'];
-										if (empty($row['Registrant Ballots'])){
-											echo ' <span class="label label-danger">Not Voted</span>';
-										}else{
-											echo ' <span class="label label-success">Voted</span>';
-										}
-									?></td>
-									<td><?=$row['Election Detail']?>
-									<?php
-										$electionBegin = strtotime(date($row['Start Date']));
-										$electionEnd = strtotime(date($row['End Date']));
-										$currentDateTime = date('Y-m-d H:i:s');
-										if ($currentDateTime > $electionBegin && $currentDateTime < $electionEnd){
-											echo '<span class="label label-info">Open</span>';
-										}else{
-											echo '<span class="label label-warning">Closed</span>';
-										}	
-										?></td>
-									<td><?=$row['Start Date']?></td>
-									<td><?=$row['End Date']?></td>
-								</tr>
-				
-				<?php			}
-				?>
-						</tbody>
-					</table>
-				</div>												
+			<div class="table-responsive">
+				<table id="elections" name="elections" class="table table-hover table-striped ">
+					<thead><tr><th>Status</th><th>Election Name</th><th>Details</th><th>Start Date</th><th>End Date</th></tr></thead>
+					<tbody>						
+			<?php	
+						foreach ($elections as $row){
+			?>		
+							<tr>
+								<th id="<?=$row['Election ID']?>" scope="row">
+																				<?php
+												$electionBegin = strtotime(date($row['Start Date']));
+												$electionEnd = strtotime(date($row['End Date']));
+												$currentDateTime = date('Y-m-d H:i:s');
+												if ($currentDateTime > $electionBegin && $currentDateTime < $electionEnd){
+													echo ' <span class="label label-info">Open</span> ';
+												}else{
+													echo ' <span class="label label-warning">Closed</span> ';
+												}
+												if (empty($row['Registrant Ballots'])){
+													echo ' <span class="label label-danger">Not Voted</span> ';
+												}else{
+													echo ' <span class="label label-success">Voted</span> ';
+												}
+													
+												?>	
+								</th>
+								<td><?=$row['Election Name']?></td>
+								<td><?=$row['Election Detail']?></td>
+								<td><?=$row['Start Date']?></td>
+								<td><?=$row['End Date']?></td>
+							</tr>
+			
+			<?php			}
+			?>
+					</tbody>
+				</table>
+			</div>												
+		</div>
+		<?php
+		
+		?>
+		<div id="electiondetaildiv" name="electiondetaildiv" class="well well-lg" hidden>
+		</div>
+		<div id="ballotdiv" name="ballotdiv" class="well well-lg" hidden>
+			<div class="panel panel-primary">
+			<div class="panel-heading">					
+				<h3 id="ballothead" name="ballothead" class="panel-title">Election 1</h3>
+				<p id="ballotdetail" name="ballotdetail">Election Detail</p>
 			</div>
-			<div id="electiondetaildiv" name="electiondetaildiv" class="well well-lg" hidden>
-				<h3>Election Detail</h3>
-				<p id="electiondetail" name="electiondetail"></p>
+			<div class="panel-body">				
+				<form name="ballotform" id="ballotform" method="post" action="ajx_cast.php">					
+				</form>
+				<!--
+				<button id="castBallotModalButton" name="castBallotModalButton"  class="btn btn-primary btn-lg btn-block" data-toggle="modal" data-target="#confirmBallotModal" role="button">CAST BALLOT</button><br/>				-->
+				<button id="closeBallot" name="closeBallot" onclick="closeBallot(1);" class="btn btn-primary btn-sm" role="button">Close Ballot</button>
+		</div> <!-- ballot panel -->
+		</div> <!-- ballot well -->
+		<!--<div class="modal fade" id="confirmBallotModal" tabindex="-1" role="dialog" aria-labelledby="confirmBallotModalLabel">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+						<h4 class="modal-title" id="confirmBallotModalLabel">Confirm Ballot</h4>
+					</div>
+					<div class="modal-body">You are about to <em><strong>CAST THIS BALLOT</strong></em>. If you are satisfied with your choices, click the CAST BALLOT button below to continue. If you want to review your choices, click the Cancel button below to return to the ballot. If you click the CAST BALLOT button, your vote <strong>will be recorded</strong> and <strong>cannot be changed!<strong>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+						<button type="button" data-dismiss="modal" id="castBallotButton" class="btn btn-primary">CAST BALLOT</button>
+					</div>
+				</div>
 			</div>
-		</section>
+		</div>		-->	
 	    <div class="alert alert-danger alert-dismissible" role="alert" id="errormessagediv" hidden>
 		    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
 				<span aria-hidden="true">&times;</span>
@@ -161,8 +190,52 @@
     <script src="js/bootstrap.min.js"></script>
 	
 <script>
-$(document).ready(function($) {	
+$(document).ready(function() {	
+	
 	var request;
+	
+	$('#ballotform').submit(function(event){
+		event.preventDefault();
+		if (request){request.abort();}
+		var $form = $(this);
+		var $inputs = $form.find("input, button");
+		var serialdata = $form.serialize();
+		$inputs.prop("disabled",true);
+		request = $.ajax({
+			url: "ajx_cast.php",
+			type: "post",
+			data: serialdata,
+			success: function(data){
+				var o;
+				var sucksess=false;
+				var msg='';
+				alert(data);
+				try{
+					o = JSON.parse(data);
+					sucksess = o['success'];
+				}catch(err){
+					msg = err;
+				}
+				if (sucksess==true){
+					console.log('Ballot cast: ' + data);
+					$inputs.prop("disabled",true);					
+					$('#successmessage').html("Your ballot was cast and stored in the system with your private key. ");
+					$('#successmessagediv').fadeIn(500);					
+					//closeBallot();
+				}
+				else{
+					console.log('Cast failure. Err=' + msg + '\n Data returned was:' + data);
+					this.error(this.xhr,'System administrators have been notified.','Err=' + msg + '\n Data returned was:' + data);
+				}
+			},
+			error: function(jqXHR, textStatus, errorThrown){
+				$('#errormessage').html("There was a problem casting your ballot. " + textStatus + errorThrown);
+				$('#errormessagediv').show();		
+				$inputs.prop("disabled",false)
+			}
+		});
+	});
+
 	$('#elections tr').click(function(e){
 		if (request){request.abort();}
         var edata = "election=" + $(this).find("th").attr("id");
@@ -183,8 +256,7 @@ $(document).ready(function($) {
 				}
 				if (sucksess==true){					
 					console.log('Election retrieved: ' + data);
-					$('#electiondetail').html(populate_election(o['elections'][0]));
-					$('#electiondetaildiv').show();					
+					injectDetails(o['elections'][0]);				
 				}
 				else{
 					console.log('Unable to retrieve election data. Err=' + msg + '\n Data returned was:' + data);
@@ -197,24 +269,95 @@ $(document).ready(function($) {
 			}
 		});
      });
-});
-function populate_election(o){
-// parse election details and populate to div.	
-	// get appropriate election (id = eid);
-	//	o['elections'],eid
-	
-	var s = '<ol>';
-	o.measures.forEach(function (arrayItem){
-		s += '<li>' + arrayItem.detail + '<ul>';
-		arrayItem.options.forEach( function (arrayItem){
-			s += '<li>' + arrayItem.detail + '</li>';
-		});
-		s += '</ul></li>';
-	});
-	s+='</ol><a class="btn btn-primary btn-lg btn-block" href="ballot.php" role="button">Open Ballot</a>';
-	return s;
-}
+     // delegated handlers for click event on dynamically-injected elements.
 
+     // HANDLER for RADIO elements to process WRITE-IN radio. 
+     // Scope of selector must inclue all radio elements in this 
+     // group so we can detect when it's necessary to hide the 
+     // write-in elements.
+     $('#ballotform').on('click','.injected',function() {
+	 	var id = $(this).attr('id');
+	 	var pxn = /(opt)\-[0-9]/g; //regex to select "opt-NNN" characters to replace.
+	 	if (this.value == 'write-in'){
+			$('#' + id.replace('opt-','')).fadeIn(500).addClass("required");	
+		}else{
+			$('#' + id.replace(pxn,"writein")).fadeOut(500).removeClass("required");	
+		}
+ 
+	});	
+});
+function injectBallot(o){
+	// INPUT for electionId (hidden)
+	var mIds = '';
+	var s = '<input type="hidden" name="electionId" value="' + o.id + '"/>';
+	// LOOP on available measures.
+	o.measures.forEach(function (measure){
+		// add MEASURE ID to special hidden input.
+		mIds += measure.id + ',';
+		// MEASURE detail output.
+		s += '<div class="input-group" id="div-measure-' + measure.id + '" name="div-measure-' + measure.id + '"><p id="detail-measure-' + measure.id + '" name="detail-measure-' + measure.id + '">' + measure.detail + '</p>';
+		// LOOP on available options.
+		var oc = 1;
+		// add NO-SELECT option.
+		// REMOVED this because this should be provided in ballot management.
+		//s += '<div class="radio"><label><input class="injected" type="radio" name="measure-' + measure.id + '" id="measure-' + measure.id + '-opt-0" value="nochoice" checked="checked">No choice (default)</option></label></div>';
+		measure.options.forEach(function (option){
+			s += '<div class="radio"><label><input class="injected" type="radio" name="measure-' + measure.id + '" id="measure-' + measure.id + '-opt-' + oc + '" value="' + option.id + '">' + option.detail + '</option></label></div>';
+			oc += 1;
+		});
+		// output measure Ids		
+		s +=  '<input type="hidden" name="measureIds" value="' + mIds.substring(0,mIds.length-1) + '"/>';
+		// add WRITE-IN option.
+		// RESERVED FOR FUTURE USE
+		//s += '<div class="radio"><label><input class="injected" type="radio" name="measure-' + measure.id + '" id="measure-' + measure.id + '-opt-writein" value="write-in">Write-In</option></label></div>';
+		//s += '<div id="measure-' + measure.id + '-writein" name="measure-' + measure.id + '-writein" class="form-group" hidden><label for="writein">Write-in</label><p class="help-block">Enter your write-in option.</p><div class="input-group"><span class="input-group-addon"><span class="glyphicon glyphicon-pencil"></span></span><input type="text" class="form-control" name="measure-' + measure.id + '-writein" id="measure-' + measure.id + '-writein"></div></div>';
+		// close out MEASURE
+		s += '</div></div>';
+	});
+	s += '<button type="submit" class="btn btn-primary btn-block">CAST BALLOT</button>';
+	// INJECT ballot.
+	$('#ballotform').html(s);
+	$('#ballothead').html('Ballot for: ' + o.name);
+	$('#ballotdetail').html(o.detail);
+}
+function injectDetails(o){
+	// parse election details and populate to div.	
+	var s = '<h3>Ballot Details: ' + o.name + '</h3><p><div class="list-group">';
+	o.measures.forEach(function (arrayItem){
+		s += '<a class="list-group-item"><strong>' + arrayItem.detail + '</strong></a><div class="list-group">';
+		arrayItem.options.forEach( function (arrayItem){
+			s += '<a class="list-group-item">' + arrayItem.detail + '</a>';
+		});
+		s += '</div>';
+	});
+	s+='</div><button id="showBallot" name="showBallot" onclick="openBallot();" class="btn btn-primary btn-lg btn-block" role="button">Open Ballot</button></p>';
+	
+	// call to inject selected ballot details into ballot divs, assuming it will be displayed (since we have the data now).
+	injectBallot(o);
+	
+	$('#electiondetaildiv').html(s);
+	$('#electiondetaildiv').fadeIn(500);	
+}
+function openBallot(){
+	// display ballot & hide other stuff.
+	$('#ballotdiv').fadeIn(500);
+	$('#electionsdiv').fadeOut(400);
+	$('#electiondetaildiv').fadeOut(450);
+}
+function closeBallot(c){
+	//c(heck) option allows for confirmed close. Pass value for c to confirm closure.
+	if (c){
+	if (confirm('Do you wish to abandon this ballot?\n\nIf you wish to stay and complete your ballot, click CANCEL, then complete the ballot and click CAST BALLOT.')){
+		//$('#ballotdiv').fadeOut(400);
+		//$('#electionsdiv').fadeIn(500);
+		location.reload();
+	};
+	}else{
+	//	$('#ballotdiv').fadeOut(400);
+	//	$('#electionsdiv').fadeIn(500);		
+	location.reload();
+	}
+}
 </script>
     </body>
 </html>

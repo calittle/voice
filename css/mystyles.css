@@ -105,9 +105,7 @@ h1, h2, h3 {
 .panel-body {
     background-color:fLoralwhite;    
 }
-label,button.btn {
-    font-size: 1.5em;
-}
+
 button.btn{
     color: #374140;
     background-color:#D9CB9E;    
