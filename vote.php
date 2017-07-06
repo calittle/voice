@@ -106,7 +106,7 @@
 												}else{
 													echo ' <span class="label label-warning">Closed</span> ';
 												}
-												if (empty($row['Registrant Ballots'])){
+												if ($row['Voted']=='False'){
 													echo ' <span class="label label-danger">Not Voted</span> ';
 												}else{
 													echo ' <span class="label label-success">Voted</span> ';

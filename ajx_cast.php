@@ -104,7 +104,7 @@ EOD;
 						$check = openssl_verify($ballotdata,$signature,$public_key, OPENSSL_ALGO_SHA1);
 						
 						## Future use: store a private/public key pair for each user. Encrypt their ballots with private key. Decrypt on vote.
-						openssl_free_key($private_key);
+						#openssl_free_key($private_key);
 
 						$response['SSLsig']=$signature;						
 						
@@ -182,6 +182,8 @@ EOD;
 			$response['success'] = false;
 			$response['message'] = $errors;				
 		}
+		error_log($response['message']);
+		error_log(print_r($errors));
 		echo(json_encode($response));		
 		$stmt = null;
 		$pdo = null;			
