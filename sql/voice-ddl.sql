@@ -70,6 +70,8 @@ CREATE TABLE USERS (
                 HASH_ALGORITHM VARCHAR(50) NOT NULL,
                 SALT VARCHAR(50),
                 EMAIL VARCHAR(256) NOT NULL,
+                PRIVATEKEY LONGBLOB NULL,
+                PUBLICKEY LONGBLOB NULL,
                 PRIMARY KEY (USER_ID)
 );
 

@@ -3,10 +3,12 @@
 	$thispage='vote';
 	include 'ac.php'; 
 	try {
+			
+			
+		
 			$pdo 	= new PDO(DSN,DBUSER,DBPASS,array(PDO::ATTR_PERSISTENT => true));
-					
+			$stmt = null;					
 			$stmt	= $pdo->prepare('CALL registrant_get_elections(?)');
-
 			$stmt -> bindParam(1,$_SESSION['rid']);
 			$elections = array();
 			if ($stmt->execute()){
@@ -19,6 +21,30 @@
 					switch ($errs[1]){
 						default:							
 							error_log(print_r('Error '.$errs[1].': '.$errs[2], TRUE)); 								
+					}
+				}
+			}
+
+			$ballots = array();			
+			foreach($elections as $el){
+				$stmt = null;					
+				$stmt	= $pdo->prepare('CALL receipt_generate(?,?)');
+				$stmt -> bindParam(1,$_SESSION['rid']);
+				$stmt -> bindParam(2,$el['Election ID']);
+				$results = array();
+				if ($stmt->execute()){
+					while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
+						$results[]=$row;
+					}
+					# error_log('Election ('.$el['Election ID'].') Ballots('.count($results).')');
+					$ballots[$el['Election ID']]['ballots']=count($results);
+				}else{
+					$errs = $stmt->errorInfo();	
+					if (!empty($errs[1])) {						
+						switch ($errs[1]){
+							default:							
+								error_log(print_r('Error '.$errs[1].': '.$errs[2], TRUE)); 								
+						}
 					}
 				}
 			}
@@ -96,8 +122,8 @@
 						foreach ($elections as $row){
 			?>		
 							<tr>
-								<th id="<?=$row['Election ID']?>" scope="row">
-																				<?php
+								<th id="<?=$row['Election ID']?>" voted="<?=$ballots[$row['Election ID']]['ballots']?>" scope="row">
+						<?php
 												$electionBegin = strtotime(date($row['Start Date']));
 												$electionEnd = strtotime(date($row['End Date']));
 												$currentDateTime = date('Y-m-d H:i:s');
@@ -106,7 +132,7 @@
 												}else{
 													echo ' <span class="label label-warning">Closed</span> ';
 												}
-												if ($row['Voted']=='False'){
+												if ($ballots[$row['Election ID']]['ballots']==0){
 													echo ' <span class="label label-danger">Not Voted</span> ';
 												}else{
 													echo ' <span class="label label-success">Voted</span> ';
@@ -142,25 +168,9 @@
 				</form>
 				<!--
 				<button id="castBallotModalButton" name="castBallotModalButton"  class="btn btn-primary btn-lg btn-block" data-toggle="modal" data-target="#confirmBallotModal" role="button">CAST BALLOT</button><br/>				-->
-				<button id="closeBallot" name="closeBallot" onclick="closeBallot(1);" class="btn btn-primary btn-sm" role="button">Close Ballot</button>
+				<button id="closeBallotButton" name="closeBallotButton" onclick="closeBallot(1);" class="btn btn-primary btn-sm" role="button">Close Ballot</button>
 		</div> <!-- ballot panel -->
 		</div> <!-- ballot well -->
-		<!--<div class="modal fade" id="confirmBallotModal" tabindex="-1" role="dialog" aria-labelledby="confirmBallotModalLabel">
-			<div class="modal-dialog" role="document">
-				<div class="modal-content">
-					<div class="modal-header">
-						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-						<h4 class="modal-title" id="confirmBallotModalLabel">Confirm Ballot</h4>
-					</div>
-					<div class="modal-body">You are about to <em><strong>CAST THIS BALLOT</strong></em>. If you are satisfied with your choices, click the CAST BALLOT button below to continue. If you want to review your choices, click the Cancel button below to return to the ballot. If you click the CAST BALLOT button, your vote <strong>will be recorded</strong> and <strong>cannot be changed!<strong>
-					</div>
-					<div class="modal-footer">
-						<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-						<button type="button" data-dismiss="modal" id="castBallotButton" class="btn btn-primary">CAST BALLOT</button>
-					</div>
-				</div>
-			</div>
-		</div>		-->	
 	    <div class="alert alert-danger alert-dismissible" role="alert" id="errormessagediv" hidden>
 		    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
 				<span aria-hidden="true">&times;</span>
@@ -196,6 +206,8 @@ $(document).ready(function() {
 	
 	$('#ballotform').submit(function(event){
 		event.preventDefault();
+		if (!confirm("You are about to CAST your BALLOT in this election. Do you wish to continue?"))
+			return;
 		if (request){request.abort();}
 		var $form = $(this);
 		var $inputs = $form.find("input, button");
@@ -207,25 +219,31 @@ $(document).ready(function() {
 			data: serialdata,
 			success: function(data){
 				var o;
-				var sucksess=false;
+				var successValue=0;//0=false, 1=true
 				var msg='';
-				alert(data);
+				console.log(data);
 				try{
 					o = JSON.parse(data);
-					sucksess = o['success'];
+					successValue = o['success'];
 				}catch(err){
 					msg = err;
 				}
-				if (sucksess==true){
+				if (successValue==1){
 					console.log('Ballot cast: ' + data);
-					$inputs.prop("disabled",true);					
-					$('#successmessage').html("Your ballot was cast and stored in the system with your private key. ");
-					$('#successmessagediv').fadeIn(500);					
-					//closeBallot();
-				}
-				else{
-					console.log('Cast failure. Err=' + msg + '\n Data returned was:' + data);
-					this.error(this.xhr,'System administrators have been notified.','Err=' + msg + '\n Data returned was:' + data);
+					$inputs.prop("disabled",true);
+					if (o['provisional']==1)
+						postBallot("Your ballot was cast outside the timeframe of the election and has been marked provisional.");
+					else
+						postBallot("Your ballot was cast and stored in the system with your private key.");				}
+				else{					
+					//check if this ballot was already cast. In which case, not an error, but 
+					if (o['code']=='1062'){
+						$inputs.prop("disabled",true);
+						postBallot("You have already cast a ballot for this election; this ballot cannot be submitted.");
+					}else{
+						console.log('Cast failure. Err=' + msg + '\n Data returned was:' + data);
+						this.error(this.xhr,'System administrators have been notified.','Err=' + msg + '\n Data returned was:' + data);
+					}
 				}
 			},
 			error: function(jqXHR, textStatus, errorThrown){
@@ -239,6 +257,7 @@ $(document).ready(function() {
 	$('#elections tr').click(function(e){
 		if (request){request.abort();}
         var edata = "election=" + $(this).find("th").attr("id");
+        var voted = $(this).find("th").attr("voted");
 		$(this).prop("disabled",true);
 		request = $.ajax({
 			url: "ajx_election.php",
@@ -256,7 +275,7 @@ $(document).ready(function() {
 				}
 				if (sucksess==true){					
 					console.log('Election retrieved: ' + data);
-					injectDetails(o['elections'][0]);				
+					injectDetails(o['elections'][0],voted);				
 				}
 				else{
 					console.log('Unable to retrieve election data. Err=' + msg + '\n Data returned was:' + data);
@@ -320,7 +339,7 @@ function injectBallot(o){
 	$('#ballothead').html('Ballot for: ' + o.name);
 	$('#ballotdetail').html(o.detail);
 }
-function injectDetails(o){
+function injectDetails(o,voted){
 	// parse election details and populate to div.	
 	var s = '<h3>Ballot Details: ' + o.name + '</h3><p><div class="list-group">';
 	o.measures.forEach(function (arrayItem){
@@ -330,13 +349,21 @@ function injectDetails(o){
 		});
 		s += '</div>';
 	});
-	s+='</div><button id="showBallot" name="showBallot" onclick="openBallot();" class="btn btn-primary btn-lg btn-block" role="button">Open Ballot</button></p>';
+	if (voted>0)		
+		s+='</div><em>You have already cast a ballot in this election. Check your <a href="account.php">account</a> to review ballots cast.</p>';
+	else
+		s+='</div><button id="showBallot" name="showBallot" onclick="openBallot();" class="btn btn-primary btn-lg btn-block" role="button">Open new ballot</button></p>';
+		
+	
 	
 	// call to inject selected ballot details into ballot divs, assuming it will be displayed (since we have the data now).
 	injectBallot(o);
 	
 	$('#electiondetaildiv').html(s);
 	$('#electiondetaildiv').fadeIn(500);	
+}
+function showBallot(){
+	openBallot();
 }
 function openBallot(){
 	// display ballot & hide other stuff.
@@ -357,6 +384,14 @@ function closeBallot(c){
 	//	$('#electionsdiv').fadeIn(500);		
 	location.reload();
 	}
+}
+function postBallot(msg){	
+	$('#successmessage').html(msg);
+	$('#successmessagediv').fadeIn(500);						
+	document.getElementById('closeBallotButton').onclick = function(){ closeBallot(); };
+	
+	//closeBallot();
+
 }
 </script>
     </body>

@@ -1,4 +1,5 @@
 <?php 
+
 	session_start();
 	$thispage='account';
 	include 'ac.php'; 
@@ -77,7 +78,6 @@
 		
 			
 			$stmt	= $pdo->prepare('CALL registrant_get_elections(?)');
-
 			$stmt -> bindParam(1,$_SESSION['rid']);
 			$elections = array();
 			if ($stmt->execute()){
@@ -93,6 +93,33 @@
 					}
 				}
 			}
+			
+			$ballots = array();			
+			foreach($elections as $el){
+				$stmt = null;					
+				$stmt	= $pdo->prepare('CALL receipt_generate(?,?)');
+				$stmt -> bindParam(1,$_SESSION['rid']);
+				$stmt -> bindParam(2,$el['Election ID']);
+				$results = array();
+				if ($stmt->execute()){
+					while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
+						$results[]=$row;
+					}
+					#error_log('Election ('.$el['Election ID'].') Ballots('.count($results).')');
+					$ballots[$el['Election ID']]['ballots']=count($results);
+				}else{
+					$errs = $stmt->errorInfo();	
+					if (!empty($errs[1])) {						
+						switch ($errs[1]){
+							default:							
+								error_log(print_r('Error '.$errs[1].': '.$errs[2], TRUE)); 								
+						}
+					}
+				}
+			}
+			
+			
+			
 												
 			
 		}catch (PDOException $e){
@@ -226,7 +253,7 @@
 									foreach ($elections as $row){
 						?>		
 										<tr>
-											<th id="<?=$row['Election ID']?>" scope="row">
+											<th id="<?=$row['Election ID']?>" voted="<?=$ballots[$row['Election ID']]['ballots']?>" scope="row">
 											<?php
 												$electionBegin = strtotime(date($row['Start Date']));
 												$electionEnd = strtotime(date($row['End Date']));
@@ -236,12 +263,11 @@
 												}else{
 													echo ' <span class="label label-warning">Closed</span> ';
 												}
-												if (empty($row['Registrant Ballots'])){
+												if ($ballots[$row['Election ID']]['ballots']==0){
 													echo ' <span class="label label-danger">Not Voted</span> ';
 												}else{
 													echo ' <span class="label label-success">Voted</span> ';
-												}
-													
+												}													
 												?>											
 											</th>
 											<td><?=$row['Election Name']?></td>
@@ -260,6 +286,8 @@
 					<div id="electiondetaildiv" name="electiondetaildiv" class="well well-lg" hidden>
 						<h3>Election Detail</h3>
 						<p id="electiondetail" name="electiondetail"></p>
+					</div>
+					<div id="ballotdiv" name="ballotdiv" class="well well-lg" hidden>						
 					</div>
 					
 					
@@ -311,7 +339,26 @@
 				<div id="debug" class="tab-pane fade">
 					<div class="well well-lg">
 						<h3>Session Variables</h3>
-						<?=print_r($_SESSION)?>
+						<div class="table-responsive">
+							<table class="table table-hover">
+								<thead><tr><th>Variable</th><th>Value</th></tr></thead>
+								<tbody>			
+								<?php	foreach ($_SESSION as $key => $value){
+
+										switch ($key){
+											case 'privkey':
+											case 'pubkey':
+												$val = empty($value) ? 'EMPTY' : 'HIDDEN';
+												break;
+											default:
+												$val = $value;										
+										}
+										echo '<tr><td>'.$key.'</td><td>'.$val.'</td></tr>';
+									}
+									?>
+								</tbody>
+							</table>
+						</div>
 					</div>
 				</div>
 				
@@ -343,31 +390,7 @@
 								</tbody>
 							</table>
 						</div>
-					</div>
-					<!--div class="well well-lg">
-						<h3>Add a Location</h3>
-						<form name='locationform' id='locationform' method="POST" action="locations_form.php">					
-							<p class="help-block">You need to add, at a minimum, a residence location. You can also add a mailing location if you need a temporary mailing address.</p>
-							<div class="form-group">
-						    	<label for="street1Input">Address Line 1</label>
-								<p class="help-block">Enter the first line of your address, e.g. street number and name.</p>
-								<div class="input-group">
-									<span class="input-group-addon"><span class="glyphicon glyphicon-exclamation-sign"></span></span>
-									<input type="text" class="form-control" id="street1Input" name="street1Input" required>
-								</div>
-							</div>
-							<div class="form-group">
-						    	<label for="street2Input">Address Line 2</label>
-								<p class="help-block">Enter the second line of your address, e.g. apartment number.</p>
-								<div class="input-group">
-									<span class="input-group-addon"><span class="glyphicon glyphicon-exclamation-sign"></span></span>
-									<input type="text" class="form-control" id="street2Input" name="street2Input" required>
-								</div>
-							</div
-							<hr/>
-							<button type="submit" class="btn btn-default">Add Location!</button>
-						</form>
-					</div-->  
+					</div>					
 				</div>
 			</div>
 		</section>
@@ -404,37 +427,72 @@ $(document).ready(function($) {
 	var request;
 	$('#elections tr').click(function(e){
 		if (request){request.abort();}
-        var edata = "election=" + $(this).find("th").attr("id");
-		$(this).prop("disabled",true);
-		request = $.ajax({
-			url: "ajx_election.php",
-			type: "post",
-			data: edata,
-			success: function(data){
-				var o;
-				var sucksess=false;
-				var msg='';
-				try{
-					o = JSON.parse(data);
-					sucksess = o['success'];
-				}catch(err){
-					msg = err;
-				}
-				if (sucksess==true){					
-					console.log('Election retrieved: ' + data);
-					$('#electiondetail').html(populate_election(o['elections'][0]));
-					$('#electiondetaildiv').show();					
-				}
-				else{
-					console.log('Unable to retrieve election data. Err=' + msg + '\n Data returned was:' + data);
-					this.error(this.xhr,'Unable to retrieve election data: ',msg);
-				}
-			},
-			error: function(jqXHR, textStatus, errorThrown){
-				$('#errormessage').html("There was a problem processing your request and System administrators have been notified. (" + textStatus + errorThrown + ")");
-				$('#errormessagediv').show();		
-			}
-		});
+        var edata = "electionId=" + $(this).find("th").attr("id");
+        var voted = $(this).find("th").attr("voted");
+        $(this).prop("disabled",true);
+
+        if (voted>0){
+	        request = $.ajax({
+				url: "ajx_getballot.php",
+				type: "post",
+				data: edata,
+				success: function(data){
+					var o;
+					var sucksess=false;
+					var msg='';
+					try{
+						o = JSON.parse(data);
+						sucksess = o['success'];
+					}catch(err){
+						msg = err;
+					}
+					if (sucksess==true){					
+						console.log('Ballot retrieved: ' + data);
+						$('#ballotdiv').html(populate_ballot(o,o['count']));
+						$('#ballotdiv').show();					
+					}
+					else{
+						console.log('Unable to retrieve election data. Err=' + msg + '\n Data returned was:' + data);
+						this.error(this.xhr,'Unable to retrieve election data: ',msg);
+					}
+				},
+				error: function(jqXHR, textStatus, errorThrown){
+					$('#errormessage').html("There was a problem processing your request and System administrators have been notified. (" + textStatus + errorThrown + ")");
+					$('#errormessagediv').show();		
+				}			
+			});
+	        
+        }else{
+			request = $.ajax({
+				url: "ajx_election.php",
+				type: "post",
+				data: edata,
+				success: function(data){
+					var o;
+					var sucksess=false;
+					var msg='';
+					try{
+						o = JSON.parse(data);
+						sucksess = o['success'];
+					}catch(err){
+						msg = err;
+					}
+					if (sucksess==true){					
+						console.log('Election retrieved: ' + data);
+						$('#electiondetail').html(populate_election(o['elections'][0],voted));
+						$('#electiondetaildiv').show();					
+					}
+					else{
+						console.log('Unable to retrieve election data. Err=' + msg + '\n Data returned was:' + data);
+						this.error(this.xhr,'Unable to retrieve election data: ',msg);
+					}
+				},
+				error: function(jqXHR, textStatus, errorThrown){
+					$('#errormessage').html("There was a problem processing your request and System administrators have been notified. (" + textStatus + errorThrown + ")");
+					$('#errormessagediv').show();		
+				}			
+			});
+		}
      });
 	$('#passwordInput').keyup(function(e) {
 	     var strongRegex = new RegExp("^(?=.{8,})(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*\\W).*$", "g");
@@ -601,8 +659,17 @@ $(document).ready(function($) {
 		//request.always(function(){$inputs.prop("disabled",false)});
 	});
 });
-
-function populate_election(o){
+function populate_ballot(o,c){
+	var s = '<h3>Your Ballot Details</h3><div class="table-responsive"><table class="table table-hover"><thead><tr><th>Measure</th><th>Choice</th><th>Cast Time</th><th>Counted?</th><th>Provisional?</th><th>Validity Check</th></tr></thead><tbody>';	
+	for (var i = 1; i <= c; i++)
+	{
+		s += '<tr><td>' + o.ballots[i].measure + '</td><td>' + o.ballots[i].choice + '</td><td>' + o.ballots[i].casttime + '</td><td>' + o.ballots[i].counted + '</td><td>' + o.ballots[i].provisional + '</td><td>' + o.ballots[i].check + '</td></tr>';
+	}
+	
+	s += '</tbody></table>';
+	return s;
+}
+function populate_election(o,voted){
 // parse election details and populate to div.	
 	// get appropriate election (id = eid);
 	//	o['elections'],eid
@@ -614,8 +681,11 @@ function populate_election(o){
 			s += '<li>' + arrayItem.detail + '</li>';
 		});
 		s += '</ul></li>';
-	});
-	s+='</ol><hr/><strong>To vote in this election, go to the <a href="vote.php">vote</a> page!</strong>';
+	});	
+	if (voted>0)		
+		s+='</ol><hr/><strong>You have already voted in this election.</strong>';
+	else
+		s+='</ol><hr/><strong>To vote in this election, go to the <a href="vote.php">vote</a> page!</strong>';
 	return s;
 }
 </script>

@@ -31,9 +31,14 @@ BEGIN
 	-- SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'X';
     SELECT
 		M.MEASURE_DETAIL as 'Measure',
+        B.MEASURE_ID as 'Measure ID',
         O.OPTION_DETAIL  as 'Chosen Option',
+        B.OPTION_ID as 'Chosen ID',
         B.CREATED as 'Cast Time',
-        B.SIGNATURE as 'Electronic Signature'
+        B.SIGNATURE as 'Signature',
+        B.PROVISIONAL as 'Provisional',
+        B.IS_COUNTED as 'Counted',
+        B.COUNTTIME as 'Count Time'        
 	FROM BALLOTS B
 	INNER JOIN `MEASURES` M on M.MEASURE_ID = B.MEASURE_ID
 	INNER JOIN `OPTIONS` O on O.OPTION_ID = B.OPTION_ID
@@ -68,30 +73,14 @@ DROP PROCEDURE IF EXISTS `VOICE`.`registrant_get_elections` $$
 CREATE PROCEDURE `VOICE`.`registrant_get_elections` (IN regid bigint(20))
 COMMENT 'List registrant''s eligible elections.'
 BEGIN
-	SELECT 
+SELECT 
 		E.`ELECTION_ID` as 'Election ID',
         E.`ELECTION_NAME` as 'Election Name',
         E.`ELECTION_DETAIL` as 'Election Detail',        
         E.`DATE_START` AS 'Start Date',
-        E.`DATE_END` as 'End Date',
-        IF (COUNT(B.`REGISTRANT_ID`)>1,1,0) as 'Registrant Ballots'		
+        E.`DATE_END` as 'End Date'        
 	FROM `ELECTIONS` E    
-    INNER JOIN BALLOTS B on B.`ELECTION_ID` = E.`ELECTION_ID`
-    WHERE E.`ELECTION_ID` IN (SELECT ELECTION_ID FROM ELECTION_DISTRICTS WHERE DISTRICT_ID IN (SELECT DISTRICT_ID FROM REGISTRANT_DISTRICTS WHERE REGISTRANT_ID = regid))
-    AND B.`REGISTRANT_ID` = 34
-    GROUP BY E.`ELECTION_ID`
-	UNION
-    SELECT 
-		E.`ELECTION_ID` as 'Election ID',
-        E.`ELECTION_NAME` as 'Election Name',
-        E.`ELECTION_DETAIL` as 'Election Detail',        
-        E.`DATE_START` AS 'Start Date',
-        E.`DATE_END` as 'End Date',
-        0 as 'Registrant Ballots'
-	FROM `ELECTIONS` E    
-    WHERE E.`ELECTION_ID` IN (SELECT ELECTION_ID FROM ELECTION_DISTRICTS WHERE DISTRICT_ID IN (SELECT DISTRICT_ID FROM REGISTRANT_DISTRICTS WHERE REGISTRANT_ID = regid))
-	AND E.`ELECTION_ID` NOT IN (SELECT ELECTION_ID FROM BALLOTS WHERE REGISTRANT_ID = 34) 
-    GROUP BY E.`ELECTION_ID`;
+    WHERE E.`ELECTION_ID` IN (SELECT ELECTION_ID FROM ELECTION_DISTRICTS WHERE DISTRICT_ID IN (SELECT DISTRICT_ID FROM REGISTRANT_DISTRICTS WHERE REGISTRANT_ID = regid))    ;    
 END $$
 DELIMITER ; $$
 
@@ -635,21 +624,35 @@ CREATE PROCEDURE `VOICE`.`users_list` ()
 BEGIN
 	SELECT USERID,USERNAME,EMAIL from USERS;
 END $$
-
-/* NOTE: hash and salt must be generated outside of database. */
-DROP PROCEDURE IF EXISTS `VOICE`.`users_add2` $$
-CREATE PROCEDURE `VOICE`.`users_add2` (IN username varchar(256),IN email varchar(256), IN passwordhash varchar(256), IN hashalg varchar(50),IN salt varchar(50))
+DELIMITER $$
+DROP PROCEDURE IF EXISTS `VOICE`.`users_set_keys` $$
+CREATE PROCEDURE `VOICE`.`users_set_keys` (IN userid bigint(20), IN publickey longblob, IN privatekey longblob)
 BEGIN
-	INSERT INTO `USERS` (`USER_NAME`,`EMAIL`,`PWD_HASH`,`HASH_ALGORITHM`,`SALT`) VALUES (username,email,passwordhash,hashalg,salt);    
+	UPDATE `USERS` SET `PRIVATEKEY` = privatekey and `PUBLICKEY` =publickey WHERE `USER_ID` = userid;
+    COMMIT;
+END $$
+DROP PROCEDURE IF EXISTS `VOICE`.`users_get_keys` $$
+CREATE PROCEDURE `VOICE`.`users_get_keys` (IN userid bigint(20), OUT publickey longblob, OUT privatekey longblob)
+BEGIN
+	SELECT PUBLICKEY,PRIVATEKEY FROM USERS WHERE USER_ID = userid;
+END $$
+DELIMITER ; $$
+/* NOTE: hash and salt must be generated outside of database. */
+DELIMITER $$
+DROP PROCEDURE IF EXISTS `VOICE`.`users_add2` $$
+CREATE PROCEDURE `VOICE`.`users_add2` (IN username varchar(256),IN email varchar(256), IN passwordhash varchar(256), IN hashalg varchar(50),IN salt varchar(50), IN publickey longblob, IN privatekey longblob)
+BEGIN
+	INSERT INTO `USERS` (`USER_NAME`,`EMAIL`,`PWD_HASH`,`HASH_ALGORITHM`,`SALT`,`PRIVATEKEY`,`PUBLICKEY`) VALUES (username,email,passwordhash,hashalg,salt,privatekey,publickey);    
     COMMIT;
 END $$
 DROP PROCEDURE IF EXISTS `VOICE`.`users_add` $$
-CREATE PROCEDURE `VOICE`.`users_add` (IN username varchar(256),IN email varchar(256), IN passwordhash varchar(256), IN hashalg varchar(50),IN salt varchar(50),OUT newid bigint(20))
+CREATE PROCEDURE `VOICE`.`users_add` (IN username varchar(256),IN email varchar(256), IN passwordhash varchar(256), IN hashalg varchar(50),IN salt varchar(50),IN publickey longblob, IN privatekey longblob,OUT newid bigint(20))
 BEGIN
-	INSERT INTO `USERS` (`USER_NAME`,`EMAIL`,`PWD_HASH`,`HASH_ALGORITHM`,`SALT`) VALUES (username,email,passwordhash,hashalg,salt);    
+	INSERT INTO `USERS` (`USER_NAME`,`EMAIL`,`PWD_HASH`,`HASH_ALGORITHM`,`SALT`,`PRIVATEKEY`,`PUBLICKEY`) VALUES (username,email,passwordhash,hashalg,salt,privatekey,publickey);    
     SELECT LAST_INSERT_ID() INTO newid;
     COMMIT;
 END $$
+DELIMITER ; $$
 DROP PROCEDURE IF EXISTS `VOICE`.`users_update_password` $$
 CREATE PROCEDURE `VOICE`.`users_update_password` (IN userid bigint(20),IN passwordhash varchar(256), IN hashalg varchar(50),IN salt varchar(50))
 COMMENT 'Update a user password'

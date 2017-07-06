@@ -3,39 +3,6 @@
 	require_once 'config.php';
 if ($_SERVER['REQUEST_METHOD'] == 'GET') 
 {
-# use this for testing.
-/*
-		$username = 'Test2';
-		$userpass = 'Password123';
-		$useremail = 'test@123.com';
-		$hashcost = 10;
-		$salt = strtr(base64_encode(mcrypt_create_iv(16, MCRYPT_DEV_URANDOM)),'+','.');
-		$alg = '$2a$%02d$';
-		$salt = sprintf($alg,$hashcost) . $salt;
-		$userpass = crypt($userpass,$salt);
-
-		try {			
-			$pdo 	= new PDO(DSN,DBUSER,DBPASS);				
-			$sql	= 'call users_add(?,?,?,?,?,@newid)';
-			$stmt	= $pdo->prepare($sql);						
-			$stmt -> bindParam(1, $username, PDO::PARAM_STR,256);
-			$stmt -> bindParam(2, $useremail, PDO::PARAM_STR,256);
-			$stmt -> bindParam(3, $userpass, PDO::PARAM_STR,256);
-			$stmt -> bindParam(4, $alg, PDO::PARAM_STR,50);
-			$stmt -> bindParam(5, $salt, PDO::PARAM_STR,50);
-			$stmt -> execute();
-			$stmt -> closeCursor();
-
-			$res = $pdo->query('SELECT @newid AS USER_ID')->fetch(PDO::FETCH_ASSOC);			
-			echo "<hr/>NewID Results:\n";
-			foreach ($res as $key => $val) {
-			    print "$key = $val\n";
-			}
-			
-		} catch (PDOException $e){
-			echo "PDO Exception: " . $e->getMessage();				
-		}	
-		*/
 	echo "Verb not supported.";	
 }elseif ($_SERVER['REQUEST_METHOD'] == 'POST') 
 {
@@ -73,16 +40,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET')
 		$alg = "$2a$%02d$";
 		$salt = sprintf($alg,$hashcost) . $salt;
 		$userpass = crypt($userpass_unhash,$salt);
-
+		$keys = array();
+		createUserKeys();
+		$pbK = getUserPublicKey();
+		$pvK = getUserPrivateKey();
+		
 		try {
 			$pdo 	= new PDO(DSN,DBUSER,DBPASS,array(PDO::ATTR_PERSISTENT => true));				
-			$sql	= 'call users_add(?,?,?,?,?,@newid)';
+			$sql	= 'call users_add(?,?,?,?,?,?,?,@newid)';
 			$stmt	= $pdo->prepare($sql);						
 			$stmt -> bindParam(1, $username, PDO::PARAM_STR,256);
 			$stmt -> bindParam(2, $useremail, PDO::PARAM_STR,256);
 			$stmt -> bindParam(3, $userpass, PDO::PARAM_STR,256);
 			$stmt -> bindParam(4, $alg, PDO::PARAM_STR,50);
 			$stmt -> bindParam(5, $salt, PDO::PARAM_STR,50);
+			$stmt -> bindParam(6, $pbK);
+			$stmt -> bindParam(7, $pvK);
 			$stmt -> execute();
 			$stmt -> closeCursor();
 			$errs = $stmt->errorInfo();
