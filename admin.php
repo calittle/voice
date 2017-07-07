@@ -3,133 +3,6 @@
 	$thispage = 'admin';
 	include_once 'ac.php';
 	include_once 'roles.php';
-try {
-			$pdo 	= new PDO(DSN,DBUSER,DBPASS,array(PDO::ATTR_PERSISTENT => true));
-
-			$stmt	= $pdo->prepare('CALL registrant_get_basic(?)');
-			$stmt -> bindParam(1,$_SESSION['rid']);
-			$registrant = array();
-			if ($stmt->execute()){
-				while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
-					$registrant[]=$row;
-				}
-			}else{
-				$errs = $stmt->errorInfo();	
-				if (!empty($errs[1])) {						
-					switch ($errs[1]){
-						default:							
-							error_log(print_r('Error '.$errs[1].': '.$errs[2], TRUE)); 								
-					}
-				}
-			}
-
-			$stmt	= $pdo->prepare('CALL registrant_get_districts(?)');
-			$stmt -> bindParam(1,$_SESSION['rid']);
-			$districts = array();
-			if ($stmt->execute()){
-				while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
-					$districts[]=$row;
-				}
-			}else{
-				$errs = $stmt->errorInfo();	
-				if (!empty($errs[1])) {						
-					switch ($errs[1]){
-						default:							
-							error_log(print_r('Error '.$errs[1].': '.$errs[2], TRUE)); 								
-					}
-				}
-			}
-							
-			$stmt	= $pdo->prepare('CALL registrant_get_addresses(?)');
-			$stmt -> bindParam(1,$_SESSION['rid']);
-			$locations = array();
-			if ($stmt->execute()){
-				while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
-					$locations[]=$row;
-				}
-			}else{
-				$errs = $stmt->errorInfo();	
-				if (!empty($errs[1])) {						
-					switch ($errs[1]){
-						default:							
-							error_log(print_r('Error '.$errs[1].': '.$errs[2], TRUE)); 								
-					}
-				}
-			}		
-			
-			$stmt	= $pdo->prepare('CALL user_roles(?,?)');
-
-			$stmt -> bindParam(1,$_SESSION['uid']);
-			$stmt -> bindParam(2,$_SESSION['username']);
-			$roles = array();
-			if ($stmt->execute()){
-				while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
-					$roles[]=$row;
-				}
-			}else{
-				$errs = $stmt->errorInfo();	
-				if (!empty($errs[1])) {						
-					switch ($errs[1]){
-						default:							
-							error_log(print_r('Error '.$errs[1].': '.$errs[2], TRUE)); 								
-					}
-				}
-			}											
-		
-			
-			$stmt	= $pdo->prepare('CALL registrant_get_elections(?)');
-			$stmt -> bindParam(1,$_SESSION['rid']);
-			$elections = array();
-			if ($stmt->execute()){
-				while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
-					$elections[]=$row;
-				}
-			}else{
-				$errs = $stmt->errorInfo();	
-				if (!empty($errs[1])) {						
-					switch ($errs[1]){
-						default:							
-							error_log(print_r('Error '.$errs[1].': '.$errs[2], TRUE)); 								
-					}
-				}
-			}
-			
-			$ballots = array();			
-			foreach($elections as $el){
-				$stmt = null;					
-				$stmt	= $pdo->prepare('CALL receipt_generate(?,?)');
-				$stmt -> bindParam(1,$_SESSION['rid']);
-				$stmt -> bindParam(2,$el['Election ID']);
-				$results = array();
-				if ($stmt->execute()){
-					while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
-						$results[]=$row;
-					}
-					#error_log('Election ('.$el['Election ID'].') Ballots('.count($results).')');
-					$ballots[$el['Election ID']]['ballots']=count($results);
-				}else{
-					$errs = $stmt->errorInfo();	
-					if (!empty($errs[1])) {						
-						switch ($errs[1]){
-							default:							
-								error_log(print_r('Error '.$errs[1].': '.$errs[2], TRUE)); 								
-						}
-					}
-				}
-			}
-			
-			
-			
-												
-			
-		}catch (PDOException $e){
-			echo($e->getMessage());
-			die();
-		}
-		finally{
-			$stmt = null;
-			$pdo = null;			
-		}	
 
 ?>
 
@@ -212,6 +85,29 @@ try {
 				<div id="registrants" class="tab-pane fade in out">
 					<div class="well well-lg">
 						<h4>Registrants</h4>
+						<p>Process approval by clicking on <span class="label label-default">Approve</span> or <span class="label label-default">Reject</span> label.</p>
+						<div class="table-responsive">
+							<table id="usertable" name="usertable" class="table table-hover">
+								<thead><tr>
+										<th>ID</th>
+										<th>UID</th>
+										<th>Name</th>
+										<th>DoB</th>
+										<th>Phone</th>
+										<th>State ID</th>
+										<th>Fed. ID</th>
+										<th>Party</th>
+										<th>State</th>
+										<th>Appr.</th>
+										<th>Affirm</th></tr>
+								</thead>
+								<tbody>	
+<?php 
+	registrantList();
+?>										
+								</tbody>
+							</table>
+						</div>
 					</div>
 				</div>
 				
@@ -307,11 +203,13 @@ function deleteUser(u){
 	$('#errormessagediv').fadeIn(500);	
 	$('#errormessagediv').fadeOut(3000);	
 }
-function revokeUserRole(u,r){
+function ajaxIt(d){
+	console.log('AJAX String:' + d);
+	
 	$('#errormessage').html('');
-	$('#errormessagediv').hide();
+	$('#errormessagediv').hide();	
 	if (request){request.abort();}
-	var edata = "function=revokerole&par1=" + u + "&par2=" + r;
+	var edata = d;
 	var o;
 	request = $.ajax({
 			url: "ajx_functions.php",
@@ -325,6 +223,8 @@ function revokeUserRole(u,r){
 					//o = JSON.parse(data);
 					successMsg = data['success'];
 					msg = data['message'];
+					console.log('RESPONSE:' + data);
+					console.log(data['function'] + ' results: ' + data['success']);
 				}catch(err){
 					msg = err;
 				}
@@ -334,6 +234,7 @@ function revokeUserRole(u,r){
 					$('#successmessagediv').fadeIn(500);
 					$('#successmessagediv').fadeOut(2500);
 					$('#errormessagediv').hide();
+					location.reload();
 				}
 				else{
 					console.log('Unable to execute ' + data['function'] + '. ' + msg + '. Data returned: [' + data + ']');
@@ -345,46 +246,18 @@ function revokeUserRole(u,r){
 				$('#errormessagediv').fadeIn(500);	
 			}
 		});	
-
+}
+function rejectRegistrant(r){
+	ajaxIt("function=rejectregistrant&par1=" + r);
+}
+function approveRegistrant(r){
+	ajaxIt("function=approveregistrant&par1=" + r);
+}
+function revokeUserRole(u,r){
+	ajaxIt("function=revokerole&par1=" + u + "&par2=" + r)
 }
 function addUserRole(u,r){
-	$('#errormessage').html('');
-	$('#errormessagediv').hide();
-	if (request){request.abort();}
-	var edata = "function=addrole&par1=" + u + "&par2=" + r;
-	var o;
-	request = $.ajax({
-			url: "ajx_functions.php",
-			type: "post",
-			data: edata,
-			dataType: "json",
-			success: function(data){
-				var successMsg=false;
-				var msg='';
-				try{
-					//o = JSON.parse(data);
-					successMsg = data['success'];
-					msg = data['message'];
-				}catch(err){
-					msg = err;
-				}
-				if (successMsg==true){
-					console.log(data['function'] + ' results: ' + data['success']);
-					$('#successmessage').html(msg);
-					$('#successmessagediv').fadeIn(500);
-					$('#successmessagediv').fadeOut(2500);
-					$('#errormessagediv').hide();
-				}
-				else{
-					console.log('Unable to execute ' + data['function'] + '. ' + msg + '. Data returned: [' + data + ']');
-					this.error(this.xhr,'Unable to perform that request; ',msg);
-				}
-			},
-			error: function(jqXHR, textStatus, errorThrown){
-				$('#errormessage').html(textStatus + errorThrown);
-				$('#errormessagediv').fadeIn(500);	
-			}
-		});	
+	ajaxIt("function=addrole&par1=" + u + "&par2=" + r);
 }
 </script>
     </body>

@@ -1144,4 +1144,26 @@ FOR EACH ROW BEGIN
     INSERT INTO REGISTRANT_DISTRICTS (`REGISTRANT_ID`,`DISTRICT_ID`) VALUES (NEW.REGISTRANT_ID,(SELECT DISTRICT_ID FROM DISTRICTS WHERE DISTRICT = 'Sample District'));    
 END $$
 DELIMITER ; $$
+
+DELIMITER $$
+DROP PROCEDURE IF EXISTS `VOICE`.`registrants_list` $$
+CREATE PROCEDURE `VOICE`.`registrants_list` ()
+COMMENT 'List registrants.'
+BEGIN
+	SELECT 
+    REGISTRANT_ID as 'RID',
+    USER_ID as 'UID',
+    CONCAT(F_NAME,' ',M_NAME,' ',L_NAME,' ',Suffix) as 'NAME',
+    DOB as 'Birth Date',
+    Phone as 'Phone',
+    STATEID as 'State ID',
+    FEDERAL_ID as 'Fed ID',
+	PARTYCD as 'Party',
+    STATECD as 'State',
+    APPROVAL_STATE as 'Approval',
+    AFFIRM_STATE as 'Affirm'    
+    FROM REGISTRANTS;
+END $$
+DELIMITER ; $$
+
 COMMIT;

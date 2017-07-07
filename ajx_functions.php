@@ -18,7 +18,13 @@
 			break;
 		case 'revokerole':
 			$results = userRevokeRole($par1,$par2);
-			break;		
+			break;
+		case 'approveregistrant':
+			$results = registrantSetApproved($par1);
+			break;
+		case 'rejectregistrant':
+			$results = registrantSetRejected($par1);
+			break;
 		default:
 			break;
 	}

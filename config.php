@@ -5,7 +5,79 @@ define('DBPASS','1385362127Maya@123@');
 define('DBPORT','3306');
 
 $pdo 	= new PDO(DSN,DBUSER,DBPASS,array(PDO::ATTR_PERSISTENT => true));
-
+function registrantList(){
+	$errors = array();
+	$aNull = null;
+	$ret = array();
+	if(!empty($errors)){
+		$ret['message'] = $errors;
+		$ret['success'] = false;
+	}else{
+		try {
+			$pdo 	= new PDO(DSN,DBUSER,DBPASS,array(PDO::ATTR_PERSISTENT => true));				
+			$sql	= 'call registrants_list()';
+			$stmt	= $pdo->prepare($sql);						
+			$stmt -> execute();
+			$errs = $stmt->errorInfo();						
+			if (empty($errs[1])) {
+				$ret['success'] = true;
+				$users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+				$stmt -> closeCursor();
+				
+				foreach ($users as $user)
+				{		
+					echo '<tr><td scope="row">'.$user['RID'].'</td>';
+					echo '<td>'.$user['UID'].'</td>';
+					echo '<td>'.$user['NAME'].'</td>';
+					echo '<td>'.$user['Birth Date'].'</td>';
+					echo '<td>'.$user['Phone'].'</td>';
+					echo '<td>'.$user['State ID'].'</td>';
+					echo '<td>'.$user['Fed ID'].'</td>';
+					echo '<td>'.$user['Party'].'</td>';
+					echo '<td>'.$user['State'].'</td>';
+					switch ($user['Approval']){
+						case "1":
+							echo '<td><span class="label label-primary">Approved</span><br/><a href="#" onclick="rejectRegistrant('.$user['RID'].');"><span class="label label-default">Reject</span></a></td>';
+							break;
+						case "0":
+							echo '<td><span class="label label-default">Approve</span><br/><a href="#" onclick="approveRegistrant('.$user['RID'].');"><span class="label label-default">Approve</span></a></td>';
+							break;
+						case "2":
+							echo '<td><span class="label label-danger">Rejected</span><br/><a href="#" onclick="approveRegistrant('.$user['RID'].');"><span class="label label-default">Approve</span></a></td>';
+							break;
+					}
+					if ($user['Affirm']=="1"){
+						echo '<td><span class="label label-primary">Affirmed</span></td>';
+					}else{
+						echo '<td><span class="label label-danger">NOT AFFIRMED!</span></td>';						
+					}
+					//echo '<td>?</td>';
+					echo '</tr>';
+				}
+			}else{
+				// On failure, perform any post-operation activity here, e.g. determine error(s).
+				$ret['success'] = false;
+				// Use this switch to capture database error conditions.
+				switch ($errs[1]){
+					//case "1062":
+					//	$ret['message'] = 'Duplicate record exists.';
+					//	break;
+					default:
+						$ret['message'] = 'There seems to be a problem. System administrators have been notified.';
+						// Log error to PHP console. Could also return this message to caller, in case
+						// it needs to be handled.
+						error_log(print_r('Error '.$errs[1].': '.$errs[2], TRUE)); 								
+						$ret['errors'] = 'Error '.$errs[1].': '.$errs[2];
+				}
+			}
+	
+		}catch (PDOException $e){
+			// Catch-all error trap.
+			$ret['success'] = false;
+			$ret['message'] = $e->getMessage();				
+		}	
+	}		
+}
 function registrantUnsetDistrict($reg,$dis){
 	// $errors holds error messages for this function.
 	$errors = array();
@@ -117,16 +189,13 @@ function registrantSetDistrict($reg,$dis){
 	}		
 }
 function registrantSetApproved($reg){
-	// $errors holds error messages for this function.
 	$errors = array();
-	// $ret holds return values for this function.
-	// Returns:
-	//	message - applicable message(s)
-	//	success - true|false success of operation. If false, error messages expected in 'message'.
 	$ret = array();
-	
-	// precheck function parameters here. 	
-	// add failures to $errors.
+	if (empty($reg))
+	{
+		$errors[] = 'Registrant ID cannot be empty.';
+	}	
+	$ret['function'] = 'registrantSetApproved';
 	
 	if(!empty($errors)){
 		$ret['message'] = $errors;
@@ -134,54 +203,40 @@ function registrantSetApproved($reg){
 	}else{
 		try {
 			$pdo 	= new PDO(DSN,DBUSER,DBPASS,array(PDO::ATTR_PERSISTENT => true));				
-			// set up stored procedure here. OUT params should be last, prefixed by @.
-			$sql	= 'call SOMEFUNCTION(?,@newid)';
+			$sql	= 'call registrant_set_approved(?)';
+			$aNull = null;
 			$stmt	= $pdo->prepare($sql);						
-			$stmt -> bindParam(1, $username); #, PDO::PARAM_STR,256); <- not necessary to use explicit typing, but here for reference.
+			$stmt -> bindParam(1, $reg); 
 			$stmt -> execute();
 			$stmt -> closeCursor();
 			$errs = $stmt->errorInfo();						
 			if (empty($errs[1])) {
-				// On success, perform any post-operation activity here, e.g. set message.
 				$ret['success'] = true;
-				
-				// Use this to obtain OUT parameter values and do something with them.
-				#$res = $pdo->query('SELECT @newid AS USER_ID')->fetch(PDO::FETCH_ASSOC);			
-				#$ret['message'] = 'User created ' . $res['USER_ID'];
+				$ret['message'] = 'Registrant approved.';
 			}else{
-				// On failure, perform any post-operation activity here, e.g. determine error(s).
 				$ret['success'] = false;
-				// Use this switch to capture database error conditions.
-				switch ($errs[1]){
-					//case "1062":
-					//	$ret['message'] = 'Duplicate record exists.';
-					//	break;
+				switch ($errs[1]){					
 					default:
 						$ret['message'] = 'There seems to be a problem. System administrators have been notified.';
-						// Log error to PHP console. Could also return this message to caller, in case
-						// it needs to be handled.
 						error_log(print_r('Error '.$errs[1].': '.$errs[2], TRUE)); 								
 						$ret['errors'] = 'Error '.$errs[1].': '.$errs[2];
 				}
 			}
 		}catch (PDOException $e){
-			// Catch-all error trap.
 			$ret['success'] = false;
 			$ret['message'] = $e->getMessage();				
 		}	
-	}		
+	}	
+	echo json_encode($ret);
 }
 function registrantUnsetApproved($reg){
-	// $errors holds error messages for this function.
 	$errors = array();
-	// $ret holds return values for this function.
-	// Returns:
-	//	message - applicable message(s)
-	//	success - true|false success of operation. If false, error messages expected in 'message'.
 	$ret = array();
-	
-	// precheck function parameters here. 	
-	// add failures to $errors.
+	if (empty($reg))
+	{
+		$errors[] = 'Registrant ID cannot be empty.';
+	}	
+	$ret['function'] = 'registrantUnsetApproved';
 	
 	if(!empty($errors)){
 		$ret['message'] = $errors;
@@ -189,54 +244,40 @@ function registrantUnsetApproved($reg){
 	}else{
 		try {
 			$pdo 	= new PDO(DSN,DBUSER,DBPASS,array(PDO::ATTR_PERSISTENT => true));				
-			// set up stored procedure here. OUT params should be last, prefixed by @.
-			$sql	= 'call SOMEFUNCTION(?,@newid)';
+			$sql	= 'call registrant_unset_approved(?)';
+			$aNull = null;
 			$stmt	= $pdo->prepare($sql);						
-			$stmt -> bindParam(1, $username); #, PDO::PARAM_STR,256); <- not necessary to use explicit typing, but here for reference.
+			$stmt -> bindParam(1, $reg); 
 			$stmt -> execute();
 			$stmt -> closeCursor();
 			$errs = $stmt->errorInfo();						
 			if (empty($errs[1])) {
-				// On success, perform any post-operation activity here, e.g. set message.
 				$ret['success'] = true;
-				
-				// Use this to obtain OUT parameter values and do something with them.
-				#$res = $pdo->query('SELECT @newid AS USER_ID')->fetch(PDO::FETCH_ASSOC);			
-				#$ret['message'] = 'User created ' . $res['USER_ID'];
+				$ret['message'] = 'Registrant unapproved.';
 			}else{
-				// On failure, perform any post-operation activity here, e.g. determine error(s).
 				$ret['success'] = false;
-				// Use this switch to capture database error conditions.
-				switch ($errs[1]){
-					//case "1062":
-					//	$ret['message'] = 'Duplicate record exists.';
-					//	break;
+				switch ($errs[1]){					
 					default:
 						$ret['message'] = 'There seems to be a problem. System administrators have been notified.';
-						// Log error to PHP console. Could also return this message to caller, in case
-						// it needs to be handled.
 						error_log(print_r('Error '.$errs[1].': '.$errs[2], TRUE)); 								
 						$ret['errors'] = 'Error '.$errs[1].': '.$errs[2];
 				}
 			}
 		}catch (PDOException $e){
-			// Catch-all error trap.
 			$ret['success'] = false;
 			$ret['message'] = $e->getMessage();				
 		}	
-	}		
-}	
+	}	
+	echo json_encode($ret);
+}
 function registrantSetRejected($reg){
-	// $errors holds error messages for this function.
 	$errors = array();
-	// $ret holds return values for this function.
-	// Returns:
-	//	message - applicable message(s)
-	//	success - true|false success of operation. If false, error messages expected in 'message'.
 	$ret = array();
-	
-	// precheck function parameters here. 	
-	// add failures to $errors.
+	if (empty($reg))
+	{
+		$errors[] = 'Registrant ID cannot be empty.';
+	}	
+	$ret['function'] = 'registrantSetRejected';
 	
 	if(!empty($errors)){
 		$ret['message'] = $errors;
@@ -244,42 +285,31 @@ function registrantSetRejected($reg){
 	}else{
 		try {
 			$pdo 	= new PDO(DSN,DBUSER,DBPASS,array(PDO::ATTR_PERSISTENT => true));				
-			// set up stored procedure here. OUT params should be last, prefixed by @.
-			$sql	= 'call SOMEFUNCTION(?,@newid)';
+			$sql	= 'call registrant_set_rejected(?)';
+			$aNull = null;
 			$stmt	= $pdo->prepare($sql);						
-			$stmt -> bindParam(1, $username); #, PDO::PARAM_STR,256); <- not necessary to use explicit typing, but here for reference.
+			$stmt -> bindParam(1, $reg); 
 			$stmt -> execute();
 			$stmt -> closeCursor();
 			$errs = $stmt->errorInfo();						
 			if (empty($errs[1])) {
-				// On success, perform any post-operation activity here, e.g. set message.
 				$ret['success'] = true;
-				
-				// Use this to obtain OUT parameter values and do something with them.
-				#$res = $pdo->query('SELECT @newid AS USER_ID')->fetch(PDO::FETCH_ASSOC);			
-				#$ret['message'] = 'User created ' . $res['USER_ID'];
+				$ret['message'] = 'Registrant rejected.';
 			}else{
-				// On failure, perform any post-operation activity here, e.g. determine error(s).
 				$ret['success'] = false;
-				// Use this switch to capture database error conditions.
-				switch ($errs[1]){
-					//case "1062":
-					//	$ret['message'] = 'Duplicate record exists.';
-					//	break;
+				switch ($errs[1]){					
 					default:
 						$ret['message'] = 'There seems to be a problem. System administrators have been notified.';
-						// Log error to PHP console. Could also return this message to caller, in case
-						// it needs to be handled.
 						error_log(print_r('Error '.$errs[1].': '.$errs[2], TRUE)); 								
 						$ret['errors'] = 'Error '.$errs[1].': '.$errs[2];
 				}
 			}
 		}catch (PDOException $e){
-			// Catch-all error trap.
 			$ret['success'] = false;
 			$ret['message'] = $e->getMessage();				
 		}	
-	}		
+	}	
+	echo json_encode($ret);
 }
 function districtAdd($dist){
 	// $errors holds error messages for this function.
@@ -512,11 +542,8 @@ function userAddRole($usr,$role){
 	echo json_encode($ret);
 }
 function userRevokeRole($usr,$role){
-	// $errors holds error messages for this function.
 	$errors = array();
 	$ret = array();
-	
-	// precheck function parameters here. 	
 	if (empty($role))
 	{
 		$errors[] = 'Role cannot be empty.';
@@ -524,7 +551,6 @@ function userRevokeRole($usr,$role){
 	if (empty($usr)){
 		$errors[] = 'User cannot be empty.';
 	}
-	// add failures to $errors.
 	$ret['function'] = 'userRevokeRole';
 	
 	if(!empty($errors)){
@@ -533,8 +559,6 @@ function userRevokeRole($usr,$role){
 	}else{
 		try {
 			$pdo 	= new PDO(DSN,DBUSER,DBPASS,array(PDO::ATTR_PERSISTENT => true));				
-			// set up stored procedure here. OUT params should be last, prefixed by @.
-			#`` (IN userid bigint(20), IN roleid bigint (20), IN username varchar(256), IN role varchar(64))
 			$sql	= 'call users_delete_role(?,?,?,?)';
 			$aNull = null;
 			$stmt	= $pdo->prepare($sql);						
@@ -546,27 +570,18 @@ function userRevokeRole($usr,$role){
 			$stmt -> closeCursor();
 			$errs = $stmt->errorInfo();						
 			if (empty($errs[1])) {
-				// On success, perform any post-operation activity here, e.g. set message.
 				$ret['success'] = true;
 				$ret['message'] = 'Role revoked from user.';
-				// Use this to obtain OUT parameter values and do something with them.
-				#$res = $pdo->query('SELECT @newid AS USER_ID')->fetch(PDO::FETCH_ASSOC);			
-				#$ret['message'] = 'User created ' . $res['USER_ID'];
 			}else{
-				// On failure, perform any post-operation activity here, e.g. determine error(s).
 				$ret['success'] = false;
-				// Use this switch to capture database error conditions.
 				switch ($errs[1]){					
 					default:
 						$ret['message'] = 'There seems to be a problem. System administrators have been notified.';
-						// Log error to PHP console. Could also return this message to caller, in case
-						// it needs to be handled.
 						error_log(print_r('Error '.$errs[1].': '.$errs[2], TRUE)); 								
 						$ret['errors'] = 'Error '.$errs[1].': '.$errs[2];
 				}
 			}
 		}catch (PDOException $e){
-			// Catch-all error trap.
 			$ret['success'] = false;
 			$ret['message'] = $e->getMessage();				
 		}	
