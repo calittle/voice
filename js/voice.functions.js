@@ -4,63 +4,81 @@ function deleteUser(u){
 	$('#errormessagediv').fadeIn(500);	
 	$('#errormessagediv').fadeOut(3000);	
 }
-function ajaxIt(d){
-	console.log('AJAX String:' + d);
-	
+function ajaxIt(d,r){
 	$('#errormessage').html('');
 	$('#errormessagediv').hide();	
 	if (request){request.abort();}
-	var edata = d;
 	var o;
 	request = $.ajax({
 			url: "ajx_functions.php",
 			type: "post",
-			data: edata,
-			dataType: "json",
+			data: d,
 			success: function(data){
 				var successMsg=false;
 				var msg='';
 				try{
-					//o = JSON.parse(data);
-					successMsg = data['success'];
-					msg = data['message'];
-					console.log('RESPONSE:' + data);
-					console.log(data['function'] + ' results: ' + data['success']);
+					o = JSON.parse(data);
+					successMsg = o['success'];
+					msg = o['message'];
+					console.log('Response Data: ' + o['function'] + ' results: ' + o['success']);
 				}catch(err){
 					msg = err;
 				}
+				
 				if (successMsg==true){
-					console.log(data['function'] + ' results: ' + data['success']);
 					$('#successmessage').html(msg);
 					$('#successmessagediv').fadeIn(500);
 					$('#successmessagediv').fadeOut(2500);
 					$('#errormessagediv').hide();
-					location.reload();
+					if (r)location.reload();
 				}
 				else{
-					console.log('Unable to execute ' + data['function'] + '. ' + msg + '. Data returned: [' + data + ']');
-					this.error(this.xhr,'Unable to perform that request; ',msg);
+					console.log('Unable to execute ' + o['function'] + '. ' + msg + '. Data returned: [' + o + ']');
+					this.error(this.xhr,'Unable to perform request.',msg);
 				}
 			},
 			error: function(jqXHR, textStatus, errorThrown){
-				$('#errormessage').html(textStatus + errorThrown);
+				$('#errormessage').html(textStatus + ' Message: '+ errorThrown);
 				$('#errormessagediv').fadeIn(500);	
 			}
 		});	
 }
 function rejectRegistrant(r){
-	ajaxIt("function=rejectregistrant&par1=" + r);
+	//var obj = {"function":"rejectregistrant","par1":r };
+	var obj ="function=rejectregistrant&par1=" + r;
+	ajaxIt(obj,1);
 }
 function approveRegistrant(r){
-	ajaxIt("function=approveregistrant&par1=" + r);
+	//var obj = {"function":"approveregistrant","par1":r };
+	var obj ="function=approveregistrant&par1=" + r;
+	ajaxIt(obj,1);
 }
 function revokeUserRole(u,r){
-	ajaxIt("function=revokerole&par1=" + u + "&par2=" + r)
+	//var obj = {"function":"revokerole","par1":u,"par2":r };
+	var obj = "function=revokerole&par1="+u+"&par2="+r;
+	ajaxIt(obj,1);
+}
+function addDistrict(d){
+	//var obj = {"function":"districtadd","par1":d };
+	var obj = "function=districtadd&par1="+d;
+	ajaxIt(obj,1);
+}
+function updateDistrict(d,r){
+	var obj="function=districtupdate&par1="+d+"+&par2="+r;
+	ajaxIt(obj,1);
+}
+function deleteDistrict(d){
+	var obj="function=districtdelete&par1="+d;
+	ajaxIt(obj,1);
 }
 function addUserRole(u,r){
-	ajaxIt("function=addrole&par1=" + u + "&par2=" + r);
+	//var obj = {"function":"addrole","par1":u,"par2":r};
+	var obj = "function=addrole&par1="+u+"&par2="+r;
+	ajaxIt(obj,1);	
 }
 function affirmRegistrant(r){
-	ajaxIt("function=setaffirmations&par1=" + r);
+	//var obj = {"function":"setaffirmations","par1":r };
+	var obj ="function=setaffirmations&par1=" + r;
+	ajaxIt(obj,1);
 }
 

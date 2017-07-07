@@ -114,7 +114,28 @@
 								
 				<div id="districts" class="tab-pane fade in">
 					<div class="well well-lg">
-						<h4>Districts</h4>
+						<h4>Districts</h4>						
+						<div class="row">
+							<div class="col-md-4">
+							<form name="editDistrictForm" id="editDistrictForm">
+								<select name="districtIdInput" id="districtIdInput">
+									<option value="" selected>--Select District--</option>
+									<?php echo districtList();?>
+								</select>
+								<input type="text" id="editDistrictInput" name="editDistrictInput">
+							</form>
+							</div>
+							<div class="col-md-4">
+								<button class="btn btn-default" id="updateDistrictButton" name="updateDistrictButton" type="button">Update District</button>								
+								<button class="btn btn-default" id="deleteDistrictButton" name="deleteDistrictButton" type="button">Delete District</button>
+							</div>
+							<div class="col-md-4">
+								<form name="newDistrictForm" id="newDistrictForm" method="" action="post">
+								<input type="text" id="newDistrictInput" name="newDistrictInput">
+								</form>
+								<button class="btn btn-default" id="newDistrictButton" name="newDistrictButton" type="button">Add New District</button>								
+							</div>
+						</div>						
 					</div>
 				</div>
 				
@@ -193,10 +214,36 @@
     <script src="js/purl.min.js"></script>
     <script src="js/voice.functions.js"></script>
     <script>
-$(function() {
+$(document).ready(function($) {
    $(document).on('click', '.alert-close', function() {
        $(this).parent().hide();
-   })
+   });
+   $(document).on('click','#deleteDistrictButton', function(){
+	   var did = $("#districtIdInput").val();
+	   var dname = $("#districtIdInput option:selected").text()
+	   if (confirm('Are you sure you wish to delete district [' + dname + ']?'))
+	   		deleteDistrict(did);
+   });
+   $(document).on('click','#updateDistrictButton', function(){
+	   var d =$('#editDistrictInput').val();
+	   var did = $("#districtIdInput").val();
+	   if (d.length >= 3 & d.length <= 128)
+	   		if (confirm('Are you sure you want to change district '+ did + ' to ' + d + '?'))
+	   			updateDistrict(did,d);
+		else
+			alert('District name must be 3-128 characters');
+   });
+   $(document).on('click','#newDistrictButton', function(){
+	   var d =$('#newDistrictInput').val();
+	   if (d.length >= 3 & d.length <= 128)
+	   		addDistrict(d);
+		else
+			alert('District name must be 3-128 characters');
+   });
+   $('#districtIdInput').on('change', function() {
+   		$('input[name="editDistrictInput"]').val($("#districtIdInput option:selected").text());
+	})
+   
 });
 </script>
     </body>

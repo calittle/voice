@@ -708,7 +708,7 @@ BEGIN
 		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Cannot add Voter role to unapproved registrant';
     END IF;
    
-	INSERT INTO `USER_ROLES` (`USER_ID`,`ROLE_ID`) VALUES (userid,roleid);
+	INSERT INTO `USER_ROLES` (`USER_ID`,`ROLE_ID`) VALUES (@uid,@rid);
 	
     COMMIT;
 END $$

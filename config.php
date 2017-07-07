@@ -314,38 +314,28 @@ function registrantSetRejected($reg){
 	}	
 	echo json_encode($ret);
 }
-function districtAdd($dist){
-	// $errors holds error messages for this function.
+function districtList(){
 	$errors = array();
-	// $ret holds return values for this function.
-	// Returns:
-	//	message - applicable message(s)
-	//	success - true|false success of operation. If false, error messages expected in 'message'.
+	$aNull = null;
 	$ret = array();
-	
-	// precheck function parameters here. 	
-	// add failures to $errors.
-	
 	if(!empty($errors)){
 		$ret['message'] = $errors;
 		$ret['success'] = false;
 	}else{
 		try {
 			$pdo 	= new PDO(DSN,DBUSER,DBPASS,array(PDO::ATTR_PERSISTENT => true));				
-			// set up stored procedure here. OUT params should be last, prefixed by @.
-			$sql	= 'call SOMEFUNCTION(?,@newid)';
+			$sql	= 'call districts_list()';
 			$stmt	= $pdo->prepare($sql);						
-			$stmt -> bindParam(1, $username); #, PDO::PARAM_STR,256); <- not necessary to use explicit typing, but here for reference.
 			$stmt -> execute();
-			$stmt -> closeCursor();
 			$errs = $stmt->errorInfo();						
 			if (empty($errs[1])) {
-				// On success, perform any post-operation activity here, e.g. set message.
 				$ret['success'] = true;
-				
-				// Use this to obtain OUT parameter values and do something with them.
-				#$res = $pdo->query('SELECT @newid AS USER_ID')->fetch(PDO::FETCH_ASSOC);			
-				#$ret['message'] = 'User created ' . $res['USER_ID'];
+				$dists = $stmt->fetchAll(PDO::FETCH_ASSOC);
+				$stmt -> closeCursor();				
+				foreach ($dists as $dist)
+				{		
+					echo '<option value="'.$dist['DISTRICT_ID'].'">'.$dist['DISTRICT'].'</option>';
+				}
 			}else{
 				// On failure, perform any post-operation activity here, e.g. determine error(s).
 				$ret['success'] = false;
@@ -362,25 +352,71 @@ function districtAdd($dist){
 						$ret['errors'] = 'Error '.$errs[1].': '.$errs[2];
 				}
 			}
+	
 		}catch (PDOException $e){
 			// Catch-all error trap.
 			$ret['success'] = false;
 			$ret['message'] = $e->getMessage();				
 		}	
 	}		
+}
+function districtAdd($dist){
+	$errors = array();
+	$ret = array();
+	if (empty($dist))
+	{
+		$errors[] = 'District name cannot be empty.';
+	}	
+
+	if(!empty($errors)){
+		$ret['message'] = $errors;
+		$ret['success'] = false;
+	}else{
+		try {
+			$pdo 	= new PDO(DSN,DBUSER,DBPASS,array(PDO::ATTR_PERSISTENT => true));				
+			// set up stored procedure here. OUT params should be last, prefixed by @.
+			$sql	= 'call districts_add(?,@newid)';
+			$stmt	= $pdo->prepare($sql);						
+			$stmt -> bindParam(1, $dist);
+			$stmt -> execute();
+			$stmt -> closeCursor();
+			$errs = $stmt->errorInfo();	
+			$stmt = null;					
+			if (empty($errs[1])) {
+				$ret['success'] = true;
+				$ret['message'] = 'District added';
+			}else{
+				// On failure, perform any post-operation activity here, e.g. determine error(s).
+				$ret['success'] = false;
+				// Use this switch to capture database error conditions.
+				switch ($errs[1]){
+					case "1062":
+						$ret['message'] = 'A district by that name already exists.';
+						break;
+					default:
+						$ret['message'] = 'There seems to be a problem. System administrators have been notified.';
+						// Log error to PHP console. Could also return this message to caller, in case
+						// it needs to be handled.
+						error_log(print_r('Error '.$errs[1].': '.$errs[2], TRUE)); 								
+						$ret['errors'] = 'Error '.$errs[1].': '.$errs[2];
+				}
+			}
+		}catch (PDOException $e){
+			// Catch-all error trap.
+			$ret['success'] = false;
+			$ret['message'] = $e->getMessage();				
+		}	
+	}
+	echo json_encode($ret);		
 }
 function districtDelete($dist){
-	// $errors holds error messages for this function.
 	$errors = array();
-	// $ret holds return values for this function.
-	// Returns:
-	//	message - applicable message(s)
-	//	success - true|false success of operation. If false, error messages expected in 'message'.
 	$ret = array();
-	
-	// precheck function parameters here. 	
-	// add failures to $errors.
-	
+	if (empty($dist))
+	{
+		$errors[] = 'District ID cannot be empty.';
+	}	
+
 	if(!empty($errors)){
 		$ret['message'] = $errors;
 		$ret['success'] = false;
@@ -388,27 +424,21 @@ function districtDelete($dist){
 		try {
 			$pdo 	= new PDO(DSN,DBUSER,DBPASS,array(PDO::ATTR_PERSISTENT => true));				
 			// set up stored procedure here. OUT params should be last, prefixed by @.
-			$sql	= 'call SOMEFUNCTION(?,@newid)';
+			$sql	= 'call districts_delete(?)';
 			$stmt	= $pdo->prepare($sql);						
-			$stmt -> bindParam(1, $username); #, PDO::PARAM_STR,256); <- not necessary to use explicit typing, but here for reference.
+			$stmt -> bindParam(1, $dist);
 			$stmt -> execute();
 			$stmt -> closeCursor();
-			$errs = $stmt->errorInfo();						
+			$errs = $stmt->errorInfo();	
+			$stmt = null;					
 			if (empty($errs[1])) {
-				// On success, perform any post-operation activity here, e.g. set message.
 				$ret['success'] = true;
-				
-				// Use this to obtain OUT parameter values and do something with them.
-				#$res = $pdo->query('SELECT @newid AS USER_ID')->fetch(PDO::FETCH_ASSOC);			
-				#$ret['message'] = 'User created ' . $res['USER_ID'];
+				$ret['message'] = 'District deleted';
 			}else{
 				// On failure, perform any post-operation activity here, e.g. determine error(s).
 				$ret['success'] = false;
 				// Use this switch to capture database error conditions.
 				switch ($errs[1]){
-					//case "1062":
-					//	$ret['message'] = 'Duplicate record exists.';
-					//	break;
 					default:
 						$ret['message'] = 'There seems to be a problem. System administrators have been notified.';
 						// Log error to PHP console. Could also return this message to caller, in case
@@ -422,20 +452,20 @@ function districtDelete($dist){
 			$ret['success'] = false;
 			$ret['message'] = $e->getMessage();				
 		}	
-	}		
+	}
+	echo json_encode($ret);		
 }
 function districtUpdate($dist,$distUpdate){
-	// $errors holds error messages for this function.
 	$errors = array();
-	// $ret holds return values for this function.
-	// Returns:
-	//	message - applicable message(s)
-	//	success - true|false success of operation. If false, error messages expected in 'message'.
 	$ret = array();
-	
-	// precheck function parameters here. 	
-	// add failures to $errors.
-	
+	if (empty($dist))
+	{
+		$errors[] = 'District ID cannot be empty.';
+	}	
+	if (empty($distUpdate))
+	{
+		$errors[] = 'District name cannot be empty.';
+	}	
 	if(!empty($errors)){
 		$ret['message'] = $errors;
 		$ret['success'] = false;
@@ -443,27 +473,22 @@ function districtUpdate($dist,$distUpdate){
 		try {
 			$pdo 	= new PDO(DSN,DBUSER,DBPASS,array(PDO::ATTR_PERSISTENT => true));				
 			// set up stored procedure here. OUT params should be last, prefixed by @.
-			$sql	= 'call SOMEFUNCTION(?,@newid)';
+			$sql	= 'call districts_update(?,?)';
 			$stmt	= $pdo->prepare($sql);						
-			$stmt -> bindParam(1, $username); #, PDO::PARAM_STR,256); <- not necessary to use explicit typing, but here for reference.
+			$stmt -> bindParam(1, $dist);
+			$stmt -> bindParam(2, $distUpdate);
 			$stmt -> execute();
 			$stmt -> closeCursor();
-			$errs = $stmt->errorInfo();						
+			$errs = $stmt->errorInfo();	
+			$stmt = null;					
 			if (empty($errs[1])) {
-				// On success, perform any post-operation activity here, e.g. set message.
 				$ret['success'] = true;
-				
-				// Use this to obtain OUT parameter values and do something with them.
-				#$res = $pdo->query('SELECT @newid AS USER_ID')->fetch(PDO::FETCH_ASSOC);			
-				#$ret['message'] = 'User created ' . $res['USER_ID'];
+				$ret['message'] = 'District updated.';
 			}else{
 				// On failure, perform any post-operation activity here, e.g. determine error(s).
 				$ret['success'] = false;
 				// Use this switch to capture database error conditions.
 				switch ($errs[1]){
-					//case "1062":
-					//	$ret['message'] = 'Duplicate record exists.';
-					//	break;
 					default:
 						$ret['message'] = 'There seems to be a problem. System administrators have been notified.';
 						// Log error to PHP console. Could also return this message to caller, in case
@@ -477,7 +502,8 @@ function districtUpdate($dist,$distUpdate){
 			$ret['success'] = false;
 			$ret['message'] = $e->getMessage();				
 		}	
-	}		
+	}
+	echo json_encode($ret);		
 }
 function registrantSetAffirmations($reg){
 	$errors = array();
@@ -569,15 +595,13 @@ function userAddRole($usr,$role){
 				// Use this switch to capture database error conditions.
 				switch ($errs[1]){
 					case '1062':
-						$ret['message'] = 'User already has role.';
+						$ret['message'] = 'User already has role, inputs ('.$usr.','.$role.')';
 						break;
 					case '1644':
 						$ret['message'] = $errs[2];
 						break;
 					default:
-						$ret['message'] = 'There seems to be a problem. System administrators have been notified.';
-						// Log error to PHP console. Could also return this message to caller, in case
-						// it needs to be handled.
+						$ret['message'] = 'Error '.$errs[1].': '.$errs[2].', Inputs ('.$usr.','.$role.')';
 						error_log(print_r('Error '.$errs[1].': '.$errs[2], TRUE)); 								
 						$ret['errors'] = 'Error '.$errs[1].': '.$errs[2];
 				}

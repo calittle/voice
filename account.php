@@ -510,7 +510,7 @@ $(document).ready(function($) {
 	
 	
 	$('#nodiserrormessage').html(msg);
-	$('#nodiserrormessagediv').show();	
+	if (msg.length>0) $('#nodiserrormessagediv').show();	
 	
 	$('#goaffirm').click(function(e){
 		$('.nav-tabs a[href="#registrant"]').tab('show');
