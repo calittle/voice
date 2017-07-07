@@ -57,7 +57,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET')
 							$_SESSION['lid'] = empty($row[0]['LOCATION_ID'])?null:$row[0]['LOCATION_ID'];
 							$_SESSION['rid'] = empty($row[0]['REGISTRANT_ID'])?null:$row[0]['REGISTRANT_ID'];						
 							$_SESSION['statecd'] = empty($row[0]['STATECD'])?null:$row[0]['STATECD'];
-							if (!empty($_SESSION['lid']) and !empty($_SESSION['rid']) and !empty($_SESSION['statecd'])){
+							$_SESSION['approved'] = empty($row[0]['APPROVAL_STATE'])?null:$row[0]['APPROVAL_STATE'];
+							$_SESSION['affirmed'] = empty($row[0]['AFFIRM_STATE'])?null:$row[0]['AFFIRM_STATE'];							
+							
+							if (!empty($_SESSION['lid']) & !empty($_SESSION['rid']) & !empty($_SESSION['statecd'])){
 								$ret['register_state'] = '1';
 							}
 						}else{

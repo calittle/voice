@@ -322,7 +322,18 @@
 											<td><?='xxx-xx-'.$row['Federal ID']?></td>
 											<td><?=$row['Gender']?></td>
 											<td><?=$row['Ethnicity']?></td>
-											<td><?=$row['Approval State']==1?'Approved':$row['Approval State']==2?'Rejected':'Pending Approval'?></td>
+											<td><?php
+												switch ($row['Approval State']){
+													case "1":
+														echo 'Approved';
+														break;
+													case "2":
+														echo 'Rejected';
+														break;
+													default:
+														echo 'Pending';
+												}
+												?></td>
 											<td><?=$row['Affirmation State']==1?'Affirmed':'Not Affirmed'?></td>
 											<td><?=$row['Party Affiliation']?></td>
 											<td><?=$row['State']?></td>									

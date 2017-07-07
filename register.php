@@ -70,7 +70,7 @@
 	            <h3>Thank you. Now what?</h3>
 				<p>Your registration and residence information has been submitted for approval. Once approved, you'll receive a voter registration card and an email notification.</p>
 				<h3>But Wait, There's More!</h3>
-				<p>For <strong>testing purposes only</strong>, your account been automatically <em>approved</em> and you have been added to a <em>testing</em> district. This means that you can complete a sample ballot by proceeding to the <a href="#">vote</a> page, or looking for applicable elections in your <a href="account.php">account</a>. Once your account has been added to an actual district, you'll be able to complete a real ballot.</p>
+				<p>For <strong>testing purposes only</strong>, your account been automatically <em>approved</em> (as long as you checked the box on your state's affirmations) and you have been added to a <em>testing</em> district. This means that you can complete a sample ballot by proceeding to the <a href="#">vote</a> page, or looking for applicable elections in your <a href="account.php">account</a>. Once your account has been added to an actual district, you'll be able to complete a real ballot.</p>
 	        </div>
 	    </section>
 

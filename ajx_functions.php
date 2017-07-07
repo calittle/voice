@@ -25,6 +25,12 @@
 		case 'rejectregistrant':
 			$results = registrantSetRejected($par1);
 			break;
+		case 'districtadd':
+			break;
+		case 'districtdelete':
+			break;
+		case 'districtupdate':
+			break;
 		default:
 			break;
 	}

@@ -274,7 +274,9 @@ SELECT
 			R.REGISTRANT_ID,
 			R.USER_ID,
             R.STATECD,
-            RL.LOCATION_ID
+            RL.LOCATION_ID,
+            R.APPROVAL_STATE,
+            R.AFFIRM_STATE
 			FROM REGISTRANTS R
 			INNER JOIN USERS U ON U.USER_ID = R.USER_ID
             INNER JOIN REG_LOC RL ON RL.REGISTRANT_ID = R.REGISTRANT_ID
@@ -573,7 +575,7 @@ BEGIN
     COMMIT;
 END $$
 
-
+DELIMITER $$
 DROP PROCEDURE IF EXISTS `VOICE`.`registrant_set_approved` $$
 CREATE PROCEDURE `VOICE`.`registrant_set_approved` (IN regid bigint(20))
 COMMENT 'Approve registrant.'
@@ -584,9 +586,9 @@ BEGIN
     3) Must have at least one location with a residence flag.
 */
 	SET @ck_district = (SELECT COUNT(*) FROM `REGISTRANT_DISTRICTS` WHERE REGISTRANT_ID = regid);
-    SET @ck_affirm = (SELECT `REGISTRANTS`.`AFFIRM_STATE` FROM `REGISTRANTS` WHERE `REGISTRANT_ID` = regid);
+    SET @ck_affirm = (SELECT IFNULL(AFFIRM_STATE,0) FROM `REGISTRANTS` WHERE `REGISTRANT_ID` = regid);
     SET @ck_location = (SELECT COUNT(*) FROM `REG_LOC` WHERE `REGISTRANT_ID` = regid and `IS_RESIDENCE` = 1);
-	
+		
     IF @ck_district = 0 THEN
 		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Cannot approve registrant: no district(s) have been assigned.';
     ELSEIF @ck_affirm = 0 THEN
@@ -602,6 +604,7 @@ BEGIN
     WHERE `REGISTRANTS`.`REGISTRANT_ID` = regid;
     COMMIT;
 END $$
+DELIMITER ; $$
 
 DROP PROCEDURE IF EXISTS `VOICE`.`registrant_set_rejected` $$
 CREATE PROCEDURE `VOICE`.`registrant_set_rejected` (IN regid bigint(20))
