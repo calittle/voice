@@ -31,6 +31,8 @@
 			break;
 		case 'districtupdate':
 			break;
+		case 'setaffirmations':
+			$results = registrantSetAffirmations($par1);			
 		default:
 			break;
 	}

@@ -216,6 +216,9 @@ function registrantSetApproved($reg){
 			}else{
 				$ret['success'] = false;
 				switch ($errs[1]){					
+					case '1644':
+						$ret['message'] = $errs[2];
+						break;
 					default:
 						$ret['message'] = 'There seems to be a problem. System administrators have been notified.';
 						error_log(print_r('Error '.$errs[1].': '.$errs[2], TRUE)); 								
@@ -476,6 +479,49 @@ function districtUpdate($dist,$distUpdate){
 		}	
 	}		
 }
+function registrantSetAffirmations($reg){
+	$errors = array();
+	$ret = array();
+	if (empty($reg))
+	{
+		$errors[] = 'Registrant ID cannot be empty.';
+	}	
+
+	$ret['function'] = 'registrantSetAffirmations';
+	
+	if(!empty($errors)){
+		$ret['message'] = $errors;
+		$ret['success'] = false;
+	}else{
+		try {
+			$pdo 	= new PDO(DSN,DBUSER,DBPASS,array(PDO::ATTR_PERSISTENT => true));				
+			$sql	= 'call registrant_set_affirm(?)';
+			$aNull = null;
+			$stmt	= $pdo->prepare($sql);						
+			$stmt -> bindParam(1, $reg); 
+			$stmt -> execute();
+			$stmt -> closeCursor();
+			$errs = $stmt->errorInfo();						
+			if (empty($errs[1])) {
+				$ret['success'] = true;
+				$ret['message'] = 'Registrant affirmations set.';
+				$_SESSION['affirmed'] = 1;
+			}else{
+				$ret['success'] = false;
+				switch ($errs[1]){					
+					default:
+						$ret['message'] = 'There seems to be a problem. System administrators have been notified.';
+						error_log(print_r('Error '.$errs[1].': '.$errs[2], TRUE)); 								
+						$ret['errors'] = 'Error '.$errs[1].': '.$errs[2];
+				}
+			}
+		}catch (PDOException $e){
+			$ret['success'] = false;
+			$ret['message'] = $e->getMessage();				
+		}	
+	}	
+	echo json_encode($ret);
+}
 function userAddRole($usr,$role){
 	// $errors holds error messages for this function.
 	$errors = array();
@@ -524,6 +570,9 @@ function userAddRole($usr,$role){
 				switch ($errs[1]){
 					case '1062':
 						$ret['message'] = 'User already has role.';
+						break;
+					case '1644':
+						$ret['message'] = $errs[2];
 						break;
 					default:
 						$ret['message'] = 'There seems to be a problem. System administrators have been notified.';

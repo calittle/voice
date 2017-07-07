@@ -682,15 +682,34 @@ DROP PROCEDURE IF EXISTS `VOICE`.`users_add_role2` $$
 CREATE PROCEDURE `VOICE`.`users_add_role2` (IN userid bigint(20), IN roleid bigint (20), IN username varchar(256), IN role varchar(64))
 COMMENT 'Can use combination of ID or name in either user or role, IDs being preferred'
 BEGIN
-	IF (!(NULLIF(userid, '') IS NULL) and !(NULLIF(roleid, '') IS NULL)) THEN
-        INSERT INTO `USER_ROLES` (`USER_ID`,`ROLE_ID`) VALUES (userid,roleid);
-	ELSEIF (!(NULLIF(username, '') IS NULL) and !(NULLIF(role, '') IS NULL)) THEN
-    	INSERT INTO `USER_ROLES` (`USER_ID`,`ROLE_ID`) VALUES ((SELECT `USER_ID` FROM USERS WHERE `USERS`.`USER_NAME` = username),(SELECT `ROLE_ID` FROM `ROLES` WHERE `ROLES`.`ROLE_DESCRIPTION` = role));
-	ELSEIF (!(NULLIF(userid, '') IS NULL) and !(NULLIF(role, '') IS NULL)) THEN
-    	INSERT INTO `USER_ROLES` (`USER_ID`,`ROLE_ID`) VALUES (userid,(SELECT `ROLE_ID` FROM `ROLES` WHERE `ROLES`.`ROLE_DESCRIPTION` = role));
-	ELSEIF (!(NULLIF(username, '') IS NULL) and !(NULLIF(roleid, '') IS NULL)) THEN
-    	INSERT INTO `USER_ROLES` (`USER_ID`,`ROLE_ID`) VALUES ((SELECT `USER_ID` FROM USERS WHERE `USERS`.`USER_NAME` = username),roleid);
+/* business rules */
+	
+    /* Establish UID/RID and ROLENAME for rules */
+    IF (NULLIF(userid, '') IS NULL) THEN
+		SET @uid = (SELECT `USER_ID` FROM USERS WHERE `USERS`.`USER_NAME` = username);        
+	ELSE 
+		SET @uid = userid;
     END IF;
+    IF (NULLIF(roleid, '') IS NULL) THEN
+		SET @rid = (SELECT `ROLE_ID` FROM `ROLES` WHERE `ROLES`.`ROLE_DESCRIPTION` = role);
+        SET @rolename = role;
+    ELSE
+		SET @rolename = (SELECT ROLE_DESCRIPTION FROM ROLES WHERE ROLE_ID = roleid);
+		SET @rid = roleid;
+    END IF;        
+    IF ((NULLIF(userid, '') IS NULL) and (NULLIF(roleid, '') IS NULL)) THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Combination of userid/username and roleid/rolename is required.';
+    END IF;
+	SET @regid = (SELECT REGISTRANT_ID from REGISTRANTS where USER_ID = @uid);
+    
+	SET @ck_appr = (SELECT IFNULL(APPROVAL_STATE,0) FROM `REGISTRANTS` WHERE `REGISTRANT_ID` = @regid);
+    
+	IF ((@ck_appr != 1) and (@rolename = 'Voters')) THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Cannot add Voter role to unapproved registrant';
+    END IF;
+   
+	INSERT INTO `USER_ROLES` (`USER_ID`,`ROLE_ID`) VALUES (userid,roleid);
+	
     COMMIT;
 END $$
 DELIMITER ; $$

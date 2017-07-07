@@ -3,7 +3,7 @@
 
 	require_once 'config.php';
 	
-	$state = $_SESSION['regdata']['stateInput'];
+	$state = isset($_SESSION['regdata']['stateInput'])?$_SESSION['regdata']['stateInput']:$_SESSION['statecd'];
 	$affirms = array();
 	
 	try {			

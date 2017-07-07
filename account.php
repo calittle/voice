@@ -345,6 +345,22 @@
 							</table>
 						</div>
 					</div>
+					<div class="well well-lg" hidden id="affirmDiv">
+						<form name="affirmForm" id="affirmForm"  method="post" action="">					
+							<h4>You need to complete your affirmations!</h4>
+							<p class="help-block">Registrants must meet qualifications to register to vote. Your selected registration state specifies that registrants must:</p>
+							<ul id="affirmations">
+							</ul>
+							<div class="form-group form-check has-danger">
+						    	<label for="affirmInput" class="form-check-label">
+									<input type="checkbox" class="form-check-input" id="affirmInput" name="affirmInput" value="1">		
+									By ticking this checkbox, you swear or affirm you meet the above qualifications.
+															
+								</label>
+							</div>
+						  <button type="submit" class="btn btn-default">Swear/Affirm</button>				  
+					  </form>
+					</div>
 				</div>
 				
 				<div id="debug" class="tab-pane fade">
@@ -405,6 +421,11 @@
 				</div>
 			</div>
 		</section>
+	    <div class="alert alert-danger alert-dismissible" role="alert" id="nodiserrormessagediv" hidden>
+			<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+			<span class="sr-only">Error:</span>
+			<span id="nodiserrormessage"></span>
+	    </div>		
 	    <div class="alert alert-danger alert-dismissible" role="alert" id="errormessagediv" hidden>
 		    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
 				<span aria-hidden="true">&times;</span>
@@ -432,10 +453,82 @@
     <script src="js/jquery.min.js"></script>
     <script src="js/jquery.validate.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
-	
-<script>
+    <script src="js/voice.functions.js"></script>
+	<script>
+		function populate_affirmations(o){
+	//alert('populate_affirmations()');
+	$.ajax({
+		type: "post",
+		url: "ajx_affirms.php",
+		success: function(data){
+			//console.log(data);
+			var opts = JSON.parse(data);
+			$.each(opts, function(i, d){
+				$('#affirmations').append('<li vid="' + d.AFFIRM_ID + '">' + d.AFFIRMATION + '</li>');
+			});
+		},
+		error: function(jqXHR, textStatus, errorThrown){
+			console.log(data);
+			console.log('Error populating affirmations: ' + textStatus + ',' +errorThrown);
+		}
+	});
+}
 $(document).ready(function($) {	
+	var apprState = <?=$_SESSION['approved']?>;
+	var affrState = <?=empty($_SESSION['affirmed'])?0:$_SESSION['affirmed']?>;
+	var msg = '';
+	switch (apprState){
+		case 0:
+			msg = '<strong>Your registration is pending.</strong> You will not be able to vote until your registration is approved. ';
+			break;
+		case 2:
+			msg = '<strong>Your registration has been rejected.</strong> Please check your email for rejection reason(s) and remediation. ';
+			break;
+	}
+	switch (affrState){
+		case 1:
+			break;
+		default:
+			$.ajax({
+				type: "post",
+				url: "ajx_affirms.php",
+				success: function(data){
+					//console.log(data);
+					var opts = JSON.parse(data);
+					$.each(opts, function(i, d){
+						$('#affirmations').append('<li vid="' + d.AFFIRM_ID + '">' + d.AFFIRMATION + '</li>');
+					});
+				},
+				error: function(jqXHR, textStatus, errorThrown){
+					console.log(data);
+					console.log('Error populating affirmations: ' + textStatus + ',' +errorThrown);
+				}
+			});
+			msg += '<strong>You have not sworm or affirmed your state\'s required affirmations.</strong> Your registration cannot be approved until you have sworn/affirmed as required by your state. Click <a href="#" id="goaffirm">here</a> to affirm.';
+	}
+	
+	
+	
+	$('#nodiserrormessage').html(msg);
+	$('#nodiserrormessagediv').show();	
+	
+	$('#goaffirm').click(function(e){
+		$('.nav-tabs a[href="#registrant"]').tab('show');
+		$('#affirmDiv').show()
+	});
+	
 	var request;
+	
+	$('#affirmForm').submit(function(event){
+		if ($('#affirmForm').valid()!=true){return false;}
+		event.preventDefault();
+		if (document.getElementById('affirmInput').checked)
+			affirmRegistrant(<?=$_SESSION['rid']?>);
+		else{alert('You must check the box indicating that you swear/affirm the presented affirmations.');}
+		});
+	
+	
+	
 	$('#elections tr').click(function(e){
 		if (request){request.abort();}        
         var edata = "election=" + $(this).find("th").attr("id");
@@ -701,6 +794,7 @@ function populate_election(o,voted){
 		s+='</ol><hr/><strong>To vote in this election, go to the <a href="vote.php">vote</a> page!</strong>';
 	return s;
 }
-</script>
+
+	</script>
     </body>
 </html>

@@ -557,7 +557,7 @@ function populate_affirmations(o){
 		},
 		error: function(jqXHR, textStatus, errorThrown){
 			console.log(data);
-			console.log('Error populating parties: ' + textStatus + ',' +errorThrown);
+			console.log('Error populating affirmations: ' + textStatus + ',' +errorThrown);
 		}
 	});
 }
