@@ -15,12 +15,12 @@ try
 
 	switch ($thispage){
 		case 'admin': #requires Administrator role
-			error_log(' Accessing ADMIN page');
+			//error_log(' Accessing ADMIN page');
 			$stmt	= $pdo->prepare('CALL user_has_admin(?,?)');
 			break;
 		case 'vote': #requires Voter role
-			error_log(' Accessing VOTER page');
-			$stmt	= $pdo->prepare('CALL state_has_voter(?,?)');
+			//error_log(' Accessing VOTER page');
+			$stmt	= $pdo->prepare('CALL user_has_voter(?,?)');
 			break;
 		default:
 			$stmt = null;

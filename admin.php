@@ -3,7 +3,136 @@
 	$thispage = 'admin';
 	include_once 'ac.php';
 	include_once 'roles.php';
+try {
+			$pdo 	= new PDO(DSN,DBUSER,DBPASS,array(PDO::ATTR_PERSISTENT => true));
+
+			$stmt	= $pdo->prepare('CALL registrant_get_basic(?)');
+			$stmt -> bindParam(1,$_SESSION['rid']);
+			$registrant = array();
+			if ($stmt->execute()){
+				while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
+					$registrant[]=$row;
+				}
+			}else{
+				$errs = $stmt->errorInfo();	
+				if (!empty($errs[1])) {						
+					switch ($errs[1]){
+						default:							
+							error_log(print_r('Error '.$errs[1].': '.$errs[2], TRUE)); 								
+					}
+				}
+			}
+
+			$stmt	= $pdo->prepare('CALL registrant_get_districts(?)');
+			$stmt -> bindParam(1,$_SESSION['rid']);
+			$districts = array();
+			if ($stmt->execute()){
+				while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
+					$districts[]=$row;
+				}
+			}else{
+				$errs = $stmt->errorInfo();	
+				if (!empty($errs[1])) {						
+					switch ($errs[1]){
+						default:							
+							error_log(print_r('Error '.$errs[1].': '.$errs[2], TRUE)); 								
+					}
+				}
+			}
+							
+			$stmt	= $pdo->prepare('CALL registrant_get_addresses(?)');
+			$stmt -> bindParam(1,$_SESSION['rid']);
+			$locations = array();
+			if ($stmt->execute()){
+				while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
+					$locations[]=$row;
+				}
+			}else{
+				$errs = $stmt->errorInfo();	
+				if (!empty($errs[1])) {						
+					switch ($errs[1]){
+						default:							
+							error_log(print_r('Error '.$errs[1].': '.$errs[2], TRUE)); 								
+					}
+				}
+			}		
+			
+			$stmt	= $pdo->prepare('CALL user_roles(?,?)');
+
+			$stmt -> bindParam(1,$_SESSION['uid']);
+			$stmt -> bindParam(2,$_SESSION['username']);
+			$roles = array();
+			if ($stmt->execute()){
+				while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
+					$roles[]=$row;
+				}
+			}else{
+				$errs = $stmt->errorInfo();	
+				if (!empty($errs[1])) {						
+					switch ($errs[1]){
+						default:							
+							error_log(print_r('Error '.$errs[1].': '.$errs[2], TRUE)); 								
+					}
+				}
+			}											
+		
+			
+			$stmt	= $pdo->prepare('CALL registrant_get_elections(?)');
+			$stmt -> bindParam(1,$_SESSION['rid']);
+			$elections = array();
+			if ($stmt->execute()){
+				while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
+					$elections[]=$row;
+				}
+			}else{
+				$errs = $stmt->errorInfo();	
+				if (!empty($errs[1])) {						
+					switch ($errs[1]){
+						default:							
+							error_log(print_r('Error '.$errs[1].': '.$errs[2], TRUE)); 								
+					}
+				}
+			}
+			
+			$ballots = array();			
+			foreach($elections as $el){
+				$stmt = null;					
+				$stmt	= $pdo->prepare('CALL receipt_generate(?,?)');
+				$stmt -> bindParam(1,$_SESSION['rid']);
+				$stmt -> bindParam(2,$el['Election ID']);
+				$results = array();
+				if ($stmt->execute()){
+					while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
+						$results[]=$row;
+					}
+					#error_log('Election ('.$el['Election ID'].') Ballots('.count($results).')');
+					$ballots[$el['Election ID']]['ballots']=count($results);
+				}else{
+					$errs = $stmt->errorInfo();	
+					if (!empty($errs[1])) {						
+						switch ($errs[1]){
+							default:							
+								error_log(print_r('Error '.$errs[1].': '.$errs[2], TRUE)); 								
+						}
+					}
+				}
+			}
+			
+			
+			
+												
+			
+		}catch (PDOException $e){
+			echo($e->getMessage());
+			die();
+		}
+		finally{
+			$stmt = null;
+			$pdo = null;			
+		}	
+
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -66,6 +195,17 @@
 				<div id="users" class="tab-pane fade in active">
 					<div class="well well-lg">
 						<h4>Users</h4>
+						<p>Click on a <span class="label label-default">role</span> label to grant the role to the user. Click on a <span class="label label-success">colored role</span> to revoke that role from a user.</p>
+						<div class="table-responsive">
+							<table id="usertable" name="usertable" class="table table-hover">
+								<thead><tr><th>ID</th><th>Action</th><th>Username</th><th>Email</th><th>Roles</th></tr></thead>
+								<tbody>	
+<?php 
+	userList();
+?>										
+								</tbody>
+							</table>
+						</div>
 					</div>
 				</div>
 				
@@ -89,14 +229,40 @@
 					</div>
 				</div>
 												
-				<div id="debug" class="tab-pane fade in">
+				<div id="debug" class="tab-pane fade">
 					<div class="well well-lg">
-						<p><?=print_r($_SESSION)?>
+						<h3>Session Variables</h3>
+						<div class="table-responsive">
+							<table class="table table-hover">
+								<thead><tr><th>Variable</th><th>Value</th></tr></thead>
+								<tbody>			
+								<?php	foreach ($_SESSION as $key => $value){
+
+										switch ($key){
+											case 'privkey':
+											case 'pubkey':
+												$val = empty($value) ? 'EMPTY' : 'HIDDEN';
+												break;
+											case 'regdata':
+												$val = 'Array:<br/>';
+												foreach ($value as $subkey => $subvalue){
+													$val += $subkey.' = '.$subvalue.'<br/>';
+												}
+												break;
+											default:
+												$val = $value;										
+										}
+										echo '<tr><td>'.$key.'</td><td>'.$val.'</td></tr>';
+									}
+									?>
+								</tbody>
+							</table>
+						</div>
 					</div>
 				</div>
 		</div>      
 	    <div class="alert alert-danger alert-dismissible" role="alert" id="errormessagediv" hidden>
-		    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+		    <button type="button" class="close alert-close" aria-label="Close">
 				<span aria-hidden="true">&times;</span>
 			</button>
 			<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
@@ -104,7 +270,7 @@
 			<span id="errormessage"></span>
 	    </div>
 	    <div class="alert alert-success alert-dismissible" role="alert" id="successmessagediv" hidden>
-		    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+		    <button type="button" class="close alert-close" aria-label="Close">
 				<span aria-hidden="true">&times;</span>
 			</button>
 			<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
@@ -129,5 +295,97 @@
     <script src="js/jquery.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
     <script src="js/purl.min.js"></script>
+    <script>
+$(function() {
+   $(document).on('click', '.alert-close', function() {
+       $(this).parent().hide();
+   })
+});
+var request;
+function deleteUser(u){
+	$('#errormessage').html('You do not have authority to delete users.');
+	$('#errormessagediv').fadeIn(500);	
+	$('#errormessagediv').fadeOut(3000);	
+}
+function revokeUserRole(u,r){
+	$('#errormessage').html('');
+	$('#errormessagediv').hide();
+	if (request){request.abort();}
+	var edata = "function=revokerole&par1=" + u + "&par2=" + r;
+	var o;
+	request = $.ajax({
+			url: "ajx_functions.php",
+			type: "post",
+			data: edata,
+			dataType: "json",
+			success: function(data){
+				var successMsg=false;
+				var msg='';
+				try{
+					//o = JSON.parse(data);
+					successMsg = data['success'];
+					msg = data['message'];
+				}catch(err){
+					msg = err;
+				}
+				if (successMsg==true){
+					console.log(data['function'] + ' results: ' + data['success']);
+					$('#successmessage').html(msg);
+					$('#successmessagediv').fadeIn(500);
+					$('#successmessagediv').fadeOut(2500);
+					$('#errormessagediv').hide();
+				}
+				else{
+					console.log('Unable to execute ' + data['function'] + '. ' + msg + '. Data returned: [' + data + ']');
+					this.error(this.xhr,'Unable to perform that request; ',msg);
+				}
+			},
+			error: function(jqXHR, textStatus, errorThrown){
+				$('#errormessage').html(textStatus + errorThrown);
+				$('#errormessagediv').fadeIn(500);	
+			}
+		});	
+
+}
+function addUserRole(u,r){
+	$('#errormessage').html('');
+	$('#errormessagediv').hide();
+	if (request){request.abort();}
+	var edata = "function=addrole&par1=" + u + "&par2=" + r;
+	var o;
+	request = $.ajax({
+			url: "ajx_functions.php",
+			type: "post",
+			data: edata,
+			dataType: "json",
+			success: function(data){
+				var successMsg=false;
+				var msg='';
+				try{
+					//o = JSON.parse(data);
+					successMsg = data['success'];
+					msg = data['message'];
+				}catch(err){
+					msg = err;
+				}
+				if (successMsg==true){
+					console.log(data['function'] + ' results: ' + data['success']);
+					$('#successmessage').html(msg);
+					$('#successmessagediv').fadeIn(500);
+					$('#successmessagediv').fadeOut(2500);
+					$('#errormessagediv').hide();
+				}
+				else{
+					console.log('Unable to execute ' + data['function'] + '. ' + msg + '. Data returned: [' + data + ']');
+					this.error(this.xhr,'Unable to perform that request; ',msg);
+				}
+			},
+			error: function(jqXHR, textStatus, errorThrown){
+				$('#errormessage').html(textStatus + errorThrown);
+				$('#errormessagediv').fadeIn(500);	
+			}
+		});	
+}
+</script>
     </body>
 </html>

@@ -125,13 +125,6 @@
 					<span id="registrant_error_msg"></span>
 				</div>
 			</div>
-
-
-		    <div class="alert alert-success" role="alert" id="registrant_success" hidden>
-				    <span class="glyphicon glyphicon-check" aria-hidden="true"></span>
-				    <span class="sr-only">Success:</span>
-						Your registrant data has been saved. 
-			</div>
 		    <div class="well well-lg" id="registrant2_div" name="registrant2_div" hidden>
 				<h3>Affirmations</h3>				
 				
@@ -170,3 +163,8 @@
 					<span id="registrant2_error_msg"></span>
 				</div>
 		    </div>
+			<div class="alert alert-success" role="alert" id="registrant_success" hidden>
+				    <span class="glyphicon glyphicon-check" aria-hidden="true"></span>
+				    <span class="sr-only">Success:</span>
+						Your registrant data has been saved. 
+			</div>

@@ -4,7 +4,7 @@
 	
 	require_once 'ac.php';	
 
-	$eId = isset($_POST['electionId']) ? $_POST['electionId'] : null;			
+	$eId = isset($_POST['election']) ? $_POST['election'] : null;			
 	
 	$uId = isset($_SESSION['uid']) ? $_SESSION['uid'] : null;
 	$rId = isset($_SESSION['rid']) ? $_SESSION['rid'] : null;
@@ -21,14 +21,13 @@
 		$stmt	= $pdo->prepare('CALL receipt_generate(?,?)');		
 		$stmt -> bindParam(1,$rId);
 		$stmt -> bindParam(2,$eId);
-		error_log('Call receipt gen '.$rId.','.$eId);
+
 		if ($stmt->execute())
 		{ 
 			// loop through ballot contents.
 			$c = 1;
 			foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row)
 			{				
-				error_log ($c.' In here ');
 				$ret['ballots'][$c]['measure'] = $row['Measure'];
 				$ret['ballots'][$c]['measureid'] = $row['Measure ID'];
 				$ret['ballots'][$c]['choice']  = $row['Chosen Option'];

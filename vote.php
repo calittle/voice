@@ -2,6 +2,7 @@
 	session_start();
 	$thispage='vote';
 	include 'ac.php'; 
+	include_once 'roles.php';
 	try {
 			
 			

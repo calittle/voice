@@ -64,13 +64,13 @@
 			?>
 			<div id="alreadyregistered" name="alreadyregistered" class="jumbotron" hidden>
 	            <h3>You're already registered.</h3>
-				<p>Maybe you want to check your <a href="account.php">account?</p>
+				<p>Maybe you want to check your <a href="account.php">account</a>?</p>
 	        </div>
 			<div id="final" name="final" class="jumbotron" hidden>
 	            <h3>Thank you. Now what?</h3>
 				<p>Your registration and residence information has been submitted for approval. Once approved, you'll receive a voter registration card and an email notification.</p>
 				<h3>But Wait, There's More!</h3>
-				<p>For testing purposes, your account been automatically approved and you have been added to a "testing" district. This means that you can complete a sample ballot by proceeding to the <a href="#">vote</a> page, or looking for applicable elections in your <a href="account.php">account</a>. Once your account has been added to an actual district, you'll be able to complete a real ballot.</p>
+				<p>For <strong>testing purposes only</strong>, your account been automatically <em>approved</em> and you have been added to a <em>testing</em> district. This means that you can complete a sample ballot by proceeding to the <a href="#">vote</a> page, or looking for applicable elections in your <a href="account.php">account</a>. Once your account has been added to an actual district, you'll be able to complete a real ballot.</p>
 	        </div>
 	    </section>
 

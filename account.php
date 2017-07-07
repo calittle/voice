@@ -426,12 +426,14 @@
 $(document).ready(function($) {	
 	var request;
 	$('#elections tr').click(function(e){
-		if (request){request.abort();}
-        var edata = "electionId=" + $(this).find("th").attr("id");
+		if (request){request.abort();}        
+        var edata = "election=" + $(this).find("th").attr("id");
         var voted = $(this).find("th").attr("voted");
         $(this).prop("disabled",true);
-
+        $('#electiondetaildiv').hide();	
+        $('#ballotdiv').hide();
         if (voted>0){
+
 	        request = $.ajax({
 				url: "ajx_getballot.php",
 				type: "post",
@@ -449,7 +451,7 @@ $(document).ready(function($) {
 					if (sucksess==true){					
 						console.log('Ballot retrieved: ' + data);
 						$('#ballotdiv').html(populate_ballot(o,o['count']));
-						$('#ballotdiv').show();					
+						$('#ballotdiv').fadeIn(500);					
 					}
 					else{
 						console.log('Unable to retrieve election data. Err=' + msg + '\n Data returned was:' + data);
@@ -458,7 +460,7 @@ $(document).ready(function($) {
 				},
 				error: function(jqXHR, textStatus, errorThrown){
 					$('#errormessage').html("There was a problem processing your request and System administrators have been notified. (" + textStatus + errorThrown + ")");
-					$('#errormessagediv').show();		
+					$('#errormessagediv').fadeIn(500);		
 				}			
 			});
 	        
@@ -480,7 +482,7 @@ $(document).ready(function($) {
 					if (sucksess==true){					
 						console.log('Election retrieved: ' + data);
 						$('#electiondetail').html(populate_election(o['elections'][0],voted));
-						$('#electiondetaildiv').show();					
+						$('#electiondetaildiv').fadeIn(500);					
 					}
 					else{
 						console.log('Unable to retrieve election data. Err=' + msg + '\n Data returned was:' + data);
@@ -489,7 +491,7 @@ $(document).ready(function($) {
 				},
 				error: function(jqXHR, textStatus, errorThrown){
 					$('#errormessage').html("There was a problem processing your request and System administrators have been notified. (" + textStatus + errorThrown + ")");
-					$('#errormessagediv').show();		
+					$('#errormessagediv').fadeIn(500);		
 				}			
 			});
 		}

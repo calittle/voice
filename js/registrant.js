@@ -394,6 +394,13 @@ $(document).ready(function($) {
 					o = JSON.parse(data);
 					didItWork = o['success'];
 					if (didItWork==true){
+						//
+						// REMOVE THIS FOR NON-TEST STATE!
+						// 
+						autoApprove();
+						//
+						// REMOVE THIS FOR NON-TEST STATE!
+						//
 						console.log('Saved location : ' + data);
 						setProgress('100');				
 						$('#header_step_3').fadeOut(1500);
@@ -471,7 +478,7 @@ function populate_parties(o){
 	});
 }
 function populate_counties(o){	
-	//alert('populate_counties()' + o);
+//	alert('populate_counties()' + o);
 	var serialdata;
 	if (o){
 		serialdata = o.serialize();
@@ -481,7 +488,7 @@ function populate_counties(o){
 		url: "ajx_counties.php",
 		data: serialdata,
 		success: function(data){
-			//console.log(data);
+			console.log('Populated counties.');
 			var opts = JSON.parse(data);
 			$.each(opts, function(i, d){
 				$('#countyInput').append('<option value="' + d.COUNTYCD + '">' + d.COUNTY + '</option>');
@@ -551,6 +558,26 @@ function populate_affirmations(o){
 		error: function(jqXHR, textStatus, errorThrown){
 			console.log(data);
 			console.log('Error populating parties: ' + textStatus + ',' +errorThrown);
+		}
+	});
+}
+function autoApprove(){
+	$.ajax({
+		type: "get",
+		url: "ajx_auto.php",
+		success: function(data){
+			console.log('AUTO APPROVED AND SET ROLE');
+			var o = JSON.parse(data);
+			if (o['success']==true){
+				console.log('Approved user.');
+			}else{
+				console.log(data);
+				this.error(this.xhr,'Unable to approve user',o['message']);
+			}
+		},
+		error: function(jqXHR, textStatus, errorThrown){
+			console.log(data);
+			console.log('Error auto approving: ' + textStatus + ',' +errorThrown);
 		}
 	});
 }

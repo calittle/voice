@@ -1,7 +1,7 @@
 <?php
 session_start();
 include 'ac.php'; 
-	
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') 
 {
 	$_SESSION['regdata'] = array_merge($_SESSION['regdata'],$_POST);
@@ -55,6 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
 				$ret['success'] = true;
 				$ret['message'] = 'Registrant created ' . $res['REG_ID'];
 				$_SESSION['rid'] = $res['REG_ID'];
+				$_SESSION['statecd'] = $l;
 				
 			}else{
 				$ret['success'] = false;

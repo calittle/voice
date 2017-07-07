@@ -1,8 +1,4 @@
-			<div class="alert alert-success" role="alert" id="residence_success" hidden>
-				    <span class="glyphicon glyphicon-check" aria-hidden="true"></span>
-				    <span class="sr-only">Success:</span>
-						Your residence data has been saved. 
-			</div>
+
 		    <div class="well well-lg" id="residence_div" name="residence_div" hidden>
 				<h3>Residence</h3>				
 				<form id="locationform" name="locationform" method="POST" action="locations_form.php">					
@@ -60,6 +56,11 @@
 					<hr/>
 					<button type="submit" class="btn btn-default">Add Residence</button>
 				</form>
+				<div class="alert alert-success" role="alert" id="residence_success" hidden>
+					    <span class="glyphicon glyphicon-check" aria-hidden="true"></span>
+					    <span class="sr-only">Success:</span>
+							Your residence data has been saved. 
+				</div>
 			    <div class="alert alert-danger alert-dismissible" role="alert" id="residence_error" hidden>
 				    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
 						<span aria-hidden="true">&times;</span>
