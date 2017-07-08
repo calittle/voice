@@ -114,26 +114,87 @@
 								
 				<div id="districts" class="tab-pane fade in">
 					<div class="well well-lg">
-						<h4>Districts</h4>						
+						<h4>Districts</h4>	
+						<p>Select a district from the dropdown, and then use the adjacent text box to update it, then click <kbd>Update District</kbd>, or click <kbd>Delete District</kbd>. To create a new District, enter a name in the indicated text box, and click <kbd>Add New District</kbd>.</p><br/>
 						<div class="row">
 							<div class="col-md-4">
 							<form name="editDistrictForm" id="editDistrictForm">
+								<label for="districtIdInput">Select a District</label>
 								<select name="districtIdInput" id="districtIdInput">
 									<option value="" selected>--Select District--</option>
 									<?php echo districtList();?>
 								</select>
+								<label for="editDistrictInput">Edit District</label>
 								<input type="text" id="editDistrictInput" name="editDistrictInput">
 							</form>
+							<button class="btn btn-default" id="updateDistrictButton" name="updateDistrictButton" type="button">Update District</button>								
+							<button class="btn btn-default" id="deleteDistrictButton" name="deleteDistrictButton" type="button">Delete District</button>
 							</div>
-							<div class="col-md-4">
-								<button class="btn btn-default" id="updateDistrictButton" name="updateDistrictButton" type="button">Update District</button>								
-								<button class="btn btn-default" id="deleteDistrictButton" name="deleteDistrictButton" type="button">Delete District</button>
-							</div>
-							<div class="col-md-4">
+							<div class="col-md-8">
 								<form name="newDistrictForm" id="newDistrictForm" method="" action="post">
+								<label for="newDistrictInput">Create a New District</label>
 								<input type="text" id="newDistrictInput" name="newDistrictInput">
 								</form>
 								<button class="btn btn-default" id="newDistrictButton" name="newDistrictButton" type="button">Add New District</button>								
+							</div>
+						</div>						
+					</div>
+					<div class="well well-lg">
+						<h4>Registrant - Districts</h4>					
+						<div class="row">
+							<div class="col-md-12">
+<!--nav aria-label="Page navigation">
+  <ul class="pagination">
+    <li>
+      <a href="#" aria-label="Previous">
+        <span aria-hidden="true">&laquo;</span>
+      </a>
+    </li>
+    <li><a href="#">1</a></li>
+    <li><a href="#">2</a></li>
+    <li><a href="#">3</a></li>
+    <li><a href="#">4</a></li>
+    <li><a href="#">5</a></li>
+    <li>
+      <a href="#" aria-label="Next">
+        <span aria-hidden="true">&raquo;</span>
+      </a>
+    </li>
+  </ul>
+</nav-->
+								<div class="table-responsive">
+									<table id="registrantDistrictTable" name="registrantDistrictTable" class="table table-hover">
+										<thead><tr>
+												<th>Registrant</th>
+												<th>District(s)</th>
+												<th>Action</th>
+												</tr>
+										</thead>
+										<tbody>	
+										<?php 
+											registrantDistrictList();
+										?>										
+										</tbody>
+									</table>
+								</div><!--
+								<form name="registrantDistrictForm" id="registrantDistrictForm">
+									<label for="registrantIdInput">1. Select a Registrant</label>
+									<select name="registrantIdInput" id="registrantIdInput">
+										<option value="" selected>--Select Registrant--</option>
+									</select>
+									<br/>
+									<label for="registrantIdInput">2. Select a District to REMOVE from Registrant</label>
+									<select name="regDistrictDeleteInput" id="regDistrictDeleteInput">
+										<option value="" selected>--Select from Registrant's Districts--</option>
+									</select>
+									<br/>									
+									<label for="registrantIdInput">3. Select a District to ADD to Registrant</label>
+									<select name="regDistrictAddInput" id="regDistrictAddInput">
+										<option value="" selected>--Select from available Districts--</option>
+										<?php echo districtList();?>
+									</select><br/>
+									<label for="updateRegistrantDistrictButton">4. Click Update to process change(s).</label><button class="btn btn-default" id="updateRegistrantDistrictButton" name="updateRegistrantDistrictButton" type="button">Update</button>		-->						
+							</form>
 							</div>
 						</div>						
 					</div>
@@ -215,6 +276,7 @@
     <script src="js/voice.functions.js"></script>
     <script>
 $(document).ready(function($) {
+			
    $(document).on('click', '.alert-close', function() {
        $(this).parent().hide();
    });
@@ -242,6 +304,9 @@ $(document).ready(function($) {
    });
    $('#districtIdInput').on('change', function() {
    		$('input[name="editDistrictInput"]').val($("#districtIdInput option:selected").text());
+	})
+   $('.registrantAddDistrictInput').on('change', function() {
+	   addDistrictToRegistrant( $(this).attr("id"),$(this).val());
 	})
    
 });

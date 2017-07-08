@@ -81,4 +81,12 @@ function affirmRegistrant(r){
 	var obj ="function=setaffirmations&par1=" + r;
 	ajaxIt(obj,1);
 }
+function deleteDistrictFromRegistrant(r,d){
+	var obj = "function=deletedistrictfromregistrant&par1="+r+"&par2="+d;
+	ajaxIt(obj,1);
+}
+function addDistrictToRegistrant(r,d){
+	var obj = "function=adddistricttoregistrant&par1="+r+"&par2="+d;
+	ajaxIt(obj,1);
+}
 

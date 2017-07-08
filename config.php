@@ -5,6 +5,134 @@ define('DBPASS','1385362127Maya@123@');
 define('DBPORT','3306');
 
 $pdo 	= new PDO(DSN,DBUSER,DBPASS,array(PDO::ATTR_PERSISTENT => true));
+function registrantEligibleDistricts($rid){
+$errors = array();
+	$aNull = null;
+	$ret = array();
+	$returnstring = '';
+	if (empty($rid)){
+		$errors[]='Registrant ID is required.';
+	}
+	if(!empty($errors)){
+		$ret['message'] = $errors;
+		$ret['success'] = false;
+	}else{
+		try {
+			$pdo 	= new PDO(DSN,DBUSER,DBPASS,array(PDO::ATTR_PERSISTENT => true));				
+			$sql	= 'call registrant_get_eligible_districts(?)';
+			#error_log('CAll: '.$sql.':'.$rid);
+			
+			$stmt	= $pdo->prepare($sql);	
+			$stmt -> bindParam(1,$rid);					
+			$stmt -> execute();
+			$errs = $stmt->errorInfo();						
+			if (empty($errs[1])) {
+				$ret['success'] = true;
+				$dists = $stmt->fetchAll(PDO::FETCH_ASSOC);
+				$stmt -> closeCursor();
+				foreach ($dists as $dist)
+				{		
+					#error_log('Result:'.$dist['DISTRICT_ID'].'>'.$dist['DISTRICT']);
+					$returnstring = $returnstring.'<option value="'.$dist['DISTRICT_ID'].'">'.$dist['DISTRICT'].'</option>';
+				}
+			}else{
+				// On failure, perform any post-operation activity here, e.g. determine error(s).
+				$ret['success'] = false;
+				// Use this switch to capture database error conditions.
+				switch ($errs[1]){
+					//case "1062":
+					//	$ret['message'] = 'Duplicate record exists.';
+					//	break;
+					default:
+						$ret['message'] = 'There seems to be a problem. System administrators have been notified.';
+						// Log error to PHP console. Could also return this message to caller, in case
+						// it needs to be handled.
+						error_log(print_r('Error '.$errs[1].': '.$errs[2], TRUE)); 								
+						$ret['errors'] = 'Error '.$errs[1].': '.$errs[2];
+				}
+			}
+	
+		}catch (PDOException $e){
+			// Catch-all error trap.
+			$ret['success'] = false;
+			$ret['message'] = $e->getMessage();		
+			error_log(print_r($e->getMessage()));		
+		}	
+	}
+	return $returnstring;	
+}	
+function registrantDistrictList(){
+	$errors = array();
+	$aNull = null;
+	$ret = array();
+	if(!empty($errors)){
+		$ret['message'] = $errors;
+		$ret['success'] = false;
+	}else{
+		try {
+			$pdo 	= new PDO(DSN,DBUSER,DBPASS,array(PDO::ATTR_PERSISTENT => true));				
+			$sql	= 'call registrants_get_districts()';
+			$stmt	= $pdo->prepare($sql);						
+			$stmt -> execute();
+			$errs = $stmt->errorInfo();						
+			if (empty($errs[1])) {
+				$ret['success'] = true;
+				$users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+				$stmt -> closeCursor();
+				$currentRID = null;
+				$outa = null;
+				$outb = null;
+				$eldist = null;
+				foreach ($users as $user)
+				{		
+
+					if ($currentRID == $user['REGISTRANT_ID'] ) {
+						// on the same registrant so collect the additional district information.
+						$outb = $outb.'&nbsp;<a href="#" onclick="deleteDistrictFromRegistrant('.$user['REGISTRANT_ID'].','.$user['DISTRICT_ID'].')"><span class="label label-default">'.$user['DISTRICT'].'</span></a>';
+					}else{
+						// on a new registrant.
+						#error_log('Actual: '.$user['REGISTRANT_ID'].', Prev:'.$prevRID.', Current:'.$currentRID);
+						$prevRID = $currentRID;
+						$currentRID = $user['REGISTRANT_ID'];
+						if (!empty($outa)){
+							//output previous.
+							#error_log( 'CAll get eleigible with '.$prevRID.', note curre='.$currentRID);
+							$eldist = registrantEligibleDistricts($prevRID);
+							echo $outa.$outb.'</td><td><select class="registrantAddDistrictInput" id="'.$prevRID.'"><option value="">--Select District to Add--</option>'.registrantEligibleDistricts($prevRID).'</select></td></tr>';
+							// get next.
+							$outa = '<tr><td scope="row" rid="'.$user['REGISTRANT_ID'].'">'.$user['NAME'].'</td><td>';
+							$outb = '<a href="#" onclick="deleteDistrictFromRegistrant('.$user['REGISTRANT_ID'].','.$user['DISTRICT_ID'].')"><span class="label label-default">'.$user['DISTRICT'].'</span></a>';
+						}else{
+							$outa = '<tr><td scope="row" rid="'.$user['REGISTRANT_ID'].'">'.$user['NAME'].'</td><td>';
+							$outb = '<a href="#" onclick="deleteDistrictFromRegistrant('.$user['REGISTRANT_ID'].','.$user['DISTRICT_ID'].')"><span class="label label-default">'.$user['DISTRICT'].'</span></a>';
+						}
+					}
+				}
+				echo $outa.$outb.'</td><td><select class="registrantAddDistrictInput" id="'.$currentRID.'"><option value="">--Select District to Add--</option>'.registrantEligibleDistricts($currentRID).'</select></td></tr>';
+			}else{
+				// On failure, perform any post-operation activity here, e.g. determine error(s).
+				$ret['success'] = false;
+				// Use this switch to capture database error conditions.
+				switch ($errs[1]){
+					//case "1062":
+					//	$ret['message'] = 'Duplicate record exists.';
+					//	break;
+					default:
+						$ret['message'] = 'There seems to be a problem. System administrators have been notified.';
+						// Log error to PHP console. Could also return this message to caller, in case
+						// it needs to be handled.
+						error_log(print_r('Error '.$errs[1].': '.$errs[2], TRUE)); 								
+						$ret['errors'] = 'Error '.$errs[1].': '.$errs[2];
+				}
+			}
+	
+		}catch (PDOException $e){
+			// Catch-all error trap.
+			$ret['success'] = false;
+			$ret['message'] = $e->getMessage();				
+		}	
+	}		
+}
 function registrantList(){
 	$errors = array();
 	$aNull = null;
@@ -79,114 +207,107 @@ function registrantList(){
 	}		
 }
 function registrantUnsetDistrict($reg,$dis){
-	// $errors holds error messages for this function.
 	$errors = array();
-	// $ret holds return values for this function.
-	// Returns:
-	//	message - applicable message(s)
-	//	success - true|false success of operation. If false, error messages expected in 'message'.
 	$ret = array();
-	
-	// precheck function parameters here. 	
-	// add failures to $errors.
-	
-	if(!empty($errors)){
-		$ret['message'] = $errors;
-		$ret['success'] = false;
-	}else{
-		try {
-			$pdo 	= new PDO(DSN,DBUSER,DBPASS,array(PDO::ATTR_PERSISTENT => true));				
-			// set up stored procedure here. OUT params should be last, prefixed by @.
-			$sql	= 'call SOMEFUNCTION(?,@newid)';
-			$stmt	= $pdo->prepare($sql);						
-			$stmt -> bindParam(1, $username); #, PDO::PARAM_STR,256); <- not necessary to use explicit typing, but here for reference.
-			$stmt -> execute();
-			$stmt -> closeCursor();
-			$errs = $stmt->errorInfo();						
-			if (empty($errs[1])) {
-				// On success, perform any post-operation activity here, e.g. set message.
-				$ret['success'] = true;
-				
-				// Use this to obtain OUT parameter values and do something with them.
-				#$res = $pdo->query('SELECT @newid AS USER_ID')->fetch(PDO::FETCH_ASSOC);			
-				#$ret['message'] = 'User created ' . $res['USER_ID'];
-			}else{
-				// On failure, perform any post-operation activity here, e.g. determine error(s).
-				$ret['success'] = false;
-				// Use this switch to capture database error conditions.
-				switch ($errs[1]){
-					//case "1062":
-					//	$ret['message'] = 'Duplicate record exists.';
-					//	break;
-					default:
-						$ret['message'] = 'There seems to be a problem. System administrators have been notified.';
-						// Log error to PHP console. Could also return this message to caller, in case
-						// it needs to be handled.
-						error_log(print_r('Error '.$errs[1].': '.$errs[2], TRUE)); 								
-						$ret['errors'] = 'Error '.$errs[1].': '.$errs[2];
-				}
-			}
-		}catch (PDOException $e){
-			// Catch-all error trap.
-			$ret['success'] = false;
-			$ret['message'] = $e->getMessage();				
-		}	
-	}			
-}
-function registrantSetDistrict($reg,$dis){
-	// $errors holds error messages for this function.
-	$errors = array();
-	// $ret holds return values for this function.
-	// Returns:
-	//	message - applicable message(s)
-	//	success - true|false success of operation. If false, error messages expected in 'message'.
-	$ret = array();
-	
-	// precheck function parameters here. 	
-	// add failures to $errors.
-	
-	if(!empty($errors)){
-		$ret['message'] = $errors;
-		$ret['success'] = false;
-	}else{
-		try {
-			$pdo 	= new PDO(DSN,DBUSER,DBPASS,array(PDO::ATTR_PERSISTENT => true));				
-			// set up stored procedure here. OUT params should be last, prefixed by @.
-			$sql	= 'call SOMEFUNCTION(?,@newid)';
-			$stmt	= $pdo->prepare($sql);						
-			$stmt -> bindParam(1, $username); #, PDO::PARAM_STR,256); <- not necessary to use explicit typing, but here for reference.
-			$stmt -> execute();
-			$stmt -> closeCursor();
-			$errs = $stmt->errorInfo();						
-			if (empty($errs[1])) {
-				// On success, perform any post-operation activity here, e.g. set message.
-				$ret['success'] = true;
-				
-				// Use this to obtain OUT parameter values and do something with them.
-				#$res = $pdo->query('SELECT @newid AS USER_ID')->fetch(PDO::FETCH_ASSOC);			
-				#$ret['message'] = 'User created ' . $res['USER_ID'];
-			}else{
-				// On failure, perform any post-operation activity here, e.g. determine error(s).
-				$ret['success'] = false;
-				// Use this switch to capture database error conditions.
-				switch ($errs[1]){
-					//case "1062":
-					//	$ret['message'] = 'Duplicate record exists.';
-					//	break;
-					default:
-						$ret['message'] = 'There seems to be a problem. System administrators have been notified.';
-						// Log error to PHP console. Could also return this message to caller, in case
-						// it needs to be handled.
-						error_log(print_r('Error '.$errs[1].': '.$errs[2], TRUE)); 								
-						$ret['errors'] = 'Error '.$errs[1].': '.$errs[2];
-				}
-			}
-		}catch (PDOException $e){
-			// Catch-all error trap.
-			$ret['success'] = false;
-			$ret['message'] = $e->getMessage();				
-		}	
+	$anull = null;
+	if (empty($reg))
+	{
+		$errors[] = 'Registrant ID cannot be empty.';
+	}
+	if (empty($dis))
+	{
+		$errors[] = 'District ID cannot be empty.';
 	}		
+	$ret['function'] = 'registrantUnsetDistrict';
+	
+	if(!empty($errors)){
+		$ret['message'] = $errors;
+		$ret['success'] = false;
+	}else{
+		try {
+			$pdo 	= new PDO(DSN,DBUSER,DBPASS,array(PDO::ATTR_PERSISTENT => true));				
+			$sql	= 'call registrant_unset_district(?,?,?)';
+			$aNull = null;
+			$stmt	= $pdo->prepare($sql);						
+			$stmt -> bindParam(1, $reg); 
+			$stmt -> bindParam(2, $dis); 
+			$stmt -> bindParam(3,$anull);
+			$stmt -> execute();
+			$stmt -> closeCursor();
+			$errs = $stmt->errorInfo();						
+			if (empty($errs[1])) {
+				$ret['success'] = true;
+				$ret['message'] = 'Registrant removed from district.';
+			}else{
+				$ret['success'] = false;
+				switch ($errs[1]){					
+					case '1644':
+						$ret['message'] = $errs[2];
+						break;
+					default:
+						$ret['message'] = 'There seems to be a problem. System administrators have been notified.';
+						error_log(print_r('Error '.$errs[1].': '.$errs[2], TRUE)); 								
+						$ret['errors'] = 'Error '.$errs[1].': '.$errs[2];
+				}
+			}
+		}catch (PDOException $e){
+			$ret['success'] = false;
+			$ret['message'] = $e->getMessage();				
+		}	
+	}	
+	echo json_encode($ret);
+}
+
+function registrantSetDistrict($reg,$dis){
+	$errors = array();
+	$ret = array();
+	$anull = null;
+	if (empty($reg))
+	{
+		$errors[] = 'Registrant ID cannot be empty.';
+	}
+	if (empty($dis))
+	{
+		$errors[] = 'District ID cannot be empty.';
+	}		
+	$ret['function'] = 'registrantSetDistrict';
+	
+	if(!empty($errors)){
+		$ret['message'] = $errors;
+		$ret['success'] = false;
+	}else{
+		try {
+			$pdo 	= new PDO(DSN,DBUSER,DBPASS,array(PDO::ATTR_PERSISTENT => true));				
+			$sql	= 'call registrant_set_district(?,?,?)';
+			$aNull = null;
+			$stmt	= $pdo->prepare($sql);						
+			$stmt -> bindParam(1, $reg); 
+			$stmt -> bindParam(2, $dis); 
+			$stmt -> bindParam(3,$anull);
+			$stmt -> execute();
+			$stmt -> closeCursor();
+			$errs = $stmt->errorInfo();						
+			if (empty($errs[1])) {
+				$ret['success'] = true;
+				$ret['message'] = 'Registrant added to district.';
+			}else{
+				$ret['success'] = false;
+				switch ($errs[1]){					
+					case '1644':
+						$ret['message'] = $errs[2];
+						break;
+					default:
+						$ret['message'] = 'There seems to be a problem. System administrators have been notified.';
+						error_log(print_r('Error '.$errs[1].': '.$errs[2], TRUE)); 								
+						$ret['errors'] = 'Error '.$errs[1].': '.$errs[2];
+				}
+			}
+		}catch (PDOException $e){
+			$ret['success'] = false;
+			$ret['message'] = $e->getMessage();				
+		}	
+	}	
+	echo json_encode($ret);
 }
 function registrantSetApproved($reg){
 	$errors = array();

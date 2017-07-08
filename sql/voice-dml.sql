@@ -503,16 +503,37 @@ BEGIN
 	DELETE FROM `DISTRICTS` WHERE `DISTRICTS`.`DISTRICT_ID` = districtid;
     COMMIT;
 END $$
+DELIMITER $$
+DROP PROCEDURE IF EXISTS `VOICE`.`registrants_get_districts` $$
+CREATE PROCEDURE `VOICE`.`registrants_get_districts` ()
+COMMENT 'Get registrant districts'
+BEGIN
+	SELECT 
+		D.DISTRICT_ID,
+		D.DISTRICT,
+        R.REGISTRANT_ID,
+        CONCAT(F_NAME,' ',M_NAME,' ',L_NAME,' ',Suffix) as 'NAME'
+	FROM DISTRICTS D 
+    INNER JOIN REGISTRANT_DISTRICTS RD ON D.DISTRICT_ID = RD.DISTRICT_ID
+    INNER JOIN REGISTRANTS R ON R.REGISTRANT_ID = RD.REGISTRANT_ID
+    WHERE RD.ACTIVE = 1;
+END $$
+DELIMITER ; $$
+DELIMITER $$
 DROP PROCEDURE IF EXISTS `VOICE`.`registrant_get_districts` $$
 CREATE PROCEDURE `VOICE`.`registrant_get_districts` (IN regid bigint(20))
 COMMENT 'Get a specific registrant''s districts'
 BEGIN
 	SELECT 
-		D.DISTRICT 
+		D.DISTRICT_ID,
+		D.DISTRICT,
+        CONCAT(F_NAME,' ',M_NAME,' ',L_NAME,' ',Suffix) as 'NAME'
 	FROM DISTRICTS D 
     INNER JOIN REGISTRANT_DISTRICTS RD ON D.DISTRICT_ID = RD.DISTRICT_ID
-    WHERE RD.REGISTRANT_ID = regid;		
+    INNER JOIN REGISTRANTS R ON R.REGISTRANT_ID = regid
+    WHERE RD.REGISTRANT_ID = regid and RD.ACTIVE = 1;	
 END $$
+DELIMITER ; $$
 
 DROP PROCEDURE IF EXISTS `VOICE`.`get_affirmations` $$
 CREATE PROCEDURE `VOICE`.`get_affirmations` (IN statecd varchar(3))
@@ -540,13 +561,25 @@ DROP PROCEDURE IF EXISTS `VOICE`.`registrant_set_district` $$
 CREATE PROCEDURE `VOICE`.`registrant_set_district` (IN regid bigint(20), IN districtid bigint(20), IN districtname varchar(128))
 COMMENT 'Add a registrant to a district (by name or ID)'
 BEGIN
-	IF (!(NULLIF(districtid, '') IS NULL)) THEN
-		INSERT INTO REGISTRANT_DISTRICTS (`REGISTRANT_ID`,`DISTRICT_ID`) VALUES (regid,districtid);
-    ELSEIF (!(NULLIF(districtname,'') IS NULL)) THEN
-		INSERT INTO REGISTRANT_DISTRICTS (`REGISTRANT_ID`,`DISTRICT_ID`) VALUES (regid,(SELECT DISTRICT_ID FROM DISTRICTS WHERE DISTRICT = districtname));
-    ELSE
+	-- check if parameters are given properly; must have one of District ID or District Name.
+	IF (NULLIF(districtid,'') IS NULL) and (!(NULLIF(districtname,'') IS NULL)) THEN
+		SET @did = (SELECT DISTRICT_ID FROM DISTRICTS WHERE DISTRICT = districtname);
+	ELSE
+		SET @did = districtid;
+    END IF;
+    IF (NULLIF(districtid,'') IS NULL) THEN
 		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Must provide either district ID or district name to add.';
 	END IF;
+    
+    -- Check if the district is already added but is inactive.
+    SET @active = (SELECT COUNT(*) from REGISTRANT_DISTRICTS where DISTRICT_ID = @did and REGISTRANT_ID = regid); 
+    IF (NULLIF(@active,'') IS NULL) THEN
+    -- not present, add it.
+		INSERT INTO REGISTRANT_DISTRICTS (`REGISTRANT_ID`,`DISTRICT_ID`) VALUES (regid,@did);
+    ELSE
+    -- present, activate it.
+		UPDATE REGISTRANT_DISTRICTS SET ACTIVE = 1 WHERE REGISTRANT_ID = regid and DISTRICT_ID = @did;
+    END IF;
     COMMIT;
 END $$
 DELIMITER ; $$
@@ -556,16 +589,32 @@ DROP PROCEDURE IF EXISTS `VOICE`.`registrant_unset_district` $$
 CREATE PROCEDURE `VOICE`.`registrant_unset_district` (IN regid bigint(20), IN districtid bigint(20),IN districtname varchar(128))
 COMMENT 'Remove a registrant to a district by district ID or name'
 BEGIN
-	IF (!(NULLIF(districtid,'') IS NULL)) THEN
-		UPDATE `REGISTRANT_DISTRICTS` RD SET `ACTIVE` = 0 WHERE RD.REGISTRANT_ID = regid and RD.DISTRICT_ID = districtid;
-    ELSEIF (!(NULLIF(districtname,'') IS NULL)) THEN
-		UPDATE `REGISTRANT_DISTRICTS` RD SET `ACTIVE` = 0 WHERE RD.REGISTRANT_ID = regid and RD.DISTRICT_ID = (SELECT DISTRICT_ID FROM DISTRICTS WHERE DISTRICT = districtname);
-    ELSE
-		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Must provide either district ID or district name to remove from registrant.';
+	IF (NULLIF(districtid,'') IS NULL) and (!(NULLIF(districtname,'') IS NULL)) THEN
+		SET @did = (SELECT DISTRICT_ID FROM DISTRICTS WHERE DISTRICT = districtname);
+	ELSE
+		SET @did = districtid;
     END IF;
+    IF (NULLIF(districtid,'') IS NULL) THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Must provide either district ID or district name to unset.';
+	END IF;
+	UPDATE `REGISTRANT_DISTRICTS` RD SET `ACTIVE` = 0 WHERE RD.REGISTRANT_ID = regid and RD.DISTRICT_ID = @did;
     COMMIT;
 END $$
 DELIMITER ; $$
+
+DELIMITER $$
+DROP PROCEDURE IF EXISTS `VOICE`.`registrant_get_eligible_districts` $$
+CREATE PROCEDURE `VOICE`.`registrant_get_eligible_districts` (IN regid bigint(20))
+COMMENT 'Get districts that a registrant does not have currently.'
+BEGIN
+
+	SELECT D.DISTRICT_ID, D.DISTRICT FROM DISTRICTS D
+    WHERE 
+		D.DISTRICT_ID NOT IN (SELECT RD.DISTRICT_ID FROM REGISTRANT_DISTRICTS RD WHERE RD.REGISTRANT_ID = regid AND ACTIVE = 1);
+    
+END $$
+DELIMITER ; $$
+
 
 DROP PROCEDURE IF EXISTS `VOICE`.`registrant_unset_approved` $$
 CREATE PROCEDURE `VOICE`.`registrant_unset_approved` (IN regid bigint(20))

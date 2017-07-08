@@ -26,6 +26,12 @@
 		case 'rejectregistrant':
 			$results = registrantSetRejected($par1);
 			break;
+		case 'adddistricttoregistrant':
+			$results = registrantSetDistrict($par1,$par2);
+			break;
+		case 'deletedistrictfromregistrant':
+			$results = registrantUnsetDistrict($par1,$par2);
+			break;
 		case 'districtadd':
 			$results = districtAdd($par1);
 			break;
