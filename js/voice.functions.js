@@ -89,4 +89,20 @@ function addDistrictToRegistrant(r,d){
 	var obj = "function=adddistricttoregistrant&par1="+r+"&par2="+d;
 	ajaxIt(obj,1);
 }
+function addDistrictToElection(r,d){
+	var obj = "function=adddistricttoelection&par1="+r+"&par2="+d;
+	ajaxIt(obj,1);
+}
+function deleteDistrictFromElection(r,d){
+	var obj = "function=deletedistrictfromelection&par1="+r+"&par2="+d;
+	ajaxIt(obj,1);
+}
+function addElection(serializedData){
+	console.log('AddElection: ' + serializedData);
+	ajaxIt(serializedData,1);
+}
+function activateElection(r){
+	var obj="function=activateelection&par1="+r;
+	ajaxIt(obj,1);	
+}
 
